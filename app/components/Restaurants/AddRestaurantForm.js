@@ -15,6 +15,12 @@ import { map, size, filter } from "lodash";
 import Modal from "../Modal";
 import * as Location from "expo-location";
 import MapView from "react-native-maps";
+import { firebaseApp } from "../../utils/firebase";
+import firebase from "firebase/app";
+import "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
+import "firebase/firestore";
+const db = firebase.firestore();
 
 const widthScreen = Dimensions.get("window").width;
 
@@ -35,8 +41,57 @@ export default function AddRestaurantForm(props) {
     } else if (!locationRestaurant) {
       toastRef.current.show("Tiene que localizar el restaurante en el mapa");
     } else {
-      toastRef.current.show("melo");
+      setIsLoading(true);
+      uploadImageStore().then((response) => {
+        db.collection("restaurants")
+          .add({
+            name: restaurantName,
+            address: restaurantAddress,
+            description: restaurantDescription,
+            location: locationRestaurant,
+            images: response,
+            rating: 0,
+            ratingTotal: 0,
+            quantityVoting: 0,
+            creatAt: new Date(),
+            createBy: firebase.auth().currentUser.uid,
+          })
+          .then(() => {
+            console.log("cargando...");
+            setIsLoading(false);
+            navigation.navigate("restaurants");
+          })
+          .catch(() => {
+            setIsLoading(false);
+            toastRef.current.show(
+              "Error al subir el restaurante intentelo mas tarde"
+            );
+          });
+      });
     }
+  };
+
+  const uploadImageStore = async () => {
+    const imageBlob = [];
+
+    await Promise.all(
+      map(imageSelected, async (image) => {
+        const response = fetch(image);
+        const blob = await (await response).blob();
+        const ref = firebase.storage().ref("restaurants").child(uuidv4());
+        await ref.put(blob).then(async (result) => {
+          await firebase
+            .storage()
+            .ref(`restaurants/${result.metadata.name}`)
+            .getDownloadURL()
+            .then((photoURL) => {
+              imageBlob.push(photoURL);
+            });
+        });
+      })
+    );
+
+    return imageBlob;
   };
 
   return (
@@ -159,7 +214,6 @@ function Map(props) {
           latitudeDelta: 0.001,
           longitudeDelta: 0.001,
         });
-        console.log(location);
       }
     })();
   }, []);
