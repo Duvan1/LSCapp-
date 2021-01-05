@@ -52,14 +52,7 @@ function Restaurant(props) {
     navigation.navigate("restaurant", {
       id,
       name,
-    }); /*
-    navigation.navigate("restaurant", {
-      id,
-      images,
-      name,
-      address,
-      description,
-    });*/
+    });
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
 import { map } from "lodash";
 import { Rating, ListItem, Icon } from "react-native-elements";
@@ -10,6 +10,7 @@ import "firebase/firestore";
 import Carousel from "../../components/Carousel";
 import Map from "../../components/Map";
 import ListReviews from "../../components/Restaurants/ListReviews";
+import Toast from "react-native-easy-toast";
 
 const db = firebase.firestore(firebaseApp);
 const screenWidth = Dimensions.get("window").width;
@@ -17,12 +18,20 @@ const screenWidth = Dimensions.get("window").width;
 export default function Restaurant(props) {
   const { navigation, route } = props;
   const { id, name } = route.params;
+  console.log();
   const [restaurant, setRestaurant] = useState(null);
   const [rating, setRating] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [userLogged, setUserLogged] = useState(false);
+  const toastRef = useRef();
 
   React.useLayoutEffect(() => {
     navigation.setOptions({ title: name });
   }, []);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    user ? setUserLogged(true) : setUserLogged(false);
+  });
 
   useFocusEffect(
     useCallback(() => {
@@ -38,10 +47,76 @@ export default function Restaurant(props) {
     }, [])
   );
 
+  useEffect(() => {
+    if (userLogged && restaurant) {
+      db.collection("favorites")
+        .where("idRestaurant", "==", restaurant.id)
+        .where("idUser", "==", firebase.auth().currentUser.uid)
+        .get()
+        .then((response) => {
+          if (response.docs.length === 1) {
+            setIsFavorite(true);
+          }
+        });
+    }
+  }, [userLogged, restaurant]);
+
   if (!restaurant) return <Loading isVisible={true} text="Cargando..." />;
+
+  const addFavorites = () => {
+    if (!userLogged) {
+      toastRef.current.show("PAra añadir a favoritos tienes que logearte");
+    } else {
+      const payload = {
+        idUser: firebase.auth().currentUser.uid,
+        idRestaurant: restaurant.id,
+      };
+      db.collection("favorites")
+        .add(payload)
+        .then(() => {
+          setIsFavorite(true);
+          toastRef.current.show("Añadido a favoritos");
+        })
+        .catch(() => {
+          toastRef.current.show("error al añadido a favoritos");
+        });
+    }
+  };
+
+  const removeFavorites = () => {
+    db.collection("favorites")
+      .where("idRestaurant", "==", restaurant.id)
+      .where("idUser", "==", firebase.auth().currentUser.uid)
+      .get()
+      .then((response) => {
+        response.forEach((doc) => {
+          const idFavorite = doc.id;
+          db.collection("favorites")
+            .doc(idFavorite)
+            .delete()
+            .then(() => {
+              setIsFavorite(false);
+              toastRef.current.show("eliminado de favoritos");
+            })
+            .catch(() => {
+              toastRef.current.show("error al eliminar de favoritos");
+            });
+        });
+      });
+  };
 
   return (
     <ScrollView vertical style={styles.viewBody}>
+      <View style={styles.viewFavorites}>
+        <Icon
+          type="material-community"
+          name={isFavorite ? "heart" : "heart-outline"}
+          size={35}
+          color={isFavorite ? "#f00" : "#000"}
+          underlayColor="transparent"
+          onPress={isFavorite ? removeFavorites : addFavorites}
+        />
+      </View>
       <Carousel
         arrayImages={restaurant.images}
         height={250}
@@ -58,6 +133,7 @@ export default function Restaurant(props) {
         address={restaurant.address}
       />
       <ListReviews navigation={navigation} idRestaurant={restaurant.id} />
+      <Toast ref={toastRef} position="center" opacity={0.9} />
     </ScrollView>
   );
 }
@@ -154,5 +230,15 @@ const styles = StyleSheet.create({
   containerListItem: {
     borderBottomColor: "#d8d8d8",
     borderBottomWidth: 1,
+  },
+  viewFavorites: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 2,
+    backgroundColor: "#fff",
+    borderBottomLeftRadius: 100,
+    padding: 5,
+    paddingLeft: 15,
   },
 });
