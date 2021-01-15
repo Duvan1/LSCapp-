@@ -10,7 +10,6 @@ export default function ChangeDisplayNameForm(props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = () => {
-    console.log(newDisplayName);
     setError(null);
     if (!newDisplayName) {
       setError("El nombre es obligatorio");

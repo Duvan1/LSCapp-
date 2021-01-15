@@ -31,9 +31,7 @@ export default function ChangeEmailForm(props) {
       });
     } else {
       reauthenticate(formData.password)
-        .then((response) => {
-          console.log(response);
-        })
+        .then((response) => {})
         .catch(() => {
           setError({ password: "Contraseña incorrecta" });
         });

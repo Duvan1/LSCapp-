@@ -23,7 +23,6 @@ export default function TopRestaurants(props) {
         response.forEach((doc) => {
           const data = doc.data();
           data.id = doc.id;
-          console.log(data);
           restaurantArray.push(data);
         });
         setRestaurants(restaurantArray);

@@ -44,6 +44,7 @@ export default function LoginFacebook(props) {
     <>
       <SocialIcon
         title="Inicia Sesion con Facebook"
+        fontWeight="bold"
         button
         type="facebook"
         onPress={login}

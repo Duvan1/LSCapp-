@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import { StyleSheet, View, ScrollView, Image, Text } from "react-native";
-import { Divider } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import LoginForm from "../../components/Account/LoginForm";
 import LoginFacebook from "../../components/Account/LoginFacebook";
@@ -8,10 +7,12 @@ import Toast from "react-native-easy-toast";
 
 export default function Login() {
   const toastRef = useRef();
+  //const navigation = useNavigation();
+
   return (
     <ScrollView>
       <Image
-        source={require("../../../assets/img/5-tenedores-letras-icono-logo.png")}
+        source={require("../../../assets/img/icono-logo.png")}
         resizeMode="contain"
         style={styles.logo}
       />
@@ -19,7 +20,6 @@ export default function Login() {
         <LoginForm toastRef={toastRef} />
         <CreateAccount />
       </View>
-      <Divider style={styles.divider} />
       <View style={styles.viewContainer}>
         <LoginFacebook toastRef={toastRef} />
       </View>
@@ -52,18 +52,20 @@ const styles = StyleSheet.create({
   viewContainer: {
     marginRight: 40,
     marginLeft: 40,
+    marginTop: 10,
   },
   textRegister: {
     marginTop: 15,
     marginLeft: 10,
     marginRight: 10,
+    color: "#AFAFAF",
   },
   btnRegister: {
-    color: "#00a680",
+    color: "#5fbdff",
     fontWeight: "bold",
   },
   divider: {
-    backgroundColor: "#00a680",
+    backgroundColor: "#5fbdff",
     margin: 40,
   },
 });

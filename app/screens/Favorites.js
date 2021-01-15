@@ -26,7 +26,13 @@ export default function Favorites(props) {
   const [reloadData, setReloadData] = useState(false);
   const toastRef = useRef();
 
-  console.log(restaurant);
+  React.useLayoutEffect(() => {
+    navigation.dangerouslyGetParent().setOptions({
+      //tabBarVisible: false,
+      //headerVisible: false,
+      //headerShown: false,
+    });
+  }, []);
 
   firebase.auth().onAuthStateChanged((user) => {
     user ? setuserLogged(true) : setuserLogged(false);

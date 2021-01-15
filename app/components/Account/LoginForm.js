@@ -45,7 +45,9 @@ export default function LoginForm(props) {
     <View style={styles.formContainer}>
       <Input
         placeholder="Correo Electronico"
+        labelStyle={{ fontWeight: "bold", fontSize: 10 }}
         containerStyle={styles.inputForm}
+        inputContainerStyle={styles.input}
         onChange={(e) => onChange(e, "email")}
         rightIcon={
           <Icon
@@ -60,6 +62,7 @@ export default function LoginForm(props) {
         password={true}
         secureTextEntry={showPassword ? false : true}
         containerStyle={styles.inputForm}
+        inputContainerStyle={styles.input}
         onChange={(e) => onChange(e, "password")}
         rightIcon={
           <Icon
@@ -71,7 +74,8 @@ export default function LoginForm(props) {
         }
       />
       <Button
-        title="iniciar sesion"
+        title="INGRESAR"
+        titleStyle={{ fontWeight: "bold", fontSize: 20 }}
         containerStyle={styles.btnContainerLogin}
         buttonStyle={styles.btnLogin}
         onPress={onSubmit}
@@ -95,16 +99,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 30,
   },
+  input: {
+    backgroundColor: "#F7F7F7",
+    borderRadius: 10,
+    borderColor: "#E5E5E5",
+    borderWidth: 2,
+    borderBottomWidth: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
   inputForm: {
     width: "100%",
-    marginTop: 20,
   },
   btnContainerLogin: {
     marginTop: 20,
     width: "95%",
+    borderColor: "#62B2EF",
+    borderTopWidth: 0.5,
+    borderLeftWidth: 1,
+    borderBottomWidth: 3,
+    borderRightWidth: 3,
+    borderBottomEndRadius: 12,
+    borderBottomLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
   btnLogin: {
-    backgroundColor: "#00a680",
+    backgroundColor: "#5fbdff",
+    borderRadius: 10,
+    padding: 15,
   },
   iconRight: {
     color: "#c1c1c1",

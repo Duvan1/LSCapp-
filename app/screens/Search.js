@@ -12,7 +12,6 @@ export default function Search(props) {
   const { navigation } = props;
   const [search, setSearch] = useState("");
   const [restaurants, setRestaurants] = useState([]);
-  console.log(restaurants);
 
   useEffect(() => {
     if (search) {

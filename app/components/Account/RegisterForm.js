@@ -59,6 +59,7 @@ export default function RegisterForm(props) {
       <Input
         placeholder="Correo electronico"
         containerStyle={styles.inputForm}
+        inputContainerStyle={styles.input}
         onChange={(e) => onChange(e, "email")}
         rightIcon={
           <Icon
@@ -72,6 +73,7 @@ export default function RegisterForm(props) {
         password={true}
         secureTextEntry={showPassword ? false : true}
         placeholder="Contraseña"
+        inputContainerStyle={styles.input}
         containerStyle={styles.inputForm}
         onChange={(e) => onChange(e, "password")}
         rightIcon={
@@ -86,6 +88,7 @@ export default function RegisterForm(props) {
       <Input
         password={true}
         secureTextEntry={showPasswordRepite ? false : true}
+        inputContainerStyle={styles.input}
         placeholder="repetir contraseña"
         containerStyle={styles.inputForm}
         onChange={(e) => onChange(e, "repeatPassword")}
@@ -101,6 +104,7 @@ export default function RegisterForm(props) {
       <Button
         buttonStyle={styles.btnRegister}
         title="Unirse"
+        titleStyle={{ fontWeight: "bold", fontSize: 20 }}
         containerStyle={styles.btnContainerRegister}
         onPress={onSubmit}
       />
@@ -124,16 +128,35 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 30,
   },
+  input: {
+    backgroundColor: "#F7F7F7",
+    borderRadius: 10,
+    borderColor: "#E5E5E5",
+    borderWidth: 2,
+    borderBottomWidth: 2,
+    paddingLeft: 10,
+    paddingRight: 10,
+  },
   inputForm: {
     width: "100%",
-    marginTop: 20,
+    marginTop: -5,
   },
   btnContainerRegister: {
     marginTop: 20,
     width: "95%",
+    borderColor: "#62B2EF",
+    borderTopWidth: 0.5,
+    borderLeftWidth: 1,
+    borderBottomWidth: 3,
+    borderRightWidth: 3,
+    borderBottomEndRadius: 12,
+    borderBottomLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
   btnRegister: {
-    backgroundColor: "#00a680",
+    backgroundColor: "#5fbdff",
+    borderRadius: 10,
+    padding: 15,
   },
   iconRight: {
     color: "#c1c1c1",
