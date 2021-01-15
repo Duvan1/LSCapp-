@@ -5,6 +5,7 @@ import { FireSQL } from "firesql";
 import { firebaseApp } from "../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import { Button } from "react-native";
 
 const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
 

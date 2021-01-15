@@ -1,7 +1,7 @@
 import React from "react";
 
 import { createStackNavigator } from "@react-navigation/stack";
-import Account from "../screens/Account/Account";
+import UserGuest from "../screens/Account/UserGuest";
 import Login from "../screens/Account/Login";
 import Register from "../screens/Account/Register";
 
@@ -9,10 +9,10 @@ const Stack = createStackNavigator();
 
 export default function AccountStack() {
   return (
-    <Stack.Navigator initialRouteName="account">
+    <Stack.Navigator initialRouteName="account-user">
       <Stack.Screen
-        name="account"
-        component={Account}
+        name="account-user"
+        component={UserGuest}
         options={{ title: "Cuenta", headerShown: false }}
       />
       <Stack.Screen
