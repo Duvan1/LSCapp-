@@ -42,39 +42,12 @@ export default function MainTab() {
         name="favorites"
         component={FavoritesSrack}
         options={{
-          title: "Favoritos",
+          title: "Señas",
         }}
         listeners={() => ({
           tabPress: (event) => {
             setBarColor("#FF5F5F");
             setinactiveColor("#FF9292");
-          },
-        })}
-      />
-      <Tab.Screen
-        name="top-restaurants"
-        component={TopRestaurantsStack}
-        options={{
-          title: "Top",
-        }}
-        listeners={() => ({
-          tabPress: (event) => {
-            setBarColor("#AF5FFF");
-            setinactiveColor("#C992FF");
-          },
-        })}
-      />
-      <Tab.Screen
-        name="search"
-        component={SearchStack}
-        options={{
-          title: "Buscar",
-        }}
-        listeners={() => ({
-          tabPress: (event) => {
-            setBarColor("#5F7AFF");
-            1;
-            setinactiveColor("#92A4FF");
           },
         })}
       />
@@ -92,6 +65,33 @@ export default function MainTab() {
           },
         })}
       />
+      <Tab.Screen
+        name="top-restaurants"
+        component={TopRestaurantsStack}
+        options={{
+          title: "Emblemas",
+        }}
+        listeners={() => ({
+          tabPress: (event) => {
+            setBarColor("#AF5FFF");
+            setinactiveColor("#C992FF");
+          },
+        })}
+      />
+      <Tab.Screen
+        name="search"
+        component={SearchStack}
+        options={{
+          title: "Tienda",
+        }}
+        listeners={() => ({
+          tabPress: (event) => {
+            setBarColor("#5F7AFF");
+            1;
+            setinactiveColor("#92A4FF");
+          },
+        })}
+      />
     </Tab.Navigator>
   );
 }
@@ -105,13 +105,13 @@ function screenOptions(route, color) {
 
       break;
     case "favorites":
-      iconName = "heart-outline";
+      iconName = "book";
       break;
     case "top-restaurants":
-      iconName = "star-outline";
+      iconName = "shield-check";
       break;
     case "search":
-      iconName = "magnify";
+      iconName = "store";
       break;
     case "account":
       iconName = "account-outline";

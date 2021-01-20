@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, Image, StyleSheet } from "react-native";
-import { SearchBar, ListItem, Icon, Avatar } from "react-native-elements";
+import { View, FlatList, Image, StyleSheet } from "react-native";
+import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { FireSQL } from "firesql";
 import { firebaseApp } from "../utils/firebase";
 import firebase from "firebase/app";
@@ -26,6 +26,7 @@ export default function Search(props) {
 
   return (
     <View>
+      <Button title="slvjfsjkv" onPress={() => navigation.navigate("Home")} />
       <SearchBar
         placeholder="Busca tu restaurante..."
         onChangeText={(e) => setSearch(e)}
