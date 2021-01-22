@@ -9,7 +9,7 @@ import firebase from "firebase";
 import "firebase/firestore";
 // stacks
 import AccountStack from "./AccountStack";
-import Home from "../screens/Home";
+import IconClass from "../components/Restaurants/IconClass";
 
 const Stack = createStackNavigator();
 
@@ -54,7 +54,7 @@ export default function Navigation() {
         />
         <Stack.Screen
           name="Home"
-          component={Home}
+          component={IconClass}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

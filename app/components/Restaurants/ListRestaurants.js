@@ -10,6 +10,7 @@ import {
 import { Image } from "react-native-elements";
 import { size } from "lodash";
 import { useNavigation } from "@react-navigation/native";
+import IconClass from "./IconClass";
 
 export default function ListRestaurants(props) {
   const { restaurants, handleLoadMore, isLoading } = props;
@@ -20,13 +21,16 @@ export default function ListRestaurants(props) {
     <View>
       {size(restaurants) > 0 ? (
         <FlatList
+          contentContainerStyle={{
+            justifyContent: "center",
+            marginTop: 30,
+            marginBottom: 60,
+          }}
           data={restaurants}
+          numColumns={2}
           renderItem={(restaurant) => (
             <Restaurant restaurant={restaurant} navigation={navigation} />
           )}
-          keyExtractor={(item, index) => {
-            index.toString();
-          }}
           onEndReachedThreshold={0.5}
           onEndReached={handleLoadMore}
           ListEmptyComponent={
@@ -57,24 +61,8 @@ function Restaurant(props) {
 
   return (
     <TouchableOpacity onPress={goRestaurant}>
-      <View style={styles.viewRestautant}>
-        <View style={styles.viewRestautantImage}>
-          <Image
-            resizeMode="cover"
-            PlaceholderContent={<ActivityIndicator color="#fff" />}
-            source={
-              imageRestaurant
-                ? { uri: imageRestaurant }
-                : require("../../../assets/img/no-image.png")
-            }
-            style={styles.imageRestaurant}
-          />
-        </View>
-        <View>
-          <Text style={styles.restaurantName}>{name}</Text>
-          <Text restaurantAddress>{address}</Text>
-          <Text restaurantDescription>{description.substr(0, 60)}...</Text>
-        </View>
+      <View style={[styles.viewRestautant, { alignContent: "center" }]}>
+        <IconClass />
       </View>
     </TouchableOpacity>
   );
@@ -104,8 +92,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   viewRestautant: {
+    flex: 1,
+    justifyContent: "center",
     flexDirection: "row",
-    margin: 10,
   },
   viewRestautantImage: {
     marginRight: 15,

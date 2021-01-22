@@ -3,79 +3,76 @@ import ProgressCircle from "react-native-progress-circle";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Avatar, Badge, Icon, withBadge } from "react-native-elements";
 
-export default function Home() {
+export default function IconClass() {
   //const disable = true;
-  const [disable, setDisable] = useState(true);
+  const [disable, setDisable] = useState(false);
 
   return (
-    /*
-    <View>
-      <FlatList
-        data={[1, 2, 3, 4, 5]}
-        numColumns={2}
-        renderItem={() => (
-          <View
-            style={{
-              flex: 1,
-              height: 150,
-              borderWidth: 1,
-              margin: 20,
-            }}
-          />
-        )}
-      />
-    </View>
-    */
-    <View style={{ alignItems: "center" }}>
+    <View
+      style={{
+        alignItems: "center",
+        marginRight: 60,
+        marginLeft: 60,
+        marginBottom: 20,
+      }}
+    >
       <View style={{ position: "absolute" }}>
         <ProgressCircle
           percent={30}
-          radius={60}
+          radius={50}
           borderWidth={8}
           color={disable ? "gray" : "#FFD200"}
           shadowColor="#E4E4E4"
           bgColor="#fff"
         >
-          <TouchableOpacity
+          <View
             style={disable ? styles.iconContainerGray : styles.iconContainer}
             onPress={() => console.log("lkdnsklfsn")}
           >
             <Image
               style={{
                 marginTop: 15,
-                height: 50,
-                width: 50,
+                height: 40,
+                width: 40,
               }}
-              source={require("../../assets/icons/burguer.png")}
+              source={require("../../../assets/icons/burguer.png")}
             />
             {disable ? (
               <Image
                 style={{
                   position: "absolute",
                   tintColor: "gray",
-                  marginTop: 15,
                   opacity: 0.8,
-                  height: 50,
-                  width: 50,
+                  marginTop: 15,
+                  height: 40,
+                  width: 40,
                 }}
-                source={require("../../assets/icons/burguer.png")}
+                source={require("../../../assets/icons/burguer.png")}
               />
             ) : null}
-          </TouchableOpacity>
+          </View>
         </ProgressCircle>
 
         <Image
-          source={require("../../assets/icons/crown1.png")}
-          style={{ position: "absolute", bottom: 0, right: 4 }}
+          source={require("../../../assets/icons/crown1.png")}
+          style={{
+            position: "absolute",
+            bottom: 2,
+            right: 5,
+            height: 30,
+            width: 38,
+          }}
         />
         {disable ? (
           <Image
-            source={require("../../assets/icons/crown1.png")}
+            source={require("../../../assets/icons/crown1.png")}
             style={{
               position: "absolute",
-              bottom: 0,
-              right: 4,
+              bottom: 2,
+              right: 5,
               tintColor: "#a7a7a7",
+              height: 30,
+              width: 38,
             }}
           />
         ) : null}
@@ -87,14 +84,14 @@ export default function Home() {
               right: 19,
               color: "#DB8B00",
               fontWeight: "bold",
-              fontSize: 20,
+              fontSize: 18,
             }}
           >
             5
           </Text>
         )}
       </View>
-      <Text style={{ marginTop: 130, fontSize: 20, fontWeight: "bold" }}>
+      <Text style={{ marginTop: 105, fontSize: 15, fontWeight: "bold" }}>
         Comidas
       </Text>
     </View>
