@@ -1,5 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  ScrollView,
+} from "react-native";
+import { ProgressBar } from "react-native-paper";
+import { ListItem, Image } from "react-native-elements";
 import * as firebase from "firebase";
 import { Button } from "react-native-elements";
 import Toast from "react-native-easy-toast";
@@ -14,6 +22,23 @@ export default function UserLogged() {
   const [realoadUserInfo, setRealoadUserInfo] = useState(false);
   const [userInfo, setuserInfo] = useState(null);
 
+  const list = [
+    {
+      name: "On fire",
+      avatar_url: require("../../../assets/icons/achievement-wildfire.png"),
+      subtitle: "Alcanza una racha de 14 días",
+      percentage: 0.5,
+      status: "7/14",
+    },
+    {
+      name: "Filósofo",
+      avatar_url: require("../../../assets/icons/achievement-sage.png"),
+      subtitle: "Gana 1000 EXP",
+      percentage: 0.9,
+      status: "935/1000",
+    },
+  ];
+
   useEffect(() => {
     (async () => {
       const user = await firebase.default.auth().currentUser;
@@ -23,7 +48,7 @@ export default function UserLogged() {
   }, [realoadUserInfo]);
 
   return (
-    <View style={styles.viewUserInfo}>
+    <ScrollView style={styles.viewUserInfo}>
       {userInfo && (
         <InfoUser
           setloading={setloading}
@@ -39,8 +64,78 @@ export default function UserLogged() {
         setRealoadUserInfo={setRealoadUserInfo}
       />
 
+      <View style={{ marginRight: 20, marginLeft: 20 }}>
+        <View
+          style={{
+            alignItems: "baseline",
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: 20,
+            borderBottomWidth: 1,
+            borderBottomColor: "#ABABAB",
+          }}
+        >
+          <Text
+            style={{
+              color: "#3c3c3c",
+              fontSize: 20,
+              fontWeight: "bold",
+              marginBottom: 10,
+            }}
+          >
+            Logros
+          </Text>
+        </View>
+      </View>
+
+      <View style={{ marginRight: 20, marginLeft: 20, borderRadius: 5 }}>
+        {list.map((l, i) => (
+          <ListItem key={i} bottomDivider>
+            <View style={{ marginLeft: 0, minWidth: 77 }}>
+              <ImageBackground
+                source={l.avatar_url}
+                style={{
+                  alignItems: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  paddingBottom: "124.5%",
+                  position: "relative",
+                  width: "100%",
+                }}
+              >
+                <Text
+                  style={{
+                    bottom: 10,
+                    fontSize: 14,
+                    color: "#fff",
+                    fontWeight: "700",
+                    display: "flex",
+                    position: "absolute",
+                  }}
+                >
+                  Nivel 4
+                </Text>
+              </ImageBackground>
+            </View>
+            <ListItem.Content>
+              <ListItem.Title>{l.name}</ListItem.Title>
+              <Text style={{ color: "gray" }}>{l.subtitle}</Text>
+              <View style={styles.subtitleView}>
+                <ProgressBar
+                  progress={0.3}
+                  color={"#FFC300"}
+                  style={styles.ratingImage}
+                />
+                <Text style={styles.ratingText}>{l.status}</Text>
+              </View>
+            </ListItem.Content>
+          </ListItem>
+        ))}
+      </View>
+
       <Button
         title="Cerrar sesión"
+        containerStyle={{ marginBottom: 60 }}
         buttonStyle={styles.btnCloseSession}
         titleStyle={styles.titleBtnCloseSession}
         onPress={() => {
@@ -49,7 +144,7 @@ export default function UserLogged() {
       />
       <Toast ref={toastRef} position="center" opacity={0.9} />
       <Loading isVisible={loading} text={loadingText} />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -57,11 +152,13 @@ const styles = StyleSheet.create({
   viewUserInfo: {
     minHeight: "100%",
     backgroundColor: "#f2f2f2",
+    marginBottom: 60,
+    marginTop: 20,
   },
   btnCloseSession: {
     marginTop: 30,
     borderRadius: 0,
-    backgroundColor: "#fff",
+    backgroundColor: "#5fbdff",
     borderTopWidth: 1,
     borderTopColor: "#e3e3e3",
     borderBottomWidth: 1,
@@ -70,6 +167,23 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   titleBtnCloseSession: {
-    color: "#00a680",
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  subtitleView: {
+    flexDirection: "row",
+    paddingLeft: 0,
+    paddingTop: 5,
+  },
+  ratingImage: {
+    borderRadius: 5,
+    height: 10,
+    minWidth: 140,
+    width: "90%",
+  },
+  ratingText: {
+    paddingLeft: 2,
+    color: "grey",
   },
 });

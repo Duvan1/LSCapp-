@@ -18,10 +18,41 @@ export default function Login() {
       />
       <View style={styles.viewContainer}>
         <LoginForm toastRef={toastRef} />
-        <CreateAccount />
+      </View>
+      <View style={styles.viewContainer}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            marginBottom: 10,
+            marginTop: 10,
+          }}
+        >
+          <View
+            style={{ flexGrow: 1, backgroundColor: "#e5e5e5", height: 2 }}
+          ></View>
+          <Text
+            style={{
+              color: "#afafaf",
+              flexGrow: 0,
+              paddingRight: 8,
+              paddingLeft: 8,
+              fontSize: 15,
+              fontWeight: "bold",
+              letterSpacing: 0.8,
+              textTransform: "uppercase",
+            }}
+          >
+            O
+          </Text>
+          <View
+            style={{ flexGrow: 1, backgroundColor: "#e5e5e5", height: 2 }}
+          ></View>
+        </View>
       </View>
       <View style={styles.viewContainer}>
         <LoginFacebook toastRef={toastRef} />
+        <CreateAccount />
       </View>
       <Toast ref={toastRef} position="center" opacity={0.9} />
     </ScrollView>
@@ -55,6 +86,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   textRegister: {
+    marginBottom: 30,
     marginTop: 15,
     marginLeft: 10,
     marginRight: 10,

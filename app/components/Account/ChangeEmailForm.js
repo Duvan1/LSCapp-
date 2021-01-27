@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, ViewComponent } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { validateEmail } from "../../utils/validation";
@@ -97,9 +97,9 @@ const styles = StyleSheet.create({
     width: "95%",
   },
   btnStyles: {
-    backgroundColor: "#00a680",
+    backgroundColor: "#5fbdff",
   },
   btn: {
-    backgroundColor: "#00a680",
+    backgroundColor: "#5fbdff",
   },
 });

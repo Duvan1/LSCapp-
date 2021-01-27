@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   btnContainerLogin: {
-    marginTop: 20,
     width: "95%",
     borderColor: "#62B2EF",
     borderTopWidth: 0.5,

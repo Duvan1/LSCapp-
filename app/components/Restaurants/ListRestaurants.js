@@ -6,6 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  SafeAreaView,
 } from "react-native";
 import { Image } from "react-native-elements";
 import { size } from "lodash";
@@ -18,18 +19,31 @@ export default function ListRestaurants(props) {
   const navigation = useNavigation();
 
   return (
-    <View>
+    <SafeAreaView style={{ alignItems: "center", backgroundColor: "#f2f2f2" }}>
       {size(restaurants) > 0 ? (
         <FlatList
           contentContainerStyle={{
-            justifyContent: "center",
-            marginTop: 30,
+            marginTop: 10,
             marginBottom: 60,
+            justifyContent: "center",
+            alignItems: "center",
           }}
           data={restaurants}
           numColumns={2}
           renderItem={(restaurant) => (
-            <Restaurant restaurant={restaurant} navigation={navigation} />
+            <View style={{}}>
+              <View
+                style={{
+                  flex: 1,
+                  marginBottom: 10,
+                  marginTop: 10,
+                  marginRight: 40,
+                  marginLeft: 40,
+                }}
+              >
+                <Restaurant restaurant={restaurant} navigation={navigation} />
+              </View>
+            </View>
           )}
           onEndReachedThreshold={0.5}
           onEndReached={handleLoadMore}
@@ -43,7 +57,7 @@ export default function ListRestaurants(props) {
           <Text>Cargando Restaurantes</Text>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -51,7 +65,9 @@ function Restaurant(props) {
   const { restaurant, navigation } = props;
   const { id, images, name, address, description } = restaurant.item;
   const imageRestaurant = images[0];
+  const number = Math.floor(Math.random() * (9 + 1));
 
+  let index = restaurant.index;
   const goRestaurant = () => {
     navigation.navigate("restaurant", {
       id,
@@ -61,7 +77,7 @@ function Restaurant(props) {
 
   return (
     <TouchableOpacity onPress={goRestaurant}>
-      <View style={[styles.viewRestautant, { alignContent: "center" }]}>
+      <View style={{ marginBottom: 20 }}>
         <IconClass />
       </View>
     </TouchableOpacity>
@@ -90,14 +106,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     alignItems: "center",
-  },
-  viewRestautant: {
-    flex: 1,
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  viewRestautantImage: {
-    marginRight: 15,
   },
   imageRestaurant: {
     height: 80,

@@ -83,7 +83,15 @@ export default function InfoUser(props) {
             : require("../../../assets/img/avatar-default.jpg")
         }
       >
-        <Avatar.Accessory onPress={changeAvatar} />
+        <Avatar.Accessory
+          style={{
+            height: 30,
+            width: 30,
+            borderRadius: 500,
+            backgroundColor: "#5fbdff",
+          }}
+          onPress={changeAvatar}
+        />
       </Avatar>
       <View>
         <Text style={styles.displayName}>

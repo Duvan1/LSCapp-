@@ -77,7 +77,7 @@ export default function AccountOptions(props) {
 function generateOptions(selectIdComponent) {
   return [
     {
-      title: "Camniar Nombre y Apellidos",
+      title: "Cambiar Nombre y Apellidos",
       iconType: "material-community",
       iconNameLeft: "account-circle",
       iconColorLeft: "#ccc",
@@ -86,7 +86,7 @@ function generateOptions(selectIdComponent) {
       },
     },
     {
-      title: "Camniar email",
+      title: "Cambiar email",
       iconType: "material-community",
       iconNameLeft: "at",
       iconColorLeft: "#ccc",
@@ -95,7 +95,7 @@ function generateOptions(selectIdComponent) {
       },
     },
     {
-      title: "Camniar contraseña",
+      title: "Cambiar contraseña",
       iconType: "material-community",
       iconNameLeft: "lock-reset",
       iconColorLeft: "#ccc",

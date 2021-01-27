@@ -142,7 +142,6 @@ const styles = StyleSheet.create({
     marginTop: -5,
   },
   btnContainerRegister: {
-    marginTop: 20,
     width: "95%",
     borderColor: "#62B2EF",
     borderTopWidth: 0.5,

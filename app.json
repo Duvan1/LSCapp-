@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "5-tenedores",
-    "slug": "5-tenedores",
+    "name": "LSCapp",
+    "slug": "lscapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

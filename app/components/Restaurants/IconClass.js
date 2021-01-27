@@ -1,32 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProgressCircle from "react-native-progress-circle";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Avatar, Badge, Icon, withBadge } from "react-native-elements";
 
 export default function IconClass() {
   //const disable = true;
-  const [disable, setDisable] = useState(false);
+  const [percent, setPercent] = useState(0);
+
+  const imgs = [
+    require("../../../assets/icons/hombre/alimentacion.png"),
+    require("../../../assets/icons/hombre/aseo-personal.png"),
+    require("../../../assets/icons/hombre/cantidad.png"),
+    require("../../../assets/icons/hombre/cuerpo.png"),
+    require("../../../assets/icons/hombre/espacio.png"),
+    require("../../../assets/icons/hombre/fisiologia.png"),
+    require("../../../assets/icons/hombre/fruts.png"),
+    require("../../../assets/icons/hombre/inteligencia.png"),
+    require("../../../assets/icons/hombre/salud.png"),
+    require("../../../assets/icons/hombre/sentimientos.png"),
+  ];
+  const titles = [
+    "Alimentación",
+    "Aseo Personal",
+    "Cantidad",
+    "Cuerpo",
+    "Espacio",
+    "Fisiología",
+    "Frutas",
+    "Inteligencía",
+    "Salud",
+    "Sentimientos",
+  ];
+
+  useEffect(() => {
+    setPercent(Math.floor(Math.random() * (9 + 1)));
+  }, []);
 
   return (
     <View
       style={{
         alignItems: "center",
-        marginRight: 60,
-        marginLeft: 60,
         marginBottom: 20,
       }}
     >
       <View style={{ position: "absolute" }}>
         <ProgressCircle
-          percent={30}
+          percent={10 * percent}
           radius={50}
           borderWidth={8}
-          color={disable ? "gray" : "#FFD200"}
+          color={percent === 0 ? "gray" : "#FFD200"}
           shadowColor="#E4E4E4"
           bgColor="#fff"
         >
           <View
-            style={disable ? styles.iconContainerGray : styles.iconContainer}
+            style={
+              percent === 0 ? styles.iconContainerGray : styles.iconContainer
+            }
             onPress={() => console.log("lkdnsklfsn")}
           >
             <Image
@@ -35,9 +64,9 @@ export default function IconClass() {
                 height: 40,
                 width: 40,
               }}
-              source={require("../../../assets/icons/burguer.png")}
+              source={imgs[percent]}
             />
-            {disable ? (
+            {percent === 0 ? (
               <Image
                 style={{
                   position: "absolute",
@@ -47,7 +76,7 @@ export default function IconClass() {
                   height: 40,
                   width: 40,
                 }}
-                source={require("../../../assets/icons/burguer.png")}
+                source={require("../../../assets/icons/hombre/alimentacion.png")}
               />
             ) : null}
           </View>
@@ -63,7 +92,7 @@ export default function IconClass() {
             width: 38,
           }}
         />
-        {disable ? (
+        {percent === 0 ? (
           <Image
             source={require("../../../assets/icons/crown1.png")}
             style={{
@@ -76,7 +105,7 @@ export default function IconClass() {
             }}
           />
         ) : null}
-        {disable ? null : (
+        {percent === 0 ? null : (
           <Text
             style={{
               position: "absolute",
@@ -87,12 +116,12 @@ export default function IconClass() {
               fontSize: 18,
             }}
           >
-            5
+            {percent}
           </Text>
         )}
       </View>
-      <Text style={{ marginTop: 105, fontSize: 15, fontWeight: "bold" }}>
-        Comidas
+      <Text style={{ marginTop: 100, fontSize: 14, fontWeight: "bold" }}>
+        {titles[percent]}
       </Text>
     </View>
   );
