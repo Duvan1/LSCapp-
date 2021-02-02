@@ -76,7 +76,7 @@ export default function IconClass() {
                   height: 40,
                   width: 40,
                 }}
-                source={require("../../../assets/icons/hombre/alimentacion.png")}
+                source={imgs[percent]}
               />
             ) : null}
           </View>

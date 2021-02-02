@@ -46,9 +46,15 @@ export default function SeparetorClass() {
             flexGrow: 0,
             marginRight: 10,
             marginLeft: 10,
+            justifyContent: "center",
+            alignItems: "center",
           }}
           source={require("../../../assets/icons/shield.png")}
-        ></ImageBackground>
+        >
+          <Text style={{ color: "#A14C0E", fontWeight: "bold", fontSize: 25 }}>
+            1
+          </Text>
+        </ImageBackground>
         <View
           style={{
             flexGrow: 1,

@@ -83,12 +83,222 @@ export default function UserLogged() {
               marginBottom: 10,
             }}
           >
+            Tus estadisticas
+          </Text>
+        </View>
+      </View>
+
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#fff",
+          marginRight: 20,
+          marginLeft: 20,
+          borderRadius: 5,
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "flex-start",
+          }}
+        >
+          <View
+            style={{
+              width: "40%",
+              borderColor: "#A7A7A7",
+              borderWidth: 1,
+              borderRadius: 5,
+              margin: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 5,
+              }}
+            >
+              <View
+                style={{
+                  width: "40%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ImageBackground
+                  style={{ height: 30, width: 30 }}
+                  source={require("../../../assets/icons/shield.png")}
+                />
+              </View>
+              <View style={{ width: "60%" }}>
+                <Text style={{ fontWeight: "bold" }}>389</Text>
+                <Text>EXP total</Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={{
+              width: "40%",
+              borderColor: "#A7A7A7",
+              borderWidth: 1,
+              borderRadius: 5,
+              margin: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 5,
+              }}
+            >
+              <View
+                style={{
+                  width: "40%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ImageBackground
+                  style={{ height: 30, width: 30 }}
+                  source={require("../../../assets/icons/shield.png")}
+                />
+              </View>
+              <View style={{ width: "60%" }}>
+                <Text style={{ fontWeight: "bold" }}>389</Text>
+                <Text>EXP total</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            flexWrap: "wrap",
+            alignItems: "flex-start",
+          }}
+        >
+          <View
+            style={{
+              width: "40%",
+              borderColor: "#A7A7A7",
+              borderWidth: 1,
+              borderRadius: 5,
+              margin: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 5,
+              }}
+            >
+              <View
+                style={{
+                  width: "40%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ImageBackground
+                  style={{ height: 30, width: 30 }}
+                  source={require("../../../assets/icons/shield.png")}
+                />
+              </View>
+              <View style={{ width: "60%" }}>
+                <Text style={{ fontWeight: "bold" }}>389</Text>
+                <Text>EXP total</Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={{
+              width: "40%",
+              borderColor: "#A7A7A7",
+              borderWidth: 1,
+              borderRadius: 5,
+              margin: 10,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 5,
+              }}
+            >
+              <View
+                style={{
+                  width: "40%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <ImageBackground
+                  style={{ height: 30, width: 30 }}
+                  source={require("../../../assets/icons/shield.png")}
+                />
+              </View>
+              <View style={{ width: "60%" }}>
+                <Text style={{ fontWeight: "bold" }}>389</Text>
+                <Text>EXP total</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <View style={{ marginRight: 20, marginLeft: 20 }}>
+        <View
+          style={{
+            alignItems: "baseline",
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: 20,
+            borderBottomWidth: 1,
+            borderBottomColor: "#ABABAB",
+          }}
+        >
+          <Text
+            style={{
+              color: "#3c3c3c",
+              fontSize: 20,
+              fontWeight: "bold",
+              marginBottom: 10,
+            }}
+          >
             Logros
           </Text>
         </View>
       </View>
 
-      <View style={{ marginRight: 20, marginLeft: 20, borderRadius: 5 }}>
+      <View style={{ marginRight: 20, marginLeft: 20, borderRadius: 20 }}>
         {list.map((l, i) => (
           <ListItem key={i} bottomDivider>
             <View style={{ marginLeft: 0, minWidth: 77 }}>
@@ -131,6 +341,21 @@ export default function UserLogged() {
             </ListItem.Content>
           </ListItem>
         ))}
+        <View>
+          <Button
+            title="Ver más..."
+            titleStyle={{ fontSize: 20, fontWeight: "bold", color: "black" }}
+            buttonStyle={{
+              backgroundColor: "#fff",
+              borderBottomLeftRadius: 5,
+              borderBottomRightRadius: 5,
+              borderBottomWidth: 1,
+              borderRightWidth: 1,
+              borderLeftWidth: 1,
+              borderColor: "#A7A7A7",
+            }}
+          />
+        </View>
       </View>
 
       <Button
