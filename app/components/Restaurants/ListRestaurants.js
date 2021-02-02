@@ -7,11 +7,13 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Image } from "react-native-elements";
 import { size } from "lodash";
 import { useNavigation } from "@react-navigation/native";
 import IconClass from "./IconClass";
+import SeparetorClass from "./SeparetorClass";
 
 export default function ListRestaurants(props) {
   const { restaurants, handleLoadMore, isLoading } = props;
@@ -19,45 +21,58 @@ export default function ListRestaurants(props) {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={{ alignItems: "center", backgroundColor: "#f2f2f2" }}>
+    <ScrollView
+      contentContainerStyle={{
+        alignItems: "center",
+        backgroundColor: "#f2f2f2",
+      }}
+    >
       {size(restaurants) > 0 ? (
-        <FlatList
-          contentContainerStyle={{
-            marginTop: 10,
-            marginBottom: 60,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          data={restaurants}
-          numColumns={2}
-          renderItem={(restaurant) => (
-            <View style={{}}>
-              <View
-                style={{
-                  flex: 1,
-                  marginBottom: 10,
-                  marginTop: 10,
-                  marginRight: 40,
-                  marginLeft: 40,
-                }}
-              >
-                <Restaurant restaurant={restaurant} navigation={navigation} />
+        <View style={{ alignItems: "center" }}>
+          <FlatList
+            contentContainerStyle={{
+              marginTop: 10,
+              marginBottom: 60,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            data={restaurants}
+            numColumns={2}
+            renderItem={(restaurant) => (
+              <View style={{}}>
+                <View
+                  style={{
+                    flex: 1,
+                    marginBottom: 10,
+                    marginTop: 10,
+                    marginRight: 40,
+                    marginLeft: 40,
+                  }}
+                >
+                  <Restaurant restaurant={restaurant} navigation={navigation} />
+                </View>
               </View>
-            </View>
-          )}
-          onEndReachedThreshold={0.5}
-          onEndReached={handleLoadMore}
-          ListEmptyComponent={
-            <FooterList isLoading={isLoading} handleLoadMore={handleLoadMore} />
-          }
-        />
+            )}
+            onEndReachedThreshold={0.5}
+            onEndReached={handleLoadMore}
+            ListEmptyComponent={
+              <FooterList
+                isLoading={isLoading}
+                handleLoadMore={handleLoadMore}
+              />
+            }
+          />
+          <View style={{ marginTop: -100 }}>
+            <SeparetorClass />
+          </View>
+        </View>
       ) : (
         <View style={styles.loadRestaurants}>
           <ActivityIndicator size="large" color="#00a680" />
           <Text>Cargando Restaurantes</Text>
         </View>
       )}
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
