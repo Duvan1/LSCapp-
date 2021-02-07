@@ -102,7 +102,7 @@ export default function Favorites(props) {
       ) : (
         <View style={styles.loaderRestaurant}>
           <ActivityIndicator size="large" />
-          <Text style={{ alignItems: "center" }}>Cargando restaurantes...</Text>
+          <Text style={{ alignItems: "center" }}>Cargando...</Text>
         </View>
       )}
       <Toast position="center" opacity={0.9} ref={toastRef} />

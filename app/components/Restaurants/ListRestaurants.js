@@ -69,7 +69,7 @@ export default function ListRestaurants(props) {
       ) : (
         <View style={styles.loadRestaurants}>
           <ActivityIndicator size="large" color="#00a680" />
-          <Text>Cargando Restaurantes</Text>
+          <Text>Cargando...</Text>
         </View>
       )}
     </ScrollView>

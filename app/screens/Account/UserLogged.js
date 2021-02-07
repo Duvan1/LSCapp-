@@ -15,7 +15,8 @@ import Loading from "../../components/Loading";
 import InfoUser from "../../components/Account/InfoUser";
 import AccountOptions from "../../components/Account/AccountOptions";
 
-export default function UserLogged() {
+export default function UserLogged(props) {
+  const { navigation } = props;
   const [loading, setloading] = useState(false);
   const [loadingText, setloadingText] = useState("");
   const toastRef = useRef();
@@ -175,12 +176,12 @@ export default function UserLogged() {
               >
                 <ImageBackground
                   style={{ height: 30, width: 30 }}
-                  source={require("../../../assets/icons/shield.png")}
+                  source={require("../../../assets/icons/on-fire.png")}
                 />
               </View>
               <View style={{ width: "60%" }}>
-                <Text style={{ fontWeight: "bold" }}>389</Text>
-                <Text>EXP total</Text>
+                <Text style={{ fontWeight: "bold" }}>1</Text>
+                <Text>Días de racha</Text>
               </View>
             </View>
           </View>
@@ -223,12 +224,12 @@ export default function UserLogged() {
               >
                 <ImageBackground
                   style={{ height: 30, width: 30 }}
-                  source={require("../../../assets/icons/shield.png")}
+                  source={require("../../../assets/icons/crown.png")}
                 />
               </View>
               <View style={{ width: "60%" }}>
-                <Text style={{ fontWeight: "bold" }}>389</Text>
-                <Text>EXP total</Text>
+                <Text style={{ fontWeight: "bold" }}>71</Text>
+                <Text>Coronas</Text>
               </View>
             </View>
           </View>
@@ -262,12 +263,12 @@ export default function UserLogged() {
               >
                 <ImageBackground
                   style={{ height: 30, width: 30 }}
-                  source={require("../../../assets/icons/shield.png")}
+                  source={require("../../../assets/icons/ruby.png")}
                 />
               </View>
               <View style={{ width: "60%" }}>
-                <Text style={{ fontWeight: "bold" }}>389</Text>
-                <Text>EXP total</Text>
+                <Text style={{ fontWeight: "bold" }}>Rubi</Text>
+                <Text>División</Text>
               </View>
             </View>
           </View>
@@ -328,7 +329,9 @@ export default function UserLogged() {
               </ImageBackground>
             </View>
             <ListItem.Content>
-              <ListItem.Title>{l.name}</ListItem.Title>
+              <ListItem.Title style={{ fontWeight: "bold" }}>
+                {l.name}
+              </ListItem.Title>
               <Text style={{ color: "gray" }}>{l.subtitle}</Text>
               <View style={styles.subtitleView}>
                 <ProgressBar
@@ -344,6 +347,7 @@ export default function UserLogged() {
         <View>
           <Button
             title="Ver más..."
+            onPress={() => navigation.navigate("logros")}
             titleStyle={{ fontSize: 20, fontWeight: "bold", color: "black" }}
             buttonStyle={{
               backgroundColor: "#fff",

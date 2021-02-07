@@ -26,7 +26,7 @@ export default function Search(props) {
 
   return (
     <View>
-      <Button title="slvjfsjkv" onPress={() => navigation.navigate("Home")} />
+      <Button title="slvjfsjkv" onPress={() => navigation.navigate("logros")} />
       <SearchBar
         placeholder="Busca tu restaurante..."
         onChangeText={(e) => setSearch(e)}
