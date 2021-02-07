@@ -17,7 +17,7 @@ export default function TopRestaurants(props) {
   useEffect(() => {
     db.collection("restaurants")
       .orderBy("rating", "desc")
-      .limit(5)
+
       .get()
       .then((response) => {
         const restaurantArray = [];
@@ -31,7 +31,7 @@ export default function TopRestaurants(props) {
   }, []);
 
   return (
-    <ScrollView>
+    <ScrollView style={{ marginBottom: 24 }}>
       <View
         style={{
           display: "flex",

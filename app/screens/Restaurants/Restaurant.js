@@ -1,5 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Dimensions,
+  ImageBackground,
+} from "react-native";
 import { map } from "lodash";
 import { Rating, ListItem, Icon } from "react-native-elements";
 import Loading from "../../components/Loading";

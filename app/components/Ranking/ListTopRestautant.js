@@ -5,17 +5,29 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  ImageBackground,
 } from "react-native";
-import { Card, Image, Icon, Button, Rating } from "react-native-elements";
+import { Card, Image, Icon, Avatar, Rating } from "react-native-elements";
 import TopRestaurants from "../../screens/TopRestaurants";
 
 export default function ListTopRestautant(props) {
   const { restaurants, navigation } = props;
+  const [restaurantLenght, setRestaurantLenght] = useState(0);
+
+  useEffect(() => {
+    setRestaurantLenght(restaurants.length);
+  }, [restaurants]);
+
+  console.log(restaurants.length);
   return (
     <FlatList
       data={restaurants}
       renderItem={(restaurant) => (
-        <Restaurant restaurant={restaurant} navigation={navigation} />
+        <Restaurant
+          restaurant={restaurant}
+          navigation={navigation}
+          restaurantLenght={restaurantLenght}
+        />
       )}
       keyExtractor={(item, index) => index.toString()}
     />
@@ -23,60 +35,81 @@ export default function ListTopRestautant(props) {
 }
 
 function Restaurant(props) {
-  const { restaurant, navigation } = props;
+  const { restaurant, navigation, restaurantLenght } = props;
   const { id, name, rating, images, description } = restaurant.item;
   const [iconColor, setIconColor] = useState("#000");
 
-  useEffect(() => {
-    if (restaurant.index === 0) {
-      setIconColor("#efb819");
-    } else if (restaurant.index === 1) {
-      setIconColor("#e3e4e5");
-    } else if (restaurant.index === 2) {
-      setIconColor("#cd7f32");
-    }
-  }, []);
+  //console.log(restaurant);
 
   return (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("restaurants", {
-          screen: "restaurant",
-          params: { id },
-        })
-      }
-    >
-      <Card containerStyle={styles.contairnerCard}>
+    <Card containerStyle={styles.contairnerCard}>
+      {restaurant.index <= 2 ? (
         <Icon
           type="material-community"
-          name="chess-queen"
-          color={iconColor}
+          name="arrow-up-bold-box"
+          color="#5fbdff"
           size={40}
           containerStyle={styles.containerIcon}
         />
-        <Image
-          style={styles.restaurantImage}
-          resizeMode="cover"
-          source={
-            images[0]
-              ? { uri: images[0] }
-              : require("../../../assets/img/no-image.png")
-          }
+      ) : restaurant.index + 1 >= restaurantLenght - 1 ? (
+        <Icon
+          type="material-community"
+          name="arrow-down-bold-box"
+          color="red"
+          size={40}
+          containerStyle={styles.containerIcon}
         />
-        <View style={styles.titleImage}>
+      ) : null}
+      <View
+        style={{
+          paddingTop: 20,
+          paddingBottom: 20,
+          paddingLeft: 0,
+          paddingRight: 0,
+          borderTopColor: "#e5e5e5",
+          position: "relative",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+          {restaurant.index + 1}
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginLeft: -100,
+            alignItems: "center",
+          }}
+        >
+          <Avatar
+            containerStyle={{ borderRadius: 80, marginRight: 10 }}
+            source={
+              images[0]
+                ? { uri: images[0] }
+                : require("../../../assets/img/no-image.png")
+            }
+          />
           <Text style={styles.title}>{name}</Text>
-          <Rating imageSize={20} startingValue={rating} readonly />
         </View>
-        <Text style={styles.description}>{description}</Text>
-      </Card>
-    </TouchableOpacity>
+        <Text style={{ fontSize: 24, color: "#a2a2a2" }}>
+          {(399 / (restaurant.index + 1)).toFixed(2)} EXP
+        </Text>
+      </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   contairnerCard: {
-    marginBottom: 30,
+    borderTopWidth: 2,
+    borderTopColor: "#e5e5e5",
     borderWidth: 0,
+    marginBottom: -17,
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   containerIcon: {
     position: "absolute",
