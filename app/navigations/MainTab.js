@@ -42,7 +42,7 @@ export default function MainTab() {
         name="favorites"
         component={FavoritesSrack}
         options={{
-          title: "Señas",
+          title: "Tienda",
         }}
         listeners={() => ({
           tabPress: (event) => {
@@ -82,7 +82,7 @@ export default function MainTab() {
         name="search"
         component={SearchStack}
         options={{
-          title: "Tienda",
+          title: "Diccionario",
         }}
         listeners={() => ({
           tabPress: (event) => {
@@ -105,13 +105,13 @@ function screenOptions(route, color) {
 
       break;
     case "favorites":
-      iconName = "book";
+      iconName = "store";
       break;
     case "top-restaurants":
       iconName = "shield-check";
       break;
     case "search":
-      iconName = "store";
+      iconName = "book";
       break;
     case "account":
       iconName = "account-outline";

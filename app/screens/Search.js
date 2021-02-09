@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, FlatList, Image, StyleSheet } from "react-native";
+import {
+  View,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  ImageBackground,
+} from "react-native";
 import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { FireSQL } from "firesql";
-import { firebaseApp } from "../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
-import { Button } from "react-native";
 
 const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
 
@@ -13,6 +18,13 @@ export default function Search(props) {
   const { navigation } = props;
   const [search, setSearch] = useState("");
   const [restaurants, setRestaurants] = useState([]);
+  const list = [
+    {
+      video: "",
+      senia: "Seña",
+      categoria: "Categoria",
+    },
+  ];
 
   useEffect(() => {
     if (search) {
@@ -21,14 +33,17 @@ export default function Search(props) {
         .then((response) => {
           setRestaurants(response);
         });
+    } else {
+      fireSQL.query(`SELECT * FROM restaurants`).then((response) => {
+        setRestaurants(response);
+      });
     }
   }, [search]);
 
   return (
     <View>
-      <Button title="slvjfsjkv" onPress={() => navigation.navigate("logros")} />
       <SearchBar
-        placeholder="Busca tu restaurante..."
+        placeholder="Buscar seña..."
         onChangeText={(e) => setSearch(e)}
         value={search}
         containerStyle={styles.searchBar}
@@ -36,13 +51,34 @@ export default function Search(props) {
       {restaurants.length === 0 ? (
         <NotFoundRestaurants />
       ) : (
-        <FlatList
-          data={restaurants}
-          renderItem={(restaurant) => (
-            <Restaurant restaurant={restaurant} navigation={navigation} />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        <View>
+          {list.map((l, i) => (
+            <ListItem key={i} bottomDivider>
+              <ImageBackground
+                style={{ width: 35, height: 30 }}
+                source={require("../../assets/img/mascota.png")}
+              />
+              <ListItem.Content>
+                <ListItem.Title style={{ fontWeight: "bold" }}>
+                  {l.senia}
+                </ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Content>
+                <ListItem.Title style={{ fontWeight: "bold" }}>
+                  {l.categoria}
+                </ListItem.Title>
+              </ListItem.Content>
+              <ListItem.Chevron />
+            </ListItem>
+          ))}
+          <FlatList
+            data={restaurants}
+            renderItem={(restaurant) => (
+              <Restaurant restaurant={restaurant} navigation={navigation} />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
       )}
     </View>
   );
@@ -50,12 +86,30 @@ export default function Search(props) {
 
 function NotFoundRestaurants(props) {
   return (
-    <View style={{ flex: 1, alignItems: "center" }}>
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        marginTop: 50,
+        marginRight: 20,
+        marginLeft: 20,
+      }}
+    >
       <Image
-        source={require("../../assets/img/no-result-found.png")}
+        source={require("../../assets/img/mascota_triste.png")}
         resizeMode="cover"
-        style={{ width: 200, height: 200 }}
+        style={{ width: 200, height: 167 }}
       />
+      <Text
+        style={{
+          marginTop: 24,
+          fontSize: 20,
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
+      >
+        No se encontraron resultados para tu busqueda.
+      </Text>
     </View>
   );
 }
@@ -67,12 +121,7 @@ function Restaurant(props) {
     <ListItem
       key={id}
       bottomDivider
-      onPress={() =>
-        navigation.navigate("restaurants", {
-          screen: "restaurant",
-          params: { id, name },
-        })
-      }
+      onPress={() => navigation.navigate("seña")}
     >
       <Avatar
         source={
@@ -81,6 +130,9 @@ function Restaurant(props) {
             : require("../../assets/img/no-image.png")
         }
       />
+      <ListItem.Content>
+        <ListItem.Title>{name}</ListItem.Title>
+      </ListItem.Content>
       <ListItem.Content>
         <ListItem.Title>{name}</ListItem.Title>
       </ListItem.Content>

@@ -10,7 +10,7 @@ export default function FavoritesStack() {
       <Stack.Screen
         name="favorites"
         component={Favorites}
-        options={{ title: "Mis señas" }}
+        options={{ title: "Mi tienda" }}
       />
     </Stack.Navigator>
   );

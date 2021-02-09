@@ -42,63 +42,66 @@ function Restaurant(props) {
   //console.log(restaurant);
 
   return (
-    <Card containerStyle={styles.contairnerCard}>
-      {restaurant.index <= 2 ? (
-        <Icon
-          type="material-community"
-          name="arrow-up-bold-box"
-          color="#5fbdff"
-          size={40}
-          containerStyle={styles.containerIcon}
-        />
-      ) : restaurant.index + 1 >= restaurantLenght - 1 ? (
-        <Icon
-          type="material-community"
-          name="arrow-down-bold-box"
-          color="red"
-          size={40}
-          containerStyle={styles.containerIcon}
-        />
-      ) : null}
-      <View
-        style={{
-          paddingTop: 20,
-          paddingBottom: 20,
-          paddingLeft: 0,
-          paddingRight: 0,
-          borderTopColor: "#e5e5e5",
-          position: "relative",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-          {restaurant.index + 1}
-        </Text>
+    <TouchableOpacity onPress={() => navigation.navigate("seña")}>
+      <Card containerStyle={styles.contairnerCard}>
+        {restaurant.index <= 2 ? (
+          <Icon
+            type="material-community"
+            name="arrow-up-bold-box"
+            color="#5fbdff"
+            size={40}
+            containerStyle={styles.containerIcon}
+          />
+        ) : restaurant.index + 1 >= restaurantLenght - 1 ? (
+          <Icon
+            type="material-community"
+            name="arrow-down-bold-box"
+            color="red"
+            size={40}
+            containerStyle={styles.containerIcon}
+          />
+        ) : null}
         <View
           style={{
+            paddingTop: 20,
+            paddingBottom: 20,
+            paddingLeft: 0,
+            paddingRight: 0,
+            borderTopColor: "#e5e5e5",
+            position: "relative",
             flexDirection: "row",
             justifyContent: "space-between",
-            marginLeft: -100,
             alignItems: "center",
           }}
         >
-          <Avatar
-            containerStyle={{ borderRadius: 80, marginRight: 10 }}
-            source={
-              images[0]
-                ? { uri: images[0] }
-                : require("../../../assets/img/no-image.png")
-            }
-          />
-          <Text style={styles.title}>{name}</Text>
+          <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+            {restaurant.index + 1}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              marginLeft: 10,
+              flex: 1,
+              alignItems: "center",
+            }}
+          >
+            <Avatar
+              containerStyle={{ borderRadius: 80, marginRight: 10 }}
+              source={
+                images[0]
+                  ? { uri: images[0] }
+                  : require("../../../assets/img/no-image.png")
+              }
+            />
+            <Text style={styles.title}>{name}</Text>
+          </View>
+          <Text style={{ fontSize: 17, fontWeight: "bold", color: "#a2a2a2" }}>
+            {(399 / (restaurant.index + 1)).toFixed(2)} EXP
+          </Text>
         </View>
-        <Text style={{ fontSize: 24, color: "#a2a2a2" }}>
-          {(399 / (restaurant.index + 1)).toFixed(2)} EXP
-        </Text>
-      </View>
-    </Card>
+      </Card>
+    </TouchableOpacity>
   );
 }
 
@@ -127,7 +130,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: "bold",
   },
   description: {
