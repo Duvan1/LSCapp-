@@ -2,10 +2,16 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { validateEmail } from "../../utils/validation";
+//////// firebase
 import firebase from "firebase";
+import { firebaseApp } from "../../utils/firebase";
+import "firebase/firestore";
+//////// firebase
 import { isEmpty } from "lodash";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
+
+const db = firebase.firestore(firebaseApp);
 
 export default function LoginForm(props) {
   const { toastRef } = props;
@@ -21,12 +27,61 @@ export default function LoginForm(props) {
       toastRef.current.show("email invalido.");
     } else {
       setloading(true);
+      // Verifico si el usuario y contraseña son correctos
       firebase
         .auth()
         .signInWithEmailAndPassword(formData.email, formData.password)
         .then(() => {
+          // obtengo el uid del usuario que acaba de iniciar sesion
+          const uid = firebase.auth().currentUser.uid;
+          console.log("///////////////////////  ", uid);
+          // consulta en la base de datos si dicho usuario ya tiene información de perfil
+          db.collection("info_user")
+            .where("id_user", "==", uid)
+            .get()
+            .then((response) => {
+              // si la respuesta es 0 quiere decir que no tiene
+              if (response.docs.length === 0) {
+                //agrego la información de usuario correspondiente
+                const payload = {
+                  EXP: 0,
+                  coronas: 0,
+                  dias_racha: 0,
+                  division: "bronce",
+                  gemas: 0,
+                  id_user: uid,
+                  primer_ingreso: true,
+                  ultima_clase: null,
+                  vidas: 5,
+                };
+                db.collection("info_user")
+                  .add(payload)
+                  .then(() => {})
+                  .catch(() => {
+                    toastRef.current.show("Un error a ocurrido");
+                    setIsLoading(false);
+                  });
+              }
+              setloading(false);
+              navigation.navigate("account");
+            });
           setloading(false);
           navigation.navigate("account");
+          /*
+          firebase.auth().onAuthStateChanged((user) => {
+            let uid = user.uid;
+            db.collection("info_user")
+              .where("id_user", "==", uid)
+              .get()
+              .then((response) => {
+                if (response.docs.length === 0) {
+
+                }
+                setloading(false);
+                navigation.navigate("account");
+              });
+          });
+          */
         })
         .catch(() => {
           setloading(false);

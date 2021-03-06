@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { Icon } from "react-native-elements";
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
@@ -16,6 +16,7 @@ export default function Restaurants(props) {
   const [totalRestaurants, setTotalRestaurants] = useState(0);
   const [startRestaurants, setStartRestaurants] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [infoUser, setInfoUser] = useState([]);
   const limitRestaurants = 6;
 
   useEffect(() => {
@@ -26,6 +27,19 @@ export default function Restaurants(props) {
 
   useFocusEffect(
     useCallback(() => {
+      const uid = firebase.auth().currentUser.uid;
+      // consulto la información del usuario
+      db.collection("info_user")
+        .where("id_user", "==", uid)
+        .get()
+        .then((response) => {
+          const arrayResponse = [];
+          response.forEach((doc) => {
+            arrayResponse.push(doc.data());
+          });
+          setInfoUser(arrayResponse);
+        });
+
       db.collection("restaurants")
         .get()
         .then((snap) => {
@@ -36,7 +50,7 @@ export default function Restaurants(props) {
 
       db.collection("restaurants")
         .orderBy("creatAt", "desc")
-        .limit(limitRestaurants)
+        //.limit(limitRestaurants)
         .get()
         .then((response) => {
           setStartRestaurants(response.docs[response.docs.length - 1]);
@@ -46,6 +60,14 @@ export default function Restaurants(props) {
             resultRestaurants.push(restaurant);
           });
           setRestaurants(resultRestaurants);
+        });
+
+      db.collection("tema")
+        .get()
+        .then((response) => {
+          response.forEach((doc) => {
+            console.log(doc.data());
+          });
         });
     }, [])
   );
@@ -77,23 +99,106 @@ export default function Restaurants(props) {
   };
 
   return (
-    <View style={styles.viewBody}>
-      <ListRestaurants
-        restaurants={restaurants}
-        handleLoadMore={handleLoadMore}
-        isLoading={isLoading}
-      />
-      {user && (
-        <Icon
-          reverse
-          containerStyle={styles.btnContainer}
-          type="material-community"
-          name="plus"
-          color="#00a680"
-          onPress={() => navigation.navigate("add-restaurant")}
+    <>
+      <View
+        style={{
+          marginTop: 0,
+          height: 80,
+          backgroundColor: "#fff",
+          borderBottomWidth: 2,
+          borderBottomColor: "#e5e5e5",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: 20,
+          }}
+        >
+          <ImageBackground
+            style={{ width: 35, height: 30 }}
+            source={require("../../../assets/icons/crown1.png")}
+          />
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "bold",
+              marginLeft: 5,
+              color: "#FF9F00",
+            }}
+          >
+            {infoUser[0] ? infoUser[0].coronas : null}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: 20,
+          }}
+        >
+          <ImageBackground
+            style={{ width: 35, height: 30 }}
+            source={require("../../../assets/icons/on-fire.png")}
+          />
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "bold",
+              marginLeft: 5,
+              color: "#F27215",
+            }}
+          >
+            {infoUser[0] ? infoUser[0].dias_racha : null}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ImageBackground
+            style={{ width: 35, height: 30 }}
+            source={require("../../../assets/icons/esmeralda.png")}
+          />
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "bold",
+              marginLeft: 5,
+              color: "#00B100",
+            }}
+          >
+            {infoUser[0] ? infoUser[0].gemas : null}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.viewBody}>
+        <ListRestaurants
+          restaurants={restaurants}
+          handleLoadMore={handleLoadMore}
+          isLoading={isLoading}
         />
-      )}
-    </View>
+        {user && (
+          <Icon
+            reverse
+            containerStyle={styles.btnContainer}
+            type="material-community"
+            name="plus"
+            color="#00a680"
+            onPress={() => navigation.navigate("add-restaurant")}
+          />
+        )}
+      </View>
+    </>
   );
 }
 

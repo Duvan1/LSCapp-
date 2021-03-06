@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { View, Text, ScrollView, Image } from "react-native";
 import { Icon } from "react-native-elements";
+import { Video, AVPlaybackStatus } from "expo-av";
 
 export default function Senia() {
+  const video = useRef(null);
+  const [status, setStatus] = useState({});
+
   return (
     <ScrollView style={{ paddingTop: 20 }}>
       <View
@@ -20,14 +24,20 @@ export default function Senia() {
             marginBottom: 20,
             paddingRight: 10,
             paddingLeft: 10,
-            paddingBottom: 80,
-            paddingTop: 80,
+            paddingBottom: 20,
+            paddingTop: 20,
           }}
         >
-          <Image
-            source={require("../../assets/img/icono-logo.png")}
+          <Video
+            ref={video}
+            style={{ alignSelf: "center", width: 320, height: 200 }}
+            source={{
+              uri: "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+            }}
+            useNativeControls
             resizeMode="contain"
-            style={{ width: "100%", height: 150, marginTop: 20 }}
+            isLooping
+            onPlaybackStatusUpdate={(status) => setStatus(() => status)}
           />
           <View
             style={{
@@ -49,7 +59,7 @@ export default function Senia() {
             />
             <Text style={{ fontSize: 34, fontWeight: "700", lineHeight: 39 }}>
               {" "}
-              Nombre seña
+              Adulto
             </Text>
           </View>
         </View>

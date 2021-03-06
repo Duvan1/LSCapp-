@@ -84,10 +84,7 @@ function Restaurant(props) {
 
   let index = restaurant.index;
   const goRestaurant = () => {
-    navigation.navigate("restaurant", {
-      id,
-      name,
-    });
+    navigation.navigate("clase");
   };
 
   return (

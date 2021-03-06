@@ -28,9 +28,9 @@ export default function LogrosUsuario() {
     {
       name: "Intelectual",
       avatar_url: require("../../../assets/icons/achievement-scholar.png"),
-      subtitle: "Aprende 2000 palabras nuevas en un mismo curso",
+      subtitle: "Aprende 20 señas nuevas en un mismo curso",
       percentage: 0.85,
-      status: "1715/2000",
+      status: "17/20",
     },
     {
       name: "Noble",
@@ -40,25 +40,11 @@ export default function LogrosUsuario() {
       status: "71/80",
     },
     {
-      name: "Insuperable",
-      avatar_url: require("../../../assets/icons/achievement-champion.png"),
-      subtitle: "Avanza a la División Zafiro",
-      percentage: 0.75,
-      status: "3/4",
-    },
-    {
       name: "En el blanco",
       avatar_url: require("../../../assets/icons/achievement-sharpshooter.png"),
       subtitle: "Completa 20 lecciones sin errores",
       percentage: 0.34,
       status: "5/20",
-    },
-    {
-      name: "Vencedor",
-      avatar_url: require("../../../assets/icons/achievement-conqueror.png"),
-      subtitle: "Sube todas las unidades de un curso al Nivel 1",
-      percentage: 0,
-      status: "0/1",
     },
     {
       name: "Primer lugar",
@@ -70,7 +56,7 @@ export default function LogrosUsuario() {
     {
       name: "Fotogenico",
       avatar_url: require("../../../assets/icons/achievement-photogenic.png"),
-      subtitle: "Queda en el puesto #1 de la División Diamante",
+      subtitle: "Cambia tu foto de perfil",
       percentage: 0,
       status: "0/1",
     },

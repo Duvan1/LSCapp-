@@ -39,24 +39,25 @@ export default function MainTab() {
         })}
       />
       <Tab.Screen
-        name="favorites"
-        component={FavoritesSrack}
+        name="search"
+        component={SearchStack}
         options={{
-          title: "Tienda",
+          title: "Diccionario",
         }}
         listeners={() => ({
           tabPress: (event) => {
-            setBarColor("#FF5F5F");
-            setinactiveColor("#FF9292");
+            setBarColor("#5F7AFF");
+            1;
+            setinactiveColor("#92A4FF");
           },
         })}
       />
+
       <Tab.Screen
         name="account"
         component={UserLogged}
         options={{
-          title: "Cuenta",
-          headerShown: true,
+          headerShown: false,
         }}
         listeners={() => ({
           tabPress: (event) => {
@@ -79,16 +80,15 @@ export default function MainTab() {
         })}
       />
       <Tab.Screen
-        name="search"
-        component={SearchStack}
+        name="favorites"
+        component={FavoritesSrack}
         options={{
-          title: "Diccionario",
+          title: "Tienda",
         }}
         listeners={() => ({
           tabPress: (event) => {
-            setBarColor("#5F7AFF");
-            1;
-            setinactiveColor("#92A4FF");
+            setBarColor("#FF5F5F");
+            setinactiveColor("#FF9292");
           },
         })}
       />

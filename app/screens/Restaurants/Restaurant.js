@@ -57,7 +57,7 @@ export default function Restaurant(props) {
     if (userLogged && restaurant) {
       db.collection("favorites")
         .where("idRestaurant", "==", restaurant.id)
-        .where("idUser", "==", firebase.auth().currentUser.uid)
+        .where("idUser", "==", firebase.auth().current)
         .get()
         .then((response) => {
           if (response.docs.length === 1) {
@@ -74,7 +74,7 @@ export default function Restaurant(props) {
       toastRef.current.show("PAra añadir a favoritos tienes que logearte");
     } else {
       const payload = {
-        idUser: firebase.auth().currentUser.uid,
+        idUser: firebase.auth().current,
         idRestaurant: restaurant.id,
       };
       db.collection("favorites")

@@ -6,14 +6,19 @@ import {
   ImageBackground,
   ScrollView,
 } from "react-native";
-import { ProgressBar } from "react-native-paper";
+import { Divider, ProgressBar } from "react-native-paper";
 import { ListItem, Image } from "react-native-elements";
 import * as firebase from "firebase";
+import { firebaseApp } from "../../utils/firebase";
+import "firebase/firestore";
 import { Button } from "react-native-elements";
 import Toast from "react-native-easy-toast";
 import Loading from "../../components/Loading";
 import InfoUser from "../../components/Account/InfoUser";
 import AccountOptions from "../../components/Account/AccountOptions";
+import { ImageBackgroundBase } from "react-native";
+
+const db = firebase.firestore(firebaseApp);
 
 export default function UserLogged(props) {
   const { navigation } = props;
@@ -22,100 +27,115 @@ export default function UserLogged(props) {
   const toastRef = useRef();
   const [realoadUserInfo, setRealoadUserInfo] = useState(false);
   const [userInfo, setuserInfo] = useState(null);
+  const [infoUser, setInfoUser] = useState([]);
+  const [logros, setlogros] = useState([]);
 
-  const list = [
-    {
-      name: "On fire",
-      avatar_url: require("../../../assets/icons/achievement-wildfire.png"),
-      subtitle: "Alcanza una racha de 14 días",
-      percentage: 0.5,
-      status: "7/14",
-    },
-    {
-      name: "Filósofo",
-      avatar_url: require("../../../assets/icons/achievement-sage.png"),
-      subtitle: "Gana 1000 EXP",
-      percentage: 0.9,
-      status: "935/1000",
-    },
-  ];
+  const divisiones_insignias = new Map();
+  divisiones_insignias.set("bronce", {
+    require: require("../../../assets/icons/bronce.png"),
+  });
+  divisiones_insignias.set("plata", {
+    require: require("../../../assets/icons/plata.png"),
+  });
+  divisiones_insignias.set("oro", {
+    require: require("../../../assets/icons/oro.png"),
+  });
+  divisiones_insignias.set("rubi", {
+    require: require("../../../assets/icons/ruby.png"),
+  });
+  divisiones_insignias.set("diamante", {
+    require: require("../../../assets/icons/diamond.png"),
+  });
+  divisiones_insignias.set("esmeralda", {
+    require: require("../../../assets/icons/esmeralda.png"),
+  });
+
+  let list = [];
 
   useEffect(() => {
     (async () => {
       const user = await firebase.default.auth().currentUser;
+      // consulto la información del usuario
+      db.collection("info_user")
+        .where("id_user", "==", user.uid)
+        .get()
+        .then((response) => {
+          const arrayResponse = [];
+          response.forEach((doc) => {
+            arrayResponse.push(doc.data());
+          });
+          setInfoUser(arrayResponse);
+        });
+      // consulto los logros obtenidos por el usuario
+      db.collection("mis_logros")
+        .where("id_user", "==", user.uid)
+        .limit(2)
+        .get()
+        .then((response) => {
+          response.forEach((doc) => {
+            let listLogros = [];
+            console.log(doc.data());
+            listLogros.push(doc.data());
+            setlogros(listLogros);
+          });
+          console.log("*********************  ", logros);
+        });
+
       setuserInfo(user);
     })();
     setRealoadUserInfo(false);
   }, [realoadUserInfo]);
 
   return (
-    <ScrollView style={styles.viewUserInfo}>
-      {userInfo && (
-        <InfoUser
-          setloading={setloading}
-          setloadingText={setloadingText}
-          toastRef={toastRef}
+    <>
+      <ScrollView style={styles.viewUserInfo}>
+        {userInfo && (
+          <InfoUser
+            setloading={setloading}
+            setloadingText={setloadingText}
+            toastRef={toastRef}
+            userInfo={userInfo}
+          />
+        )}
+
+        <AccountOptions
           userInfo={userInfo}
+          toastRef={toastRef}
+          setRealoadUserInfo={setRealoadUserInfo}
         />
-      )}
 
-      <AccountOptions
-        userInfo={userInfo}
-        toastRef={toastRef}
-        setRealoadUserInfo={setRealoadUserInfo}
-      />
-
-      <View style={{ marginRight: 20, marginLeft: 20 }}>
-        <View
-          style={{
-            alignItems: "baseline",
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 20,
-            borderBottomWidth: 1,
-            borderBottomColor: "#ABABAB",
-          }}
-        >
-          <Text
-            style={{
-              color: "#3c3c3c",
-              fontSize: 20,
-              fontWeight: "bold",
-              marginBottom: 10,
-            }}
-          >
-            Tus estadisticas
-          </Text>
-        </View>
-      </View>
-
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#fff",
-          marginRight: 20,
-          marginLeft: 20,
-          borderRadius: 5,
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "flex-start",
-          }}
-        >
+        <View style={{ marginRight: 20, marginLeft: 20 }}>
           <View
             style={{
-              width: "40%",
-              borderColor: "#A7A7A7",
-              borderWidth: 1,
-              borderRadius: 5,
-              margin: 10,
+              alignItems: "baseline",
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: 20,
+              borderBottomWidth: 1,
+              borderBottomColor: "#ABABAB",
+            }}
+          >
+            <Text
+              style={{
+                color: "#3c3c3c",
+                fontSize: 20,
+                fontWeight: "bold",
+                marginBottom: 10,
+              }}
+            >
+              Tus estadisticas
+            </Text>
+          </View>
+        </View>
+        {!(typeof infoUser[0] === "undefined") ? (
+          <View
+            style={{
               justifyContent: "center",
               alignItems: "center",
+              backgroundColor: "#fff",
+              marginRight: 20,
+              marginLeft: 20,
+              borderRadius: 5,
             }}
           >
             <View
@@ -123,257 +143,323 @@ export default function UserLogged(props) {
                 flex: 1,
                 flexDirection: "row",
                 flexWrap: "wrap",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 5,
+                alignItems: "flex-start",
               }}
             >
               <View
                 style={{
                   width: "40%",
+                  borderColor: "#A7A7A7",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  margin: 10,
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                <ImageBackground
-                  style={{ height: 30, width: 30 }}
-                  source={require("../../../assets/icons/shield.png")}
-                />
-              </View>
-              <View style={{ width: "60%" }}>
-                <Text style={{ fontWeight: "bold" }}>389</Text>
-                <Text>EXP total</Text>
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              width: "40%",
-              borderColor: "#A7A7A7",
-              borderWidth: 1,
-              borderRadius: 5,
-              margin: 10,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 5,
-              }}
-            >
-              <View
-                style={{
-                  width: "40%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <ImageBackground
-                  style={{ height: 30, width: 30 }}
-                  source={require("../../../assets/icons/on-fire.png")}
-                />
-              </View>
-              <View style={{ width: "60%" }}>
-                <Text style={{ fontWeight: "bold" }}>1</Text>
-                <Text>Días de racha</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            flexWrap: "wrap",
-            alignItems: "flex-start",
-          }}
-        >
-          <View
-            style={{
-              width: "40%",
-              borderColor: "#A7A7A7",
-              borderWidth: 1,
-              borderRadius: 5,
-              margin: 10,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 5,
-              }}
-            >
-              <View
-                style={{
-                  width: "40%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <ImageBackground
-                  style={{ height: 30, width: 30 }}
-                  source={require("../../../assets/icons/crown.png")}
-                />
-              </View>
-              <View style={{ width: "60%" }}>
-                <Text style={{ fontWeight: "bold" }}>71</Text>
-                <Text>Coronas</Text>
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              width: "40%",
-              borderColor: "#A7A7A7",
-              borderWidth: 1,
-              borderRadius: 5,
-              margin: 10,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 5,
-              }}
-            >
-              <View
-                style={{
-                  width: "40%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <ImageBackground
-                  style={{ height: 30, width: 30 }}
-                  source={require("../../../assets/icons/ruby.png")}
-                />
-              </View>
-              <View style={{ width: "60%" }}>
-                <Text style={{ fontWeight: "bold" }}>Rubi</Text>
-                <Text>División</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
-
-      <View style={{ marginRight: 20, marginLeft: 20 }}>
-        <View
-          style={{
-            alignItems: "baseline",
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 20,
-            borderBottomWidth: 1,
-            borderBottomColor: "#ABABAB",
-          }}
-        >
-          <Text
-            style={{
-              color: "#3c3c3c",
-              fontSize: 20,
-              fontWeight: "bold",
-              marginBottom: 10,
-            }}
-          >
-            Logros
-          </Text>
-        </View>
-      </View>
-
-      <View style={{ marginRight: 20, marginLeft: 20, borderRadius: 20 }}>
-        {list.map((l, i) => (
-          <ListItem key={i} bottomDivider>
-            <View style={{ marginLeft: 0, minWidth: 77 }}>
-              <ImageBackground
-                source={l.avatar_url}
-                style={{
-                  alignItems: "center",
-                  display: "flex",
-                  flexDirection: "column",
-                  paddingBottom: "124.5%",
-                  position: "relative",
-                  width: "100%",
-                }}
-              >
-                <Text
+                <View
                   style={{
-                    bottom: 10,
-                    fontSize: 14,
-                    color: "#fff",
-                    fontWeight: "700",
-                    display: "flex",
-                    position: "absolute",
+                    flex: 1,
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 5,
                   }}
                 >
-                  Nivel 4
-                </Text>
-              </ImageBackground>
-            </View>
-            <ListItem.Content>
-              <ListItem.Title style={{ fontWeight: "bold" }}>
-                {l.name}
-              </ListItem.Title>
-              <Text style={{ color: "gray" }}>{l.subtitle}</Text>
-              <View style={styles.subtitleView}>
-                <ProgressBar
-                  progress={0.3}
-                  color={"#FFC300"}
-                  style={styles.ratingImage}
-                />
-                <Text style={styles.ratingText}>{l.status}</Text>
+                  <View
+                    style={{
+                      width: "40%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ImageBackground
+                      style={{ height: 30, width: 30 }}
+                      source={require("../../../assets/icons/shield.png")}
+                    />
+                  </View>
+                  <View style={{ width: "60%" }}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {infoUser[0].EXP}
+                    </Text>
+                    <Text>EXP total</Text>
+                  </View>
+                </View>
               </View>
-            </ListItem.Content>
-          </ListItem>
-        ))}
-        <View>
-          <Button
-            title="Ver más..."
-            onPress={() => navigation.navigate("logros")}
-            titleStyle={{ fontSize: 20, fontWeight: "bold", color: "black" }}
-            buttonStyle={{
-              backgroundColor: "#fff",
-              borderBottomLeftRadius: 5,
-              borderBottomRightRadius: 5,
+              <View
+                style={{
+                  width: "40%",
+                  borderColor: "#A7A7A7",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  margin: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 5,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "40%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ImageBackground
+                      style={{ height: 30, width: 30 }}
+                      source={require("../../../assets/icons/on-fire.png")}
+                    />
+                  </View>
+                  <View style={{ width: "60%" }}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {infoUser[0].dias_racha}
+                    </Text>
+                    <Text>Días de racha</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                flexWrap: "wrap",
+                alignItems: "flex-start",
+              }}
+            >
+              <View
+                style={{
+                  width: "40%",
+                  borderColor: "#A7A7A7",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  margin: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 5,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "40%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ImageBackground
+                      style={{ height: 30, width: 30 }}
+                      source={require("../../../assets/icons/crown.png")}
+                    />
+                  </View>
+                  <View style={{ width: "60%" }}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {infoUser[0].coronas}
+                    </Text>
+                    <Text>Coronas</Text>
+                  </View>
+                </View>
+              </View>
+              <View
+                style={{
+                  width: "40%",
+                  borderColor: "#A7A7A7",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  margin: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 5,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "40%",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ImageBackground
+                      style={{ height: 30, width: 30 }}
+                      source={
+                        divisiones_insignias.get(infoUser[0].division).require
+                      }
+                    />
+                  </View>
+                  <View style={{ width: "60%" }}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {infoUser[0].division}
+                    </Text>
+                    <Text>División</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <Text>Cargando</Text>
+        )}
+        <View style={{ marginRight: 20, marginLeft: 20 }}>
+          <View
+            style={{
+              alignItems: "baseline",
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: 20,
               borderBottomWidth: 1,
-              borderRightWidth: 1,
-              borderLeftWidth: 1,
-              borderColor: "#A7A7A7",
+              borderBottomColor: "#ABABAB",
             }}
-          />
+          >
+            <Text
+              style={{
+                color: "#3c3c3c",
+                fontSize: 20,
+                fontWeight: "bold",
+                marginBottom: 10,
+              }}
+            >
+              Logros
+            </Text>
+          </View>
         </View>
-      </View>
 
-      <Button
-        title="Cerrar sesión"
-        containerStyle={{ marginBottom: 60 }}
-        buttonStyle={styles.btnCloseSession}
-        titleStyle={styles.titleBtnCloseSession}
-        onPress={() => {
-          firebase.default.auth().signOut();
-        }}
-      />
-      <Toast ref={toastRef} position="center" opacity={0.9} />
-      <Loading isVisible={loading} text={loadingText} />
-    </ScrollView>
+        <View style={{ marginRight: 20, marginLeft: 20, borderRadius: 20 }}>
+          {logros.length > 0 ? (
+            logros.map((l, i) => (
+              <ListItem key={i} bottomDivider>
+                <View style={{ marginLeft: 0, minWidth: 77 }}>
+                  <ImageBackground
+                    source={require("../../../assets/icons/achievement-champion.png")}
+                    style={{
+                      alignItems: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      paddingBottom: "124.5%",
+                      position: "relative",
+                      width: "100%",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        bottom: 10,
+                        fontSize: 14,
+                        color: "#fff",
+                        fontWeight: "700",
+                        display: "flex",
+                        position: "absolute",
+                      }}
+                    >
+                      Nivel 4
+                    </Text>
+                  </ImageBackground>
+                </View>
+                <ListItem.Content>
+                  <ListItem.Title style={{ fontWeight: "bold" }}>
+                    {l.logro.nombre}
+                  </ListItem.Title>
+                  <Text style={{ color: "gray" }}>{l.logro.descripcion}</Text>
+                  <View style={styles.subtitleView}>
+                    <ProgressBar
+                      progress={l.logro.puntaje_a_lograr / l.mi_puntaje}
+                      color={"#FFC300"}
+                      style={styles.ratingImage}
+                    />
+                    <Text style={styles.ratingText}>
+                      {l.mi_puntaje}/{l.logro.puntaje_a_lograr}
+                    </Text>
+                  </View>
+                </ListItem.Content>
+              </ListItem>
+            ))
+          ) : (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 20,
+              }}
+            >
+              <ImageBackground
+                style={{ width: 200, height: 180 }}
+                source={require("../../../assets/img/logros_not_found.png")}
+              />
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 17,
+                  textAlign: "center",
+                }}
+              >
+                Aun no tienes logros para mostrar, pero no te preocupes sabemos
+                que muy pronto lo lograras.
+              </Text>
+            </View>
+          )}
+
+          {logros.length > 1 ? (
+            <View>
+              <Button
+                title="Ver más..."
+                onPress={() => navigation.navigate("logros")}
+                titleStyle={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: "black",
+                }}
+                buttonStyle={{
+                  backgroundColor: "#fff",
+                  borderBottomLeftRadius: 5,
+                  borderBottomRightRadius: 5,
+                  borderBottomWidth: 1,
+                  borderRightWidth: 1,
+                  borderLeftWidth: 1,
+                  borderColor: "#A7A7A7",
+                }}
+              />
+            </View>
+          ) : null}
+        </View>
+
+        <Button
+          title="Cerrar sesión"
+          containerStyle={{ marginBottom: 60 }}
+          buttonStyle={styles.btnCloseSession}
+          titleStyle={styles.titleBtnCloseSession}
+          onPress={() => {
+            firebase.default.auth().signOut();
+          }}
+        />
+        <Toast ref={toastRef} position="center" opacity={0.9} />
+        <Loading isVisible={loading} text={loadingText} />
+      </ScrollView>
+    </>
   );
 }
 
