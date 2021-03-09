@@ -93,7 +93,7 @@ export default function Navigation() {
                   let payload = {
                     logro: doc.data(),
                     nivel: 1,
-                    mi_puntaje: false,
+                    mi_puntaje: 0,
                     id_logro: doc.id,
                     id_user: uid,
                   };

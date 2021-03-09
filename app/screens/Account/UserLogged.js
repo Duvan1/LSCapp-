@@ -55,7 +55,7 @@ export default function UserLogged(props) {
   useEffect(() => {
     (async () => {
       const user = await firebase.default.auth().currentUser;
-      // consulto la información del usuario
+      setuserInfo(user);
       db.collection("info_user")
         .where("id_user", "==", user.uid)
         .get()
@@ -66,23 +66,23 @@ export default function UserLogged(props) {
           });
           setInfoUser(arrayResponse);
         });
-      // consulto los logros obtenidos por el usuario
+
       db.collection("mis_logros")
         .where("id_user", "==", user.uid)
         .limit(2)
         .get()
         .then((response) => {
+          let listLogros = [];
           response.forEach((doc) => {
-            let listLogros = [];
-            console.log(doc.data());
             listLogros.push(doc.data());
-            setlogros(listLogros);
+            //setlogros(listLogros);
           });
+          //console.log("*********************  ", listLogros);
+          setlogros(listLogros);
           console.log("*********************  ", logros);
         });
-
-      setuserInfo(user);
     })();
+
     setRealoadUserInfo(false);
   }, [realoadUserInfo]);
 
@@ -386,11 +386,20 @@ export default function UserLogged(props) {
                   </ListItem.Title>
                   <Text style={{ color: "gray" }}>{l.logro.descripcion}</Text>
                   <View style={styles.subtitleView}>
-                    <ProgressBar
-                      progress={l.logro.puntaje_a_lograr / l.mi_puntaje}
-                      color={"#FFC300"}
-                      style={styles.ratingImage}
-                    />
+                    {l.mi_puntaje > 0 ? (
+                      <ProgressBar
+                        progress={l.logro.puntaje_a_lograr / l.mi_puntaje}
+                        color={"#FFC300"}
+                        style={styles.ratingImage}
+                      />
+                    ) : (
+                      <ProgressBar
+                        progress={0}
+                        color={"#FFC300"}
+                        style={styles.ratingImage}
+                      />
+                    )}
+
                     <Text style={styles.ratingText}>
                       {l.mi_puntaje}/{l.logro.puntaje_a_lograr}
                     </Text>
