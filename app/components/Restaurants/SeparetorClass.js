@@ -8,7 +8,8 @@ import {
 } from "react-native";
 import { Image } from "react-native-elements";
 
-export default function SeparetorClass() {
+export default function SeparetorClass(props) {
+  const { indice } = props;
   const windowWidth = Dimensions.get("window").width;
 
   return (
@@ -52,7 +53,7 @@ export default function SeparetorClass() {
           source={require("../../../assets/icons/shield.png")}
         >
           <Text style={{ color: "#A14C0E", fontWeight: "bold", fontSize: 25 }}>
-            1
+            {indice + 1}
           </Text>
         </ImageBackground>
         <View

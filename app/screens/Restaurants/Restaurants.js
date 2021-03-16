@@ -17,6 +17,7 @@ export default function Restaurants(props) {
   const [startRestaurants, setStartRestaurants] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [infoUser, setInfoUser] = useState([]);
+  const [modulos, setModulos] = useState([]);
   const limitRestaurants = 6;
 
   useEffect(() => {
@@ -61,13 +62,18 @@ export default function Restaurants(props) {
           });
           setRestaurants(resultRestaurants);
         });
+      // proceso para cargar los modulos
+      const resultModulos = [];
 
-      db.collection("tema")
+      db.collection("modulo")
         .get()
         .then((response) => {
           response.forEach((doc) => {
-            console.log(doc.data());
+            const modulo = doc.data();
+            modulo.id = doc.id;
+            resultModulos.push(modulo);
           });
+          setModulos(resultModulos);
         });
     }, [])
   );
@@ -100,6 +106,7 @@ export default function Restaurants(props) {
 
   return (
     <>
+      {/* Header con la información del usuario */}
       <View
         style={{
           marginTop: 0,
@@ -112,6 +119,7 @@ export default function Restaurants(props) {
           alignItems: "center",
         }}
       >
+        {/* Coronas */}
         <View
           style={{
             flexDirection: "row",
@@ -135,6 +143,7 @@ export default function Restaurants(props) {
             {infoUser[0] ? infoUser[0].coronas : null}
           </Text>
         </View>
+        {/* Días de racha */}
         <View
           style={{
             flexDirection: "row",
@@ -158,6 +167,7 @@ export default function Restaurants(props) {
             {infoUser[0] ? infoUser[0].dias_racha : null}
           </Text>
         </View>
+        {/* esmeraldas */}
         <View
           style={{
             flexDirection: "row",
@@ -181,12 +191,17 @@ export default function Restaurants(props) {
           </Text>
         </View>
       </View>
+      {/* body del inicio */}
       <View style={styles.viewBody}>
-        <ListRestaurants
-          restaurants={restaurants}
-          handleLoadMore={handleLoadMore}
-          isLoading={isLoading}
-        />
+        {modulos.map((l, i) => (
+          <ListRestaurants
+            restaurants={restaurants}
+            handleLoadMore={handleLoadMore}
+            isLoading={isLoading}
+            indice={i}
+          />
+        ))}
+
         {user && (
           <Icon
             reverse

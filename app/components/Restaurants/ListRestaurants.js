@@ -16,7 +16,7 @@ import IconClass from "./IconClass";
 import SeparetorClass from "./SeparetorClass";
 
 export default function ListRestaurants(props) {
-  const { restaurants, handleLoadMore, isLoading } = props;
+  const { restaurants, handleLoadMore, isLoading, indice } = props;
   //const restaurants = [];
   const navigation = useNavigation();
 
@@ -29,6 +29,9 @@ export default function ListRestaurants(props) {
     >
       {size(restaurants) > 0 ? (
         <View style={{ alignItems: "center" }}>
+          <View>
+            <SeparetorClass indice={indice} />
+          </View>
           <FlatList
             contentContainerStyle={{
               marginTop: 10,
@@ -62,9 +65,6 @@ export default function ListRestaurants(props) {
               />
             }
           />
-          <View style={{ marginTop: -100 }}>
-            <SeparetorClass />
-          </View>
         </View>
       ) : (
         <View style={styles.loadRestaurants}>
