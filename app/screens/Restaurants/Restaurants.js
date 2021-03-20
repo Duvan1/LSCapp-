@@ -195,7 +195,7 @@ export default function Restaurants(props) {
       <View style={styles.viewBody}>
         {modulos.map((l, i) => (
           <ListRestaurants
-            restaurants={restaurants}
+            restaurants={modulos}
             handleLoadMore={handleLoadMore}
             isLoading={isLoading}
             indice={i}

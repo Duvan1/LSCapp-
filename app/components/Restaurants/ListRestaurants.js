@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,14 +11,46 @@ import {
 } from "react-native";
 import { Image } from "react-native-elements";
 import { size } from "lodash";
-import { useNavigation } from "@react-navigation/native";
+import { firebaseApp } from "../../utils/firebase";
+import firebase from "firebase/app";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import IconClass from "./IconClass";
 import SeparetorClass from "./SeparetorClass";
 
+const db = firebase.firestore(firebaseApp);
+
 export default function ListRestaurants(props) {
   const { restaurants, handleLoadMore, isLoading, indice } = props;
+  const [temas, setTemas] = useState([]);
   //const restaurants = [];
   const navigation = useNavigation();
+
+  useFocusEffect(useCallback(() => {}, []));
+
+  useEffect(() => {
+    const uid = firebase.auth().currentUser.uid;
+    let temasAux = [];
+    restaurants.forEach((modulo) => {
+      modulo.categorias.forEach((categoria) => {
+        db.collection("categoria_principal")
+          .doc(categoria)
+          .get()
+          .then((response) => {
+            response.data().temas.forEach((tema) => {
+              db.collection("tema")
+                .doc(tema)
+                .get()
+                .then((response) => {
+                  temasAux.push(response.data());
+
+                  setTemas([...temasAux]);
+                });
+            });
+            console.log(temasAux);
+          });
+      });
+    });
+  }, []);
 
   return (
     <ScrollView
@@ -27,7 +59,7 @@ export default function ListRestaurants(props) {
         backgroundColor: "#f2f2f2",
       }}
     >
-      {size(restaurants) > 0 ? (
+      {size(temas) > 0 ? (
         <View style={{ alignItems: "center" }}>
           <View>
             <SeparetorClass indice={indice} />
@@ -39,9 +71,9 @@ export default function ListRestaurants(props) {
               justifyContent: "center",
               alignItems: "center",
             }}
-            data={restaurants}
+            data={temas}
             numColumns={2}
-            renderItem={(restaurant) => (
+            renderItem={(tema) => (
               <View style={{}}>
                 <View
                   style={{
@@ -52,7 +84,7 @@ export default function ListRestaurants(props) {
                     marginLeft: 40,
                   }}
                 >
-                  <Restaurant restaurant={restaurant} navigation={navigation} />
+                  <Restaurant restaurant={tema} navigation={navigation} />
                 </View>
               </View>
             )}
@@ -78,8 +110,9 @@ export default function ListRestaurants(props) {
 
 function Restaurant(props) {
   const { restaurant, navigation } = props;
-  const { id, images, name, address, description } = restaurant.item;
-  const imageRestaurant = images[0];
+  //const { id, images, name, address, description } = restaurant.item;
+  const { id, nombre } = restaurant.item;
+  //const imageRestaurant = images[0];
   const number = Math.floor(Math.random() * (9 + 1));
 
   let index = restaurant.index;
