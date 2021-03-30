@@ -16,12 +16,15 @@ import firebase from "firebase/app";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import IconClass from "./IconClass";
 import SeparetorClass from "./SeparetorClass";
+import ModalEjercicio from "../ModalEjercicio";
+import Restaurant from "../../screens/Restaurants/Restaurant";
 
 const db = firebase.firestore(firebaseApp);
 
 export default function ListRestaurants(props) {
   const { restaurants, handleLoadMore, isLoading, indice } = props;
   const [temas, setTemas] = useState([]);
+
   //const restaurants = [];
   const navigation = useNavigation();
 
@@ -84,7 +87,7 @@ export default function ListRestaurants(props) {
                     marginLeft: 40,
                   }}
                 >
-                  <Restaurant restaurant={tema} navigation={navigation} />
+                  <Tema restaurant={tema} navigation={navigation} />
                 </View>
               </View>
             )}
@@ -108,23 +111,49 @@ export default function ListRestaurants(props) {
   );
 }
 
-function Restaurant(props) {
+function Tema(props) {
   const { restaurant, navigation } = props;
+  const [renderCoponent, setRenderCoponent] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  console.log(
+    "------------------------------->>>>>>>>>>>>>>>>>>>>>   ",
+    restaurant
+  );
   //const { id, images, name, address, description } = restaurant.item;
-  const { id, nombre } = restaurant.item;
+  const { senia, nombre } = restaurant.item;
+  let nombreIcon = nombre.replace(" ", "-").toLowerCase();
   //const imageRestaurant = images[0];
   const number = Math.floor(Math.random() * (9 + 1));
 
   let index = restaurant.index;
   const goRestaurant = () => {
-    navigation.navigate("clase");
+    /*
+    navigation.navigate("clase", {
+      senia,
+      nombre,
+    });
+    */
+    setRenderCoponent(
+      <Restaurant
+        navigation={navigation}
+        nombre={nombre}
+        senia={senia}
+        setShowModal={setShowModal}
+      />
+    );
+    setShowModal(true);
   };
 
   return (
     <TouchableOpacity onPress={goRestaurant}>
       <View style={{ marginBottom: 20 }}>
-        <IconClass />
+        <IconClass nombre={nombre} nombreIcon={nombreIcon} />
       </View>
+      {renderCoponent && (
+        <ModalEjercicio isVisible={showModal} setVisible={setShowModal}>
+          {renderCoponent}
+        </ModalEjercicio>
+      )}
     </TouchableOpacity>
   );
 }

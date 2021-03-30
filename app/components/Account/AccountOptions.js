@@ -86,15 +86,6 @@ function generateOptions(selectIdComponent) {
       },
     },
     {
-      title: "Cambiar email",
-      iconType: "material-community",
-      iconNameLeft: "at",
-      iconColorLeft: "#ccc",
-      onPress: () => {
-        selectIdComponent("email");
-      },
-    },
-    {
       title: "Cambiar contraseña",
       iconType: "material-community",
       iconNameLeft: "lock-reset",

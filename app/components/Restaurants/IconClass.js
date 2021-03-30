@@ -3,34 +3,59 @@ import ProgressCircle from "react-native-progress-circle";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Avatar, Badge, Icon, withBadge } from "react-native-elements";
 
-export default function IconClass() {
+export default function IconClass(props) {
+  const { nombre, nombreIcon } = props;
   //const disable = true;
   const [percent, setPercent] = useState(0);
 
-  const imgs = [
-    require("../../../assets/icons/hombre/alimentacion.png"),
-    require("../../../assets/icons/hombre/aseo-personal.png"),
-    require("../../../assets/icons/hombre/cantidad.png"),
-    require("../../../assets/icons/hombre/cuerpo.png"),
-    require("../../../assets/icons/hombre/espacio.png"),
-    require("../../../assets/icons/hombre/fisiologia.png"),
-    require("../../../assets/icons/hombre/fruts.png"),
-    require("../../../assets/icons/hombre/inteligencia.png"),
-    require("../../../assets/icons/hombre/salud.png"),
-    require("../../../assets/icons/hombre/sentimientos.png"),
-  ];
-  const titles = [
-    "Alimentación",
-    "Aseo Personal",
-    "Cantidad",
-    "Cuerpo",
-    "Espacio",
-    "Fisiología",
-    "Frutas",
-    "Inteligencía",
-    "Salud",
-    "Sentimientos",
-  ];
+  // Map que asigna un color y la imagen por cada categoria
+  const iconMap = new Map([
+    [
+      "cuerpo-humano",
+      {
+        uri: require("../../../assets/icons/hombre/cuerpo-humano.png"),
+        color: "#5DADE2",
+      },
+    ],
+    [
+      "escencia",
+      {
+        uri: require("../../../assets/icons/hombre/escencia.png"),
+        color: "#5DADE2",
+      },
+    ],
+    [
+      "tiempo",
+      {
+        uri: require("../../../assets/icons/hombre/tiempo.png"),
+        color: "#5DADE2",
+      },
+    ],
+    [
+      "inteligencia",
+      {
+        uri: require("../../../assets/icons/hombre/inteligencia.png"),
+        color: "#5DADE2",
+      },
+    ],
+    [
+      "espacio",
+      {
+        uri: require("../../../assets/icons/hombre/espacio.png"),
+        color: "#5DADE2",
+      },
+    ],
+  ]);
+
+  const jewelStyle = function (nombreIcon) {
+    return {
+      backgroundColor: iconMap.get(nombreIcon).color,
+      borderRadius: 100,
+      width: "80%",
+      height: "80%",
+      alignItems: "center",
+    };
+  };
 
   useEffect(() => {
     setPercent(Math.floor(Math.random() * (9 + 1)));
@@ -54,7 +79,7 @@ export default function IconClass() {
         >
           <View
             style={
-              percent === 0 ? styles.iconContainerGray : styles.iconContainer
+              percent === 0 ? styles.iconContainerGray : jewelStyle(nombreIcon)
             }
             onPress={() => console.log("lkdnsklfsn")}
           >
@@ -64,7 +89,7 @@ export default function IconClass() {
                 height: 40,
                 width: 40,
               }}
-              source={imgs[percent]}
+              source={iconMap.get(nombreIcon).uri}
             />
             {percent === 0 ? (
               <Image
@@ -76,7 +101,7 @@ export default function IconClass() {
                   height: 40,
                   width: 40,
                 }}
-                source={imgs[percent]}
+                source={iconMap.get(nombreIcon).uri}
               />
             ) : null}
           </View>
@@ -121,20 +146,13 @@ export default function IconClass() {
         )}
       </View>
       <Text style={{ marginTop: 100, fontSize: 14, fontWeight: "bold" }}>
-        {titles[percent]}
+        {nombre.toUpperCase()}
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  iconContainer: {
-    backgroundColor: "#FC4848",
-    borderRadius: 100,
-    width: "80%",
-    height: "80%",
-    alignItems: "center",
-  },
   iconContainerGray: {
     backgroundColor: "gray",
     borderRadius: 100,

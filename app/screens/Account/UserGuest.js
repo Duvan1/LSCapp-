@@ -11,6 +11,15 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function UserGuest() {
   const navigation = useNavigation();
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      //tabBarVisible: false,
+      //headerVisible: false,
+      headerShown: false,
+    });
+  }, []);
+
   return (
     <View style={styles.viewBody}>
       <Image
