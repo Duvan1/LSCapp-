@@ -8,7 +8,7 @@ import {
   Alert,
   Dimensions,
 } from "react-native";
-import { Button, Icon, SocialIcon } from "react-native-elements";
+import { Button, Icon, Card } from "react-native-elements";
 //import basic react native components
 import { BottomSheet } from "react-native-btr";
 //////// firebase
@@ -26,8 +26,8 @@ const heightScreen = Dimensions.get("window").height;
 
 export default function Restaurant(props) {
   const { displayName, setShowModal, toastRef, navigation, senia } = props;
-  const [newDisplayName, setNewDisplayName] = useState(null);
-  const [error, setError] = useState(null);
+  const [gameOver, setGameOver] = useState(false);
+  const [final, setFinal] = useState(false);
   const [avance, setAvance] = useState(0);
   const video = useRef(null);
   const [status, setStatus] = useState({});
@@ -37,6 +37,9 @@ export default function Restaurant(props) {
   const [opciones, setOpciones] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState(false);
+  const [vidas, setVidas] = useState(4);
+  const [correctas, setcorrectas] = useState([]);
+  const [incorrectas, setincorrectas] = useState([]);
 
   const toggleBottomNavigationView = () => {
     //Toggling the visibility state of the bottom sheet
@@ -51,19 +54,23 @@ export default function Restaurant(props) {
   useEffect(() => {
     // este estado sera el que guardara cuantas señas tengo lo qiue es lo mismo que la cantidad de preguntas
     setSeniasLenght(senia.length);
-    db.collection("senia")
-      .doc(senia[avance])
-      .get()
-      .then((response) => {
-        let payload = {
-          nombre: response.data().nombre,
-          icon: require("../../../assets/icons/crown.png"),
-          isCorrect: true,
-        };
-        crearOpciones(payload);
-        setSenias(response.data());
-        console.log("========>>>>>>>>>>>>>        ", senias);
-      });
+    if (senia.length > avance) {
+      db.collection("senia")
+        .doc(senia[avance])
+        .get()
+        .then((response) => {
+          let payload = {
+            nombre: response.data().nombre,
+            icon: require("../../../assets/icons/crown.png"),
+            isCorrect: true,
+          };
+          crearOpciones(payload);
+          setSenias(response.data());
+        });
+    } else {
+      setFinal(true);
+      console.log("");
+    }
   }, [avance]);
 
   function comprobar() {
@@ -74,9 +81,16 @@ export default function Restaurant(props) {
     if (flexDirection.isCorrect) {
       //alert("correcto");
       setCorrectAnswer(true);
+      correctas.push(senias);
     } else {
-      //alert("incorrecto :c");
       setCorrectAnswer(false);
+      incorrectas.push(senias);
+      setVidas(vidas - 1);
+      if (vidas <= 1) {
+        setFinal(true);
+        setGameOver(true);
+      }
+      //setVidas(vidas.pop());
     }
     setIsVisible(true);
     setflexDirection({});
@@ -136,7 +150,7 @@ export default function Restaurant(props) {
 
   return (
     <View style={styles.container}>
-      {senias ? (
+      {senias && !gameOver & !final ? (
         <View style={styles.container}>
           <BottomSheet
             visible={isVisible}
@@ -267,7 +281,7 @@ export default function Restaurant(props) {
                 {avance == 0 ? (
                   <Progress.Bar
                     progress={0}
-                    width={widthScreen * 0.8}
+                    width={widthScreen * 0.4}
                     height={4}
                     animated={true}
                     color={"#61dafb"}
@@ -281,6 +295,18 @@ export default function Restaurant(props) {
                     color={"#61dafb"}
                   />
                 )}
+              </View>
+              <View style={{ flexDirection: "row" }}>
+                <Text
+                  style={{ color: "#EA2B2B", fontWeight: "bold", fontSize: 20 }}
+                >
+                  {vidas}
+                </Text>
+                <Icon
+                  type="material-community"
+                  name={"heart"}
+                  iconStyle={{ color: "#EA2B2B" }}
+                />
               </View>
             </View>
             <View style={[styles.box, styles.two]}></View>
@@ -387,6 +413,96 @@ export default function Restaurant(props) {
               </View>
             </View>
           </ScrollView>
+        </View>
+      ) : gameOver ? (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: heightScreen * 0.1,
+          }}
+        >
+          <ImageBackground
+            style={{ width: 150, height: 125, marginBottom: 10 }}
+            source={require("../../../assets/img/mascota_triste.png")}
+          />
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 17,
+              textAlign: "center",
+              lineHeight: 25,
+              marginBottom: 10,
+            }}
+          >
+            ¡Te quedaste sin vidas!{"\n"}
+            Pero no te preocupes {"\n"}
+            Sabemos que lo harás mejor la próxima{"\n"}
+            la práctica hace al maestro.
+          </Text>
+          <Card containerStyle={{ width: widthScreen * 0.8, borderRadius: 10 }}>
+            <Card.Title
+              style={{ color: "#EA2B2B", fontWeight: "bold", fontSize: 17 }}
+            >
+              Respuestas incorrectas
+            </Card.Title>
+            <Card.Divider />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 17,
+                  flex: 1,
+                  marginLeft: 20,
+                }}
+              >
+                Hombre
+              </Text>
+              <Icon
+                type="material-community"
+                name={"close"}
+                iconStyle={{ color: "#EA2B2B" }}
+                containerStyle={{ flex: 2 }}
+              />
+            </View>
+            <Card.Divider />
+            <Card.Title
+              style={{ color: "#58A700", fontWeight: "bold", fontSize: 17 }}
+            >
+              Respuestas correctas
+            </Card.Title>
+            <Card.Divider />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 17,
+                  flex: 1,
+                  marginLeft: 20,
+                }}
+              >
+                Hombre
+              </Text>
+              <Icon
+                type="material-community"
+                name={"check-decagram"}
+                iconStyle={{ color: "#58A700" }}
+                containerStyle={{ flex: 2 }}
+              />
+            </View>
+          </Card>
         </View>
       ) : (
         <View
