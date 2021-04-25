@@ -37,9 +37,14 @@ export default function Restaurant(props) {
   const [opciones, setOpciones] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState(false);
-  const [vidas, setVidas] = useState(4);
+  const [vidas, setVidas] = useState(3);
   const [correctas, setcorrectas] = useState([]);
   const [incorrectas, setincorrectas] = useState([]);
+  const [seguidas, setseguidas] = useState(0);
+  let banderaSeguidas = false;
+  let EXP = 0;
+  let coronas = 0;
+  let gemas = 0;
 
   const toggleBottomNavigationView = () => {
     //Toggling the visibility state of the bottom sheet
@@ -47,8 +52,29 @@ export default function Restaurant(props) {
     setAvance(avance + 1);
   };
 
-  const onSubmit = () => {
-    setShowModal(false);
+  const finalizar = () => {
+    alert(final && !gameOver);
+    if (final && !gameOver) {
+      EXP =
+        seguidas * 10 +
+        100 +
+        correctas.length * 10 +
+        vidas * 10 -
+        incorrectas.length * 10;
+      coronas = 1;
+      gemas = coronas * 4 + Math.ceil(EXP / 40);
+      alert(
+        "seguidas: " +
+          seguidas +
+          " EXP: " +
+          EXP +
+          " coronas: " +
+          coronas +
+          " gemas: " +
+          gemas
+      );
+      //setShowModal(false);
+    }
   };
 
   useEffect(() => {
@@ -80,9 +106,11 @@ export default function Restaurant(props) {
     }
     if (flexDirection.isCorrect) {
       //alert("correcto");
+      banderaSeguidas = true;
       setCorrectAnswer(true);
       correctas.push(senias);
     } else {
+      banderaSeguidas = false;
       setCorrectAnswer(false);
       incorrectas.push(senias);
       setVidas(vidas - 1);
@@ -91,6 +119,14 @@ export default function Restaurant(props) {
         setGameOver(true);
       }
       //setVidas(vidas.pop());
+    }
+    if (banderaSeguidas) {
+      setseguidas(seguidas + 1);
+    } else {
+      setseguidas(0);
+    }
+    if (seguidas == 4) {
+      alert("WOW 4 seguidas lo estas haciendo excelente");
     }
     setIsVisible(true);
     setflexDirection({});
@@ -415,95 +451,263 @@ export default function Restaurant(props) {
           </ScrollView>
         </View>
       ) : gameOver ? (
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: heightScreen * 0.1,
-          }}
-        >
-          <ImageBackground
-            style={{ width: 150, height: 125, marginBottom: 10 }}
-            source={require("../../../assets/img/mascota_triste.png")}
-          />
-          <Text
+        <ScrollView>
+          <View
             style={{
-              fontWeight: "bold",
-              fontSize: 17,
-              textAlign: "center",
-              lineHeight: 25,
-              marginBottom: 10,
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: heightScreen * 0.1,
             }}
           >
-            ¡Te quedaste sin vidas!{"\n"}
-            Pero no te preocupes {"\n"}
-            Sabemos que lo harás mejor la próxima{"\n"}
-            la práctica hace al maestro.
-          </Text>
-          <Card containerStyle={{ width: widthScreen * 0.8, borderRadius: 10 }}>
-            <Card.Title
-              style={{ color: "#EA2B2B", fontWeight: "bold", fontSize: 17 }}
-            >
-              Respuestas incorrectas
-            </Card.Title>
-            <Card.Divider />
-            <View
+            <ImageBackground
+              style={{ width: 150, height: 125, marginBottom: 10 }}
+              source={require("../../../assets/img/mascota_triste.png")}
+            />
+            <Text
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
+                fontWeight: "bold",
+                fontSize: 17,
+                textAlign: "center",
+                lineHeight: 25,
+                marginBottom: 10,
               }}
             >
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 17,
-                  flex: 1,
-                  marginLeft: 20,
-                }}
-              >
-                Hombre
-              </Text>
-              <Icon
-                type="material-community"
-                name={"close"}
-                iconStyle={{ color: "#EA2B2B" }}
-                containerStyle={{ flex: 2 }}
-              />
-            </View>
-            <Card.Divider />
-            <Card.Title
-              style={{ color: "#58A700", fontWeight: "bold", fontSize: 17 }}
+              ¡Te quedaste sin vidas!{"\n"}
+              Pero no te preocupes {"\n"}
+              Sabemos que lo harás mejor la próxima{"\n"}
+              la práctica hace al maestro.
+            </Text>
+            <Card
+              containerStyle={{ width: widthScreen * 0.8, borderRadius: 10 }}
             >
-              Respuestas correctas
-            </Card.Title>
-            <Card.Divider />
-            <View
+              <Card.Title
+                style={{ color: "#EA2B2B", fontWeight: "bold", fontSize: 17 }}
+              >
+                Respuestas incorrectas
+              </Card.Title>
+              <Card.Divider />
+
+              {incorrectas.map((l, i) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 17,
+                      flex: 1,
+                      marginLeft: 20,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {l.nombre}
+                  </Text>
+                  <Icon
+                    type="material-community"
+                    name={"close"}
+                    iconStyle={{ color: "#EA2B2B" }}
+                    containerStyle={{ flex: 2 }}
+                  />
+                </View>
+              ))}
+
+              <Card.Divider />
+              <Card.Title
+                style={{ color: "#58A700", fontWeight: "bold", fontSize: 17 }}
+              >
+                Respuestas correctas
+              </Card.Title>
+              <Card.Divider />
+              {correctas.map((l, i) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 17,
+                      flex: 1,
+                      marginLeft: 20,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {l.nombre}
+                  </Text>
+                  <Icon
+                    type="material-community"
+                    name={"check-decagram"}
+                    iconStyle={{ color: "#58A700" }}
+                    containerStyle={{ flex: 2 }}
+                  />
+                </View>
+              ))}
+            </Card>
+            <Button
+              onPress={() => {
+                finalizar();
+              }}
+              title="Finalizar"
+              buttonStyle={{
+                backgroundColor: "#61dafb",
+                borderColor: "#55C1E2",
+                borderWidth: 1,
+                borderRadius: 10,
+              }}
+              containerStyle={{
+                borderColor: "#55C1E2",
+                borderTopWidth: 0.5,
+                borderLeftWidth: 1,
+                borderBottomWidth: 3,
+                borderRightWidth: 3,
+                borderBottomEndRadius: 12,
+                borderBottomLeftRadius: 12,
+                borderTopRightRadius: 12,
+                width: "85%",
+                marginTop: 15,
+              }}
+              titleStyle={{ fontSize: 20 }}
+            />
+          </View>
+        </ScrollView>
+      ) : !gameOver && final ? (
+        <ScrollView>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: heightScreen * 0.1,
+            }}
+          >
+            <ImageBackground
+              style={{ width: 150, height: 125, marginBottom: 10 }}
+              source={require("../../../assets/img/mascota_triste.png")}
+            />
+            <Text
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
+                fontWeight: "bold",
+                fontSize: 17,
+                textAlign: "center",
+                lineHeight: 25,
+                marginBottom: 10,
               }}
             >
-              <Text
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 17,
-                  flex: 1,
-                  marginLeft: 20,
-                }}
+              ¡Te quedaste sin vidas!{"\n"}
+              Pero no te preocupes {"\n"}
+              Sabemos que lo harás mejor la próxima{"\n"}
+              la práctica hace al maestro.
+            </Text>
+            <Card
+              containerStyle={{ width: widthScreen * 0.8, borderRadius: 10 }}
+            >
+              <Card.Title
+                style={{ color: "#EA2B2B", fontWeight: "bold", fontSize: 17 }}
               >
-                Hombre
-              </Text>
-              <Icon
-                type="material-community"
-                name={"check-decagram"}
-                iconStyle={{ color: "#58A700" }}
-                containerStyle={{ flex: 2 }}
-              />
-            </View>
-          </Card>
-        </View>
+                Respuestas incorrectas
+              </Card.Title>
+              <Card.Divider />
+
+              {incorrectas.map((l, i) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 17,
+                      flex: 1,
+                      marginLeft: 20,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {l.nombre}
+                  </Text>
+                  <Icon
+                    type="material-community"
+                    name={"close"}
+                    iconStyle={{ color: "#EA2B2B" }}
+                    containerStyle={{ flex: 2 }}
+                  />
+                </View>
+              ))}
+
+              <Card.Divider />
+              <Card.Title
+                style={{ color: "#58A700", fontWeight: "bold", fontSize: 17 }}
+              >
+                Respuestas correctas
+              </Card.Title>
+              <Card.Divider />
+              {correctas.map((l, i) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 17,
+                      flex: 1,
+                      marginLeft: 20,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {l.nombre}
+                  </Text>
+                  <Icon
+                    type="material-community"
+                    name={"check-decagram"}
+                    iconStyle={{ color: "#58A700" }}
+                    containerStyle={{ flex: 2 }}
+                  />
+                </View>
+              ))}
+            </Card>
+            <Button
+              onPress={() => {
+                finalizar();
+              }}
+              title="Finalizar"
+              buttonStyle={{
+                backgroundColor: "#61dafb",
+                borderColor: "#55C1E2",
+                borderWidth: 1,
+                borderRadius: 10,
+              }}
+              containerStyle={{
+                borderColor: "#55C1E2",
+                borderTopWidth: 0.5,
+                borderLeftWidth: 1,
+                borderBottomWidth: 3,
+                borderRightWidth: 3,
+                borderBottomEndRadius: 12,
+                borderBottomLeftRadius: 12,
+                borderTopRightRadius: 12,
+                width: "85%",
+                marginTop: 15,
+              }}
+              titleStyle={{ fontSize: 20 }}
+            />
+          </View>
+        </ScrollView>
       ) : (
         <View
           style={{
@@ -513,6 +717,31 @@ export default function Restaurant(props) {
           }}
         >
           <Text>Cargando...</Text>
+          <Button
+            onPress={() => {
+              finalizar();
+            }}
+            title="Finalizar"
+            buttonStyle={{
+              backgroundColor: "#61dafb",
+              borderColor: "#55C1E2",
+              borderWidth: 1,
+              borderRadius: 10,
+            }}
+            containerStyle={{
+              borderColor: "#55C1E2",
+              borderTopWidth: 0.5,
+              borderLeftWidth: 1,
+              borderBottomWidth: 3,
+              borderRightWidth: 3,
+              borderBottomEndRadius: 12,
+              borderBottomLeftRadius: 12,
+              borderTopRightRadius: 12,
+              width: "85%",
+              marginTop: 15,
+            }}
+            titleStyle={{ fontSize: 20 }}
+          />
         </View>
       )}
     </View>
