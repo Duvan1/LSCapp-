@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Avatar, Badge, Icon, withBadge } from "react-native-elements";
 
 export default function IconClass(props) {
-  const { nombre, nombreIcon } = props;
+  const { nombre, nombreIcon, coronas, completado, veces_completado } = props;
   //const disable = true;
   const [percent, setPercent] = useState(0);
 
@@ -58,7 +58,7 @@ export default function IconClass(props) {
   };
 
   useEffect(() => {
-    setPercent(Math.floor(Math.random() * (9 + 1)));
+    setPercent(coronas);
   }, []);
 
   return (
@@ -70,7 +70,7 @@ export default function IconClass(props) {
     >
       <View style={{ position: "absolute" }}>
         <ProgressCircle
-          percent={10 * percent}
+          percent={10 * veces_completado}
           radius={50}
           borderWidth={8}
           color={percent === 0 ? "gray" : "#FFD200"}

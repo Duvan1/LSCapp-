@@ -44,9 +44,25 @@ export default function ListRestaurants(props) {
                 .doc(tema)
                 .get()
                 .then((response) => {
-                  temasAux.push(response.data());
-
-                  setTemas([...temasAux]);
+                  let aux = response.data();
+                  aux.uid = response.id;
+                  db.collection("mis_temas")
+                    .where("id_tema", "==", tema)
+                    .get()
+                    .then((res) => {
+                      res.forEach((doc) => {
+                        aux.uid_mis_temas = doc.id;
+                        aux.completado = doc.data().completado;
+                        aux.coronas = doc.data().coronas;
+                        aux.veces_completado = doc.data().veces_completado;
+                      });
+                      console.log(
+                        "************************************   ",
+                        aux
+                      );
+                      temasAux.push(aux);
+                      setTemas([...temasAux]);
+                    });
                 });
             });
             console.log(temasAux);
@@ -120,7 +136,14 @@ function Tema(props) {
     restaurant
   );
   //const { id, images, name, address, description } = restaurant.item;
-  const { senia, nombre } = restaurant.item;
+  const {
+    senia,
+    nombre,
+    completado,
+    veces_completado,
+    coronas,
+    uid_mis_temas,
+  } = restaurant.item;
   let nombreIcon = nombre.replace(" ", "-").toLowerCase();
   //const imageRestaurant = images[0];
   const number = Math.floor(Math.random() * (9 + 1));
@@ -135,6 +158,7 @@ function Tema(props) {
     */
     setRenderCoponent(
       <Restaurant
+        tema={restaurant}
         navigation={navigation}
         nombre={nombre}
         senia={senia}
@@ -147,7 +171,13 @@ function Tema(props) {
   return (
     <TouchableOpacity onPress={goRestaurant}>
       <View style={{ marginBottom: 20 }}>
-        <IconClass nombre={nombre} nombreIcon={nombreIcon} />
+        <IconClass
+          nombre={nombre}
+          nombreIcon={nombreIcon}
+          completado={completado}
+          coronas={coronas}
+          veces_completado={veces_completado}
+        />
       </View>
       {renderCoponent && (
         <ModalEjercicio isVisible={showModal} setVisible={setShowModal}>

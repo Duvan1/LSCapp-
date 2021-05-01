@@ -25,7 +25,14 @@ const widthScreen = Dimensions.get("window").width;
 const heightScreen = Dimensions.get("window").height;
 
 export default function Restaurant(props) {
-  const { displayName, setShowModal, toastRef, navigation, senia } = props;
+  const {
+    displayName,
+    setShowModal,
+    toastRef,
+    navigation,
+    senia,
+    tema,
+  } = props;
   const [gameOver, setGameOver] = useState(false);
   const [final, setFinal] = useState(false);
   const [avance, setAvance] = useState(0);
@@ -53,7 +60,6 @@ export default function Restaurant(props) {
   };
 
   const finalizar = () => {
-    alert(final && !gameOver);
     if (final && !gameOver) {
       EXP =
         seguidas * 10 +
@@ -73,6 +79,74 @@ export default function Restaurant(props) {
           " gemas: " +
           gemas
       );
+
+      const uid = firebase.auth().currentUser.uid;
+      console.log(uid);
+      db.collection("info_user")
+        .where("id_user", "==", uid)
+        .get()
+        .then((response) => {
+          const arrayResponse = [];
+          response.forEach((doc) => {
+            arrayResponse.push(doc.data());
+          });
+          // timestamp dia de hoy
+          let now = Math.round(new Date() / 1000);
+          // base del timestamp comparativo
+          const oneDay = 24 * 60 * 60 * 1000;
+          //ultima clase vista
+          var last_class = new Date(arrayResponse[0].ultima_clase * 1000);
+          //dias de diferencia
+          const diffDays = Math.round(Math.abs((now - last_class) / oneDay));
+
+          let experiencia = EXP + arrayResponse[0].EXP;
+          let coronasaux = coronas + arrayResponse[0].coronas;
+          let gemasaux = gemas + arrayResponse[0].gemas;
+          let total = experiencia + coronasaux + gemasaux;
+          let divicionAux = (total) =>
+            200
+              ? "bronce"
+              : (total) =>
+                  400
+                    ? "plata"
+                    : (total) => (600 ? "oro" : arrayResponse[0].division);
+          payload = {
+            EXP: experiencia,
+            coronas: coronasaux,
+            gemas: gemasaux,
+            ultima_clase: now,
+            dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
+            division: divicionAux,
+          };
+          db.collection("info_user")
+            .where("id_user", "==", uid)
+            .set({
+              EXP: experiencia,
+              coronas: coronasaux,
+              gemas: gemasaux,
+              ultima_clase: now,
+              dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
+              division: divicionAux,
+            })
+            .then(() => {
+              console.log(
+                "info urse *********************************************************"
+              );
+              db.collection("mis_temas")
+                .doc(tema.uid_mis_temas)
+                .set({
+                  completado: true,
+                  veces_completado: tema.veces_completado + 1,
+                  coronas: tema.coronas + 1,
+                })
+                .then((response) => {
+                  console.log(
+                    "mis temas *********************************************************"
+                  );
+                  setShowModal(false);
+                });
+            });
+        });
       //setShowModal(false);
     }
   };
