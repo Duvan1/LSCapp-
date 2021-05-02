@@ -22,8 +22,9 @@ import Restaurant from "../../screens/Restaurants/Restaurant";
 const db = firebase.firestore(firebaseApp);
 
 export default function ListRestaurants(props) {
-  const { restaurants, handleLoadMore, isLoading, indice } = props;
+  const { restaurants, handleLoadMore, isLoading, indice, uidInfoUser } = props;
   const [temas, setTemas] = useState([]);
+  const [reaload, setreaload] = useState(0);
 
   //const restaurants = [];
   const navigation = useNavigation();
@@ -51,15 +52,15 @@ export default function ListRestaurants(props) {
                     .get()
                     .then((res) => {
                       res.forEach((doc) => {
+                        console.log(
+                          "************************************   ",
+                          doc.id
+                        );
                         aux.uid_mis_temas = doc.id;
                         aux.completado = doc.data().completado;
                         aux.coronas = doc.data().coronas;
                         aux.veces_completado = doc.data().veces_completado;
                       });
-                      console.log(
-                        "************************************   ",
-                        aux
-                      );
                       temasAux.push(aux);
                       setTemas([...temasAux]);
                     });
@@ -69,7 +70,7 @@ export default function ListRestaurants(props) {
           });
       });
     });
-  }, []);
+  }, [reaload]);
 
   return (
     <ScrollView
@@ -103,7 +104,12 @@ export default function ListRestaurants(props) {
                     marginLeft: 40,
                   }}
                 >
-                  <Tema restaurant={tema} navigation={navigation} />
+                  <Tema
+                    setreaload={setreaload}
+                    restaurant={tema}
+                    uidInfoUser={uidInfoUser}
+                    navigation={navigation}
+                  />
                 </View>
               </View>
             )}
@@ -128,7 +134,7 @@ export default function ListRestaurants(props) {
 }
 
 function Tema(props) {
-  const { restaurant, navigation } = props;
+  const { restaurant, navigation, uidInfoUser, setreaload } = props;
   const [renderCoponent, setRenderCoponent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   console.log(
@@ -158,7 +164,10 @@ function Tema(props) {
     */
     setRenderCoponent(
       <Restaurant
+        setreaload={setreaload}
+        uidInfoUser={uidInfoUser}
         tema={restaurant}
+        uid_mis_temas={uid_mis_temas}
         navigation={navigation}
         nombre={nombre}
         senia={senia}

@@ -32,6 +32,9 @@ export default function Restaurant(props) {
     navigation,
     senia,
     tema,
+    uid_mis_temas,
+    uidInfoUser,
+    setreaload,
   } = props;
   const [gameOver, setGameOver] = useState(false);
   const [final, setFinal] = useState(false);
@@ -48,6 +51,7 @@ export default function Restaurant(props) {
   const [correctas, setcorrectas] = useState([]);
   const [incorrectas, setincorrectas] = useState([]);
   const [seguidas, setseguidas] = useState(0);
+  //const [uidInfoUser, setuidInfoUser] = useState("");
   let banderaSeguidas = false;
   let EXP = 0;
   let coronas = 0;
@@ -69,16 +73,6 @@ export default function Restaurant(props) {
         incorrectas.length * 10;
       coronas = 1;
       gemas = coronas * 4 + Math.ceil(EXP / 40);
-      alert(
-        "seguidas: " +
-          seguidas +
-          " EXP: " +
-          EXP +
-          " coronas: " +
-          coronas +
-          " gemas: " +
-          gemas
-      );
 
       const uid = firebase.auth().currentUser.uid;
       console.log(uid);
@@ -88,6 +82,8 @@ export default function Restaurant(props) {
         .then((response) => {
           const arrayResponse = [];
           response.forEach((doc) => {
+            //console.log("UID INFO_USER:::::  ", doc.id);
+            //setuidInfoUser(doc.id);
             arrayResponse.push(doc.data());
           });
           // timestamp dia de hoy
@@ -109,40 +105,87 @@ export default function Restaurant(props) {
               : (total) =>
                   400
                     ? "plata"
-                    : (total) => (600 ? "oro" : arrayResponse[0].division);
-          payload = {
+                    : (total) =>
+                        600
+                          ? "oro"
+                          : (total) =>
+                              800
+                                ? "ruby"
+                                : (total) =>
+                                    1000
+                                      ? "diamante"
+                                      : (total) =>
+                                          1200
+                                            ? "esmeralda"
+                                            : arrayResponse[0].division;
+          /*payload = {
             EXP: experiencia,
             coronas: coronasaux,
             gemas: gemasaux,
             ultima_clase: now,
             dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
             division: divicionAux,
-          };
+          };*/
+          /*var batch = db.batch();
+          var infoUserRef = db.collection("info_user").doc(uidInfoUser);
+          batch.update(infoUserRef, {
+            EXP: experiencia,
+            coronas: coronasaux,
+            gemas: gemasaux,
+            ultima_clase: now,
+            dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
+            //division: divicionAux,
+          });
+          var miTemaRef = db.collection("mis_temas").doc(tema.uid_mis_temas);
+          batch.update(miTemaRef, {
+            completado: true,
+            veces_completado: tema.veces_completado + 1,
+            coronas: tema.coronas + 1,
+          });
+          batch.commit().then(() => {
+            // [START_EXCLUDE]
+            console.log(
+              "mis temas *********************************************************"
+            );
+            setShowModal(false);
+            done();
+            // [END_EXCLUDE]
+          });
+         */
+          console.log(
+            "info urse *********************************************************",
+            uidInfoUser,
+            "\nuid_mis_temas *********************************************************",
+            uid_mis_temas,
+            "\ncoronas *********************************************************",
+            coronas,
+            "\nEXP *********************************************************",
+            EXP,
+            "\ngemas *********************************************************",
+            gemas,
+            "\ndias_racha *********************************************************",
+            diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0
+          );
           db.collection("info_user")
-            .where("id_user", "==", uid)
-            .set({
+            .doc(uidInfoUser)
+            .update({
               EXP: experiencia,
               coronas: coronasaux,
               gemas: gemasaux,
               ultima_clase: now,
+              //division: divicionAux,
               dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
-              division: divicionAux,
             })
             .then(() => {
-              console.log(
-                "info urse *********************************************************"
-              );
               db.collection("mis_temas")
-                .doc(tema.uid_mis_temas)
-                .set({
+                .doc(uid_mis_temas)
+                .update({
                   completado: true,
-                  veces_completado: tema.veces_completado + 1,
-                  coronas: tema.coronas + 1,
+                  veces_completado: tema.item.veces_completado + 1,
+                  coronas: tema.item.coronas + 1,
                 })
                 .then((response) => {
-                  console.log(
-                    "mis temas *********************************************************"
-                  );
+                  setreaload(Math.random());
                   setShowModal(false);
                 });
             });
@@ -152,6 +195,7 @@ export default function Restaurant(props) {
   };
 
   useEffect(() => {
+    console.log("------------------>>>>>>>>>>>         ", tema);
     // este estado sera el que guardara cuantas señas tengo lo qiue es lo mismo que la cantidad de preguntas
     setSeniasLenght(senia.length);
     if (senia.length > avance) {
@@ -791,31 +835,6 @@ export default function Restaurant(props) {
           }}
         >
           <Text>Cargando...</Text>
-          <Button
-            onPress={() => {
-              finalizar();
-            }}
-            title="Finalizar"
-            buttonStyle={{
-              backgroundColor: "#61dafb",
-              borderColor: "#55C1E2",
-              borderWidth: 1,
-              borderRadius: 10,
-            }}
-            containerStyle={{
-              borderColor: "#55C1E2",
-              borderTopWidth: 0.5,
-              borderLeftWidth: 1,
-              borderBottomWidth: 3,
-              borderRightWidth: 3,
-              borderBottomEndRadius: 12,
-              borderBottomLeftRadius: 12,
-              borderTopRightRadius: 12,
-              width: "85%",
-              marginTop: 15,
-            }}
-            titleStyle={{ fontSize: 20 }}
-          />
         </View>
       )}
     </View>

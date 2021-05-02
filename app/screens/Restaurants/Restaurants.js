@@ -18,6 +18,7 @@ export default function Restaurants(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [infoUser, setInfoUser] = useState([]);
   const [modulos, setModulos] = useState([]);
+  const [uidInfoUser, setuidInfoUser] = useState("");
   const limitRestaurants = 6;
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export default function Restaurants(props) {
         .then((response) => {
           const arrayResponse = [];
           response.forEach((doc) => {
+            setuidInfoUser(doc.id);
             arrayResponse.push(doc.data());
           });
           setInfoUser(arrayResponse);
@@ -195,6 +197,7 @@ export default function Restaurants(props) {
       <View style={styles.viewBody}>
         {modulos.map((l, i) => (
           <ListRestaurants
+            uidInfoUser={uidInfoUser}
             restaurants={modulos}
             handleLoadMore={handleLoadMore}
             isLoading={isLoading}
