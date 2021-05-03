@@ -52,10 +52,6 @@ export default function ListRestaurants(props) {
                     .get()
                     .then((res) => {
                       res.forEach((doc) => {
-                        console.log(
-                          "************************************   ",
-                          doc.id
-                        );
                         aux.uid_mis_temas = doc.id;
                         aux.completado = doc.data().completado;
                         aux.coronas = doc.data().coronas;
@@ -66,7 +62,6 @@ export default function ListRestaurants(props) {
                     });
                 });
             });
-            console.log(temasAux);
           });
       });
     });
@@ -137,10 +132,6 @@ function Tema(props) {
   const { restaurant, navigation, uidInfoUser, setreaload } = props;
   const [renderCoponent, setRenderCoponent] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  console.log(
-    "------------------------------->>>>>>>>>>>>>>>>>>>>>   ",
-    restaurant
-  );
   //const { id, images, name, address, description } = restaurant.item;
   const {
     senia,

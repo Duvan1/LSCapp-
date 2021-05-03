@@ -75,7 +75,7 @@ export default function Restaurant(props) {
       gemas = coronas * 4 + Math.ceil(EXP / 40);
 
       const uid = firebase.auth().currentUser.uid;
-      console.log(uid);
+      //console.log(uid);
       db.collection("info_user")
         .where("id_user", "==", uid)
         .get()
@@ -87,11 +87,14 @@ export default function Restaurant(props) {
             arrayResponse.push(doc.data());
           });
           // timestamp dia de hoy
-          let now = Math.round(new Date() / 1000);
+          let now = new Date();
           // base del timestamp comparativo
           const oneDay = 24 * 60 * 60 * 1000;
           //ultima clase vista
-          var last_class = new Date(arrayResponse[0].ultima_clase * 1000);
+          var last_class = new Date(
+            arrayResponse[0].ultima_clase.seconds * 1000
+          );
+
           //dias de diferencia
           const diffDays = Math.round(Math.abs((now - last_class) / oneDay));
 
@@ -118,41 +121,8 @@ export default function Restaurant(props) {
                                           1200
                                             ? "esmeralda"
                                             : arrayResponse[0].division;
-          /*payload = {
-            EXP: experiencia,
-            coronas: coronasaux,
-            gemas: gemasaux,
-            ultima_clase: now,
-            dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
-            division: divicionAux,
-          };*/
-          /*var batch = db.batch();
-          var infoUserRef = db.collection("info_user").doc(uidInfoUser);
-          batch.update(infoUserRef, {
-            EXP: experiencia,
-            coronas: coronasaux,
-            gemas: gemasaux,
-            ultima_clase: now,
-            dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
-            //division: divicionAux,
-          });
-          var miTemaRef = db.collection("mis_temas").doc(tema.uid_mis_temas);
-          batch.update(miTemaRef, {
-            completado: true,
-            veces_completado: tema.veces_completado + 1,
-            coronas: tema.coronas + 1,
-          });
-          batch.commit().then(() => {
-            // [START_EXCLUDE]
-            console.log(
-              "mis temas *********************************************************"
-            );
-            setShowModal(false);
-            done();
-            // [END_EXCLUDE]
-          });
-         */
-          console.log(
+
+          /*console.log(
             "info urse *********************************************************",
             uidInfoUser,
             "\nuid_mis_temas *********************************************************",
@@ -165,7 +135,7 @@ export default function Restaurant(props) {
             gemas,
             "\ndias_racha *********************************************************",
             diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0
-          );
+          );*/
           db.collection("info_user")
             .doc(uidInfoUser)
             .update({
@@ -195,7 +165,7 @@ export default function Restaurant(props) {
   };
 
   useEffect(() => {
-    console.log("------------------>>>>>>>>>>>         ", tema);
+    //console.log("------------------>>>>>>>>>>>         ", tema);
     // este estado sera el que guardara cuantas señas tengo lo qiue es lo mismo que la cantidad de preguntas
     setSeniasLenght(senia.length);
     if (senia.length > avance) {
@@ -213,7 +183,7 @@ export default function Restaurant(props) {
         });
     } else {
       setFinal(true);
-      console.log("");
+      //console.log("");
     }
   }, [avance]);
 
