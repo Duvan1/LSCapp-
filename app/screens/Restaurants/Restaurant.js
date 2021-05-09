@@ -82,8 +82,6 @@ export default function Restaurant(props) {
         .then((response) => {
           const arrayResponse = [];
           response.forEach((doc) => {
-            //console.log("UID INFO_USER:::::  ", doc.id);
-            //setuidInfoUser(doc.id);
             arrayResponse.push(doc.data());
           });
           // timestamp dia de hoy
@@ -94,7 +92,6 @@ export default function Restaurant(props) {
           var last_class = new Date(
             arrayResponse[0].ultima_clase.seconds * 1000
           );
-
           //dias de diferencia
           const diffDays = Math.round(Math.abs((now - last_class) / oneDay));
 
@@ -102,63 +99,57 @@ export default function Restaurant(props) {
           let coronasaux = coronas + arrayResponse[0].coronas;
           let gemasaux = gemas + arrayResponse[0].gemas;
           let total = experiencia + coronasaux + gemasaux;
-          let divicionAux = (total) =>
-            200
+          let divicionAux =
+            total >= 2500 && total < 3000
               ? "bronce"
-              : (total) =>
-                  400
-                    ? "plata"
-                    : (total) =>
-                        600
-                          ? "oro"
-                          : (total) =>
-                              800
-                                ? "ruby"
-                                : (total) =>
-                                    1000
-                                      ? "diamante"
-                                      : (total) =>
-                                          1200
-                                            ? "esmeralda"
-                                            : arrayResponse[0].division;
+              : total >= 3000 && total < 6000
+              ? "plata"
+              : total >= 6000 && total < 9000
+              ? "oro"
+              : total >= 9000 && total < 12000
+              ? "ruby"
+              : total >= 12000 && total < 20000
+              ? "diamante"
+              : total >= 20000
+              ? "esmeralda"
+              : arrayResponse[0].division;
 
-          /*console.log(
-            "info urse *********************************************************",
-            uidInfoUser,
-            "\nuid_mis_temas *********************************************************",
-            uid_mis_temas,
-            "\ncoronas *********************************************************",
-            coronas,
-            "\nEXP *********************************************************",
-            EXP,
-            "\ngemas *********************************************************",
-            gemas,
-            "\ndias_racha *********************************************************",
-            diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0
-          );*/
-          db.collection("info_user")
-            .doc(uidInfoUser)
-            .update({
-              EXP: experiencia,
-              coronas: coronasaux,
-              gemas: gemasaux,
-              ultima_clase: now,
-              //division: divicionAux,
-              dias_racha: diffDays <= 1 ? arrayResponse[0].dias_racha + 1 : 0,
-            })
-            .then(() => {
-              db.collection("mis_temas")
-                .doc(uid_mis_temas)
-                .update({
-                  completado: true,
-                  veces_completado: tema.item.veces_completado + 1,
-                  coronas: tema.item.coronas + 1,
-                })
-                .then((response) => {
-                  setreaload(Math.random());
-                  setShowModal(false);
-                });
-            });
+          getAllmodulsUnlock(uid_mis_temas).then((data) => {
+            console.log(data);
+            let unlock = data
+              ? arrayResponse[0].modulos_desbloqueados + 1
+              : arrayResponse[0].modulos_desbloqueados;
+            console.log(unlock);
+            db.collection("info_user")
+              .doc(uidInfoUser)
+              .update({
+                EXP: experiencia,
+                coronas: coronasaux,
+                gemas: gemasaux,
+                ultima_clase: now,
+                division: divicionAux,
+                dias_racha:
+                  diffDays == 0
+                    ? arrayResponse[0].dias_racha
+                    : diffDays <= 1
+                    ? arrayResponse[0].dias_racha + 1
+                    : 0,
+                modulos_desbloqueados: unlock >= 3 ? 3 : unlock,
+              })
+              .then(() => {
+                db.collection("mis_temas")
+                  .doc(uid_mis_temas)
+                  .update({
+                    completado: true,
+                    veces_completado: tema.item.veces_completado + 1,
+                    coronas: tema.item.coronas + 1,
+                  })
+                  .then((response) => {
+                    setreaload(Math.random());
+                    setShowModal(false);
+                  });
+              });
+          });
         });
       //setShowModal(false);
     }
@@ -186,6 +177,28 @@ export default function Restaurant(props) {
       //console.log("");
     }
   }, [avance]);
+
+  const getAllmodulsUnlock = (id) => {
+    return new Promise((resolve, reject) => {
+      console.log("getAllmodulsUnlock");
+      let isModuleCompleted = false;
+      db.collection("mis_temas")
+        .get()
+        .then((response) => {
+          response.forEach((doc) => {
+            let aux = doc.data();
+            if (doc.id != id) {
+              if (aux.completado) {
+                isModuleCompleted = true;
+              } else {
+                isModuleCompleted = false;
+              }
+            }
+          });
+          resolve(isModuleCompleted);
+        });
+    });
+  };
 
   function comprobar() {
     if (isEmpty(flexDirection)) {

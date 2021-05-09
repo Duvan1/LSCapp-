@@ -11,13 +11,16 @@ import { SearchBar, ListItem, Avatar } from "react-native-elements";
 import { FireSQL } from "firesql";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import { firebaseApp } from "../utils/firebase";
 
 const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
-
+const db = firebase.firestore(firebaseApp);
 export default function Search(props) {
   const { navigation } = props;
   const [search, setSearch] = useState("");
   const [restaurants, setRestaurants] = useState([]);
+  const [senias, setsenias] = useState([]);
+  const [seniasID, setseniasID] = useState([]);
   const list = [
     {
       video: "",
@@ -38,6 +41,29 @@ export default function Search(props) {
         setRestaurants(response);
       });
     }
+    fireSQL
+      .query("SELECT * FROM mis_temas WHERE default = true OR completado=true")
+      .then((res) => {
+        let array = [];
+        res.forEach((tema) => {
+          let aux = tema.tema.senia;
+          aux.forEach((x) => {
+            array.push(x);
+          });
+        });
+        setseniasID(array);
+
+        seniasID.forEach((id) => {
+          //console.log(id);
+          db.collection("senia")
+            .doc(id)
+            .get()
+            .then((res) => {
+              senias.push(res.data());
+            });
+        });
+        console.log(senias.length);
+      });
   }, [search]);
 
   return (

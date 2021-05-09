@@ -41,6 +41,22 @@ export default function Restaurants(props) {
             arrayResponse.push(doc.data());
           });
           setInfoUser(arrayResponse);
+
+          db.collection("modulo")
+            .get()
+            .then((response) => {
+              response.forEach((doc) => {
+                let i = 0;
+                let modulos_unlock = infoUser[0].modulos_desbloqueados - 1;
+                const modulo = doc.data();
+                modulo.id = doc.id;
+                if (i <= modulos_unlock) {
+                  resultModulos.push(modulo);
+                }
+                i += 1;
+              });
+              setModulos(resultModulos);
+            });
         });
 
       db.collection("restaurants")
@@ -66,17 +82,6 @@ export default function Restaurants(props) {
         });
       // proceso para cargar los modulos
       const resultModulos = [];
-
-      db.collection("modulo")
-        .get()
-        .then((response) => {
-          response.forEach((doc) => {
-            const modulo = doc.data();
-            modulo.id = doc.id;
-            resultModulos.push(modulo);
-          });
-          setModulos(resultModulos);
-        });
     }, [])
   );
 

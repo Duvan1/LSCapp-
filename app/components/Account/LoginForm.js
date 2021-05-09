@@ -53,6 +53,7 @@ export default function LoginForm(props) {
                   primer_ingreso: true,
                   ultima_clase: null,
                   vidas: 5,
+                  modulos_desbloqueados: 1,
                 };
                 db.collection("info_user")
                   .add(payload)
@@ -61,6 +62,8 @@ export default function LoginForm(props) {
                     toastRef.current.show("Un error a ocurrido");
                     setIsLoading(false);
                   });
+              } else {
+                /** aca voy agregar el primer ingreso en false y hago otras validaciones mas */
               }
               setloading(false);
               navigation.navigate("account");
