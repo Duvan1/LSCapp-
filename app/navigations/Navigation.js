@@ -66,6 +66,7 @@ export default function Navigation() {
                     completado: false,
                     id_tema: doc.id,
                     id_user: uid,
+                    default: true,
                   };
                   db.collection("mis_temas")
                     .add(payload)

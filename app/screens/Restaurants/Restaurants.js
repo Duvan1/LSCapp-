@@ -19,6 +19,7 @@ export default function Restaurants(props) {
   const [infoUser, setInfoUser] = useState([]);
   const [modulos, setModulos] = useState([]);
   const [uidInfoUser, setuidInfoUser] = useState("");
+  const [infoErrorReload, setinfoErrorReload] = useState(false);
   const limitRestaurants = 6;
 
   useEffect(() => {
@@ -47,6 +48,9 @@ export default function Restaurants(props) {
             .then((response) => {
               response.forEach((doc) => {
                 let i = 0;
+                if (infoUser[0] == undefined) {
+                  setinfoErrorReload(true);
+                }
                 let modulos_unlock = infoUser[0].modulos_desbloqueados - 1;
                 const modulo = doc.data();
                 modulo.id = doc.id;
@@ -82,7 +86,7 @@ export default function Restaurants(props) {
         });
       // proceso para cargar los modulos
       const resultModulos = [];
-    }, [])
+    }, [infoErrorReload])
   );
 
   const handleLoadMore = () => {

@@ -3,7 +3,20 @@ import { View, Text, ScrollView, Image } from "react-native";
 import { Icon } from "react-native-elements";
 import { Video, AVPlaybackStatus } from "expo-av";
 
-export default function Senia() {
+export default function Senia(props) {
+  const { senia, navigation } = props;
+  const {
+    id,
+    tema,
+    URL,
+    categoria_gramatical,
+    definicion,
+    descripcion,
+    nombre,
+    nombre_ingles,
+    prosa,
+    prosa_traduccion,
+  } = senia.item;
   const video = useRef(null);
   const [status, setStatus] = useState({});
 

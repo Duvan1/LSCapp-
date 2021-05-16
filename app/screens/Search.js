@@ -31,39 +31,18 @@ export default function Search(props) {
 
   useEffect(() => {
     if (search) {
+      let consultav = search.toLowerCase();
       fireSQL
-        .query(`SELECT * FROM restaurants WHERE name LIKE '${search}%'`)
+        .query(`SELECT * FROM senia WHERE nombre LIKE '${consultav}%'`)
         .then((response) => {
-          setRestaurants(response);
+          setsenias(response);
         });
     } else {
-      fireSQL.query(`SELECT * FROM restaurants`).then((response) => {
-        setRestaurants(response);
+      fireSQL.query(`SELECT * FROM senia`).then((response) => {
+        setsenias(response);
       });
     }
-    fireSQL
-      .query("SELECT * FROM mis_temas WHERE default = true OR completado=true")
-      .then((res) => {
-        let array = [];
-        res.forEach((tema) => {
-          let aux = tema.tema.senia;
-          aux.forEach((x) => {
-            array.push(x);
-          });
-        });
-        setseniasID(array);
-
-        seniasID.forEach((id) => {
-          //console.log(id);
-          db.collection("senia")
-            .doc(id)
-            .get()
-            .then((res) => {
-              senias.push(res.data());
-            });
-        });
-        console.log(senias.length);
-      });
+    console.log(senias);
   }, [search]);
 
   return (
@@ -74,7 +53,8 @@ export default function Search(props) {
         value={search}
         containerStyle={styles.searchBar}
       />
-      {restaurants.length === 0 ? (
+
+      {senias.length === 0 ? (
         <NotFoundRestaurants />
       ) : (
         <View>
@@ -98,9 +78,9 @@ export default function Search(props) {
             </ListItem>
           ))}
           <FlatList
-            data={restaurants}
-            renderItem={(restaurant) => (
-              <Restaurant restaurant={restaurant} navigation={navigation} />
+            data={senias}
+            renderItem={(senia) => (
+              <Restaurant senia={senia} navigation={navigation} />
             )}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -141,26 +121,20 @@ function NotFoundRestaurants(props) {
 }
 
 function Restaurant(props) {
-  const { restaurant, navigation } = props;
-  const { name, images, id } = restaurant.item;
+  const { senia, navigation } = props;
+  const { nombre, images, id, tema } = senia.item;
   return (
     <ListItem
       key={id}
       bottomDivider
-      onPress={() => navigation.navigate("seña")}
+      onPress={() => navigation.navigate("seña", { senia: senia })}
     >
-      <Avatar
-        source={
-          images[0]
-            ? { uri: images[0] }
-            : require("../../assets/img/no-image.png")
-        }
-      />
+      <Avatar source={require("../../assets/icons/achievement-winner.png")} />
       <ListItem.Content>
-        <ListItem.Title>{name}</ListItem.Title>
+        <ListItem.Title>{nombre}</ListItem.Title>
       </ListItem.Content>
       <ListItem.Content>
-        <ListItem.Title>{name}</ListItem.Title>
+        <ListItem.Title>{tema}</ListItem.Title>
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>
