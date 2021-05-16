@@ -13,7 +13,11 @@ export default function SearchStack() {
         component={Search}
         options={{ title: "Mi Diccionario" }}
       />
-      <Stack.Screen name="seña" component={Senia} options={{ title: "Seña" }} />
+      <Stack.Screen
+        name="senia"
+        component={Senia}
+        options={{ title: "Seña" }}
+      />
     </Stack.Navigator>
   );
 }

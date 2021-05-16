@@ -52,6 +52,34 @@ export default function UserLogged(props) {
 
   let list = [];
 
+  const getIcon = (nombre) => {
+    switch (nombre) {
+      case "Filósofo":
+        return require("../../../assets/icons/achievement-sage.png");
+        break;
+      case "Intelectual":
+        return require("../../../assets/icons/achievement-scholar.png");
+        break;
+      case "Fotogenico":
+        return require("../../../assets/icons/achievement-photogenic.png");
+        break;
+      case "Primer lugar":
+        return require("../../../assets/icons/achievement-winner.png");
+        break;
+      case "En el blanco":
+        return require("../../../assets/icons/achievement-sharpshooter.png");
+        break;
+      case "On fire":
+        return require("../../../assets/icons/achievement-wildfire.png");
+        break;
+      case "Noble":
+        return require("../../../assets/icons/achievement-regal.png");
+        break;
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
     (async () => {
       const user = await firebase.default.auth().currentUser;
@@ -69,6 +97,7 @@ export default function UserLogged(props) {
 
       db.collection("mis_logros")
         .where("id_user", "==", user.uid)
+        .orderBy("mi_puntaje", "desc")
         .limit(2)
         .get()
         .then((response) => {
@@ -356,7 +385,7 @@ export default function UserLogged(props) {
               <ListItem key={i} bottomDivider>
                 <View style={{ marginLeft: 0, minWidth: 77 }}>
                   <ImageBackground
-                    source={require("../../../assets/icons/achievement-champion.png")}
+                    source={getIcon(l.logro.nombre)}
                     style={{
                       alignItems: "center",
                       display: "flex",
@@ -376,7 +405,8 @@ export default function UserLogged(props) {
                         position: "absolute",
                       }}
                     >
-                      Nivel 4
+                      {"Nivel "}
+                      {l.nivel}
                     </Text>
                   </ImageBackground>
                 </View>

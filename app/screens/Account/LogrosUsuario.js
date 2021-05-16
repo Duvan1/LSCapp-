@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,66 +8,73 @@ import {
 } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { ListItem } from "react-native-elements";
+import Loading from "../../components/Loading";
+import * as firebase from "firebase";
+import { firebaseApp } from "../../utils/firebase";
+import "firebase/firestore";
+
+const db = firebase.firestore(firebaseApp);
 
 export default function LogrosUsuario() {
-  const list = [
-    {
-      name: "On fire",
-      avatar_url: require("../../../assets/icons/achievement-wildfire.png"),
-      subtitle: "Alcanza una racha de 14 días",
-      percentage: 0.5,
-      status: "7/14",
-    },
-    {
-      name: "Filósofo",
-      avatar_url: require("../../../assets/icons/achievement-sage.png"),
-      subtitle: "Gana 1000 EXP",
-      percentage: 0.9,
-      status: "935/1000",
-    },
-    {
-      name: "Intelectual",
-      avatar_url: require("../../../assets/icons/achievement-scholar.png"),
-      subtitle: "Aprende 20 señas nuevas en un mismo curso",
-      percentage: 0.85,
-      status: "17/20",
-    },
-    {
-      name: "Noble",
-      avatar_url: require("../../../assets/icons/achievement-regal.png"),
-      subtitle: "Gana 80 coronas",
-      percentage: 0.79,
-      status: "71/80",
-    },
-    {
-      name: "En el blanco",
-      avatar_url: require("../../../assets/icons/achievement-sharpshooter.png"),
-      subtitle: "Completa 20 lecciones sin errores",
-      percentage: 0.34,
-      status: "5/20",
-    },
-    {
-      name: "Primer lugar",
-      avatar_url: require("../../../assets/icons/achievement-winner.png"),
-      subtitle: "Queda en el puesto #1 de tu liga",
-      percentage: 0,
-      status: "0/1",
-    },
-    {
-      name: "Fotogenico",
-      avatar_url: require("../../../assets/icons/achievement-photogenic.png"),
-      subtitle: "Cambia tu foto de perfil",
-      percentage: 0,
-      status: "0/1",
-    },
-  ];
+  const [isVisible, setisVisible] = useState(false);
+  const [list, setlist] = useState([]);
+
+  useEffect(() => {
+    setisVisible(true);
+
+    const user = firebase.default.auth().currentUser;
+
+    db.collection("mis_logros")
+      .where("id_user", "==", user.uid)
+      .get()
+      .then((response) => {
+        let listLogros = [];
+        response.forEach((doc) => {
+          listLogros.push(doc.data());
+          //setlogros(listLogros);
+        });
+        //console.log("*********************  ", listLogros);
+        setlist(listLogros);
+        setisVisible(false);
+        console.log("*********************  ", list);
+      });
+  }, []);
+
+  const getIcon = (nombre) => {
+    switch (nombre) {
+      case "Filósofo":
+        return require("../../../assets/icons/achievement-sage.png");
+        break;
+      case "Intelectual":
+        return require("../../../assets/icons/achievement-scholar.png");
+        break;
+      case "Fotogenico":
+        return require("../../../assets/icons/achievement-photogenic.png");
+        break;
+      case "Primer lugar":
+        return require("../../../assets/icons/achievement-winner.png");
+        break;
+      case "En el blanco":
+        return require("../../../assets/icons/achievement-sharpshooter.png");
+        break;
+      case "On fire":
+        return require("../../../assets/icons/achievement-wildfire.png");
+        break;
+      case "Noble":
+        return require("../../../assets/icons/achievement-regal.png");
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <ScrollView style={{ marginRight: 20, marginLeft: 20, borderRadius: 20 }}>
       {list.map((l, i) => (
         <ListItem key={i} bottomDivider>
           <View style={{ marginLeft: 0, minWidth: 77 }}>
             <ImageBackground
-              source={l.avatar_url}
+              source={getIcon(l.logro.nombre)}
               style={{
                 alignItems: "center",
                 display: "flex",
@@ -87,26 +94,31 @@ export default function LogrosUsuario() {
                   position: "absolute",
                 }}
               >
-                Nivel 4
+                {"Nivel "}
+                {l.nivel}
               </Text>
             </ImageBackground>
           </View>
           <ListItem.Content>
             <ListItem.Title style={{ fontWeight: "bold" }}>
-              {l.name}
+              {l.logro.nombre}
             </ListItem.Title>
-            <Text style={{ color: "gray" }}>{l.subtitle}</Text>
+            <Text style={{ color: "gray" }}>{l.logro.descripcion}</Text>
             <View style={styles.subtitleView}>
               <ProgressBar
-                progress={l.percentage}
+                progress={l.mi_puntaje}
                 color={"#FFC300"}
                 style={styles.ratingImage}
               />
-              <Text style={styles.ratingText}>{l.status}</Text>
+              <Text style={styles.ratingText}>
+                {l.mi_puntaje} {"/"}
+                {l.logro.puntaje_a_lograr}
+              </Text>
             </View>
           </ListItem.Content>
         </ListItem>
       ))}
+      <Loading text="Cargando... " isVisible={isVisible} />
     </ScrollView>
   );
 }

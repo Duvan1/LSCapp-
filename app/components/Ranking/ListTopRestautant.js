@@ -8,23 +8,49 @@ import {
   ImageBackground,
 } from "react-native";
 import { Card, Image, Icon, Avatar, Rating } from "react-native-elements";
-import TopRestaurants from "../../screens/TopRestaurants";
+import * as firebase from "firebase";
+import { firebaseApp } from "../../utils/firebase";
+import { FireSQL } from "firesql";
+const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
+
+const db = firebase.firestore(firebaseApp);
 
 export default function ListTopRestautant(props) {
-  const { restaurants, navigation } = props;
+  const { top, navigation } = props;
   const [restaurantLenght, setRestaurantLenght] = useState(0);
 
   useEffect(() => {
-    setRestaurantLenght(restaurants.length);
-  }, [restaurants]);
+    let uid = firebase.default.auth().currentUser.uid;
+    if (top[0] != undefined) {
+      if (top[0].id_user == uid) {
+        db.collection("mis_logros")
+          .where("logro.nombre", "==", "Primer lugar")
+          .get()
+          .then((res) => {
+            res.forEach((doc) => {
+              db.collection("mis_logros")
+                .doc(doc.id)
+                .update({
+                  mi_puntaje: 1,
+                })
+                .then((response) => {
+                  console.log(response);
+                });
+            });
+          });
+      }
+    }
 
-  console.log(restaurants.length);
+    setRestaurantLenght(top.length);
+  }, [top]);
+
+  console.log(top.length);
   return (
     <FlatList
-      data={restaurants}
-      renderItem={(restaurant) => (
+      data={top}
+      renderItem={(item) => (
         <Restaurant
-          restaurant={restaurant}
+          item={item}
           navigation={navigation}
           restaurantLenght={restaurantLenght}
         />
@@ -35,16 +61,17 @@ export default function ListTopRestautant(props) {
 }
 
 function Restaurant(props) {
-  const { restaurant, navigation, restaurantLenght } = props;
-  const { id, name, rating, images, description } = restaurant.item;
+  const { item, navigation, restaurantLenght } = props;
+  const { EXP, id_user, displayName, photoURL } = item.item;
   const [iconColor, setIconColor] = useState("#000");
 
-  //console.log(restaurant);
+  console.log(displayName);
+  console.log(photoURL);
 
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("seña")}>
+    <TouchableOpacity>
       <Card containerStyle={styles.contairnerCard}>
-        {restaurant.index <= 2 ? (
+        {item.index <= 2 ? (
           <Icon
             type="material-community"
             name="arrow-up-bold-box"
@@ -52,7 +79,7 @@ function Restaurant(props) {
             size={40}
             containerStyle={styles.containerIcon}
           />
-        ) : restaurant.index + 1 >= restaurantLenght - 1 ? (
+        ) : item.index + 1 >= restaurantLenght - 1 ? (
           <Icon
             type="material-community"
             name="arrow-down-bold-box"
@@ -75,7 +102,7 @@ function Restaurant(props) {
           }}
         >
           <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-            {restaurant.index + 1}
+            {item.index + 1}
           </Text>
           <View
             style={{
@@ -89,15 +116,15 @@ function Restaurant(props) {
             <Avatar
               containerStyle={{ borderRadius: 80, marginRight: 10 }}
               source={
-                images[0]
-                  ? { uri: images[0] }
+                photoURL
+                  ? { uri: photoURL }
                   : require("../../../assets/img/no-image.png")
               }
             />
-            <Text style={styles.title}>{name}</Text>
+            <Text style={styles.title}>{displayName}</Text>
           </View>
           <Text style={{ fontSize: 17, fontWeight: "bold", color: "#a2a2a2" }}>
-            {(399 / (restaurant.index + 1)).toFixed(2)} EXP
+            {EXP} EXP
           </Text>
         </View>
       </Card>

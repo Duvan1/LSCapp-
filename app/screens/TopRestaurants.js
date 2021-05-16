@@ -6,15 +6,42 @@ import firebase from "firebase";
 import "firebase/firestore";
 import Toast from "react-native-easy-toast";
 import ListTopRestautant from "../components/Ranking/ListTopRestautant";
+import { FireSQL } from "firesql";
+
+const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
 
 const db = firebase.firestore(firebaseApp);
 
 export default function TopRestaurants(props) {
   const { navigation } = props;
   const [restaurants, setRestaurants] = useState([]);
+  const [division, setdivision] = useState("bronce");
+  const [top, settop] = useState([]);
   const toastRef = useRef();
 
   useEffect(() => {
+    const user = firebase.default.auth().currentUser;
+
+    db.collection("info_user")
+      .where("id_user", "==", user.uid)
+      .get()
+      .then((response) => {
+        let infoUser = [];
+        response.forEach((doc) => {
+          infoUser.push(doc.data());
+          //setlogros(listLogros);
+        });
+        setdivision(infoUser[0].division);
+        console.log(division);
+
+        fireSQL
+          .query(`SELECT * FROM info_user WHERE division = '${division}' `)
+          .then((response) => {
+            console.log(response);
+            settop(response);
+          });
+      });
+
     db.collection("restaurants")
       .orderBy("rating", "desc")
 
@@ -28,7 +55,32 @@ export default function TopRestaurants(props) {
         });
         setRestaurants(restaurantArray);
       });
-  }, []);
+  }, [division]);
+
+  const getIcon = (nombre) => {
+    switch (nombre) {
+      case "ruby":
+        return require("../../assets/icons/ruby.png");
+        break;
+      case "bronce":
+        return require("../../assets/icons/bronce.png");
+        break;
+      case "diamante":
+        return require("../../assets/icons/diamond.png");
+        break;
+      case "plata":
+        return require("../../assets/icons/plata.png");
+        break;
+      case "oro":
+        return require("../../assets/icons/oro.png");
+        break;
+      case "esmeralda":
+        return require("../../assets/icons/esmeralda.png");
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <ScrollView style={{ marginBottom: 24 }}>
@@ -57,13 +109,14 @@ export default function TopRestaurants(props) {
               lineHeight: 26,
             }}
           >
-            Liga Rubi
+            {/* string.charAt(0).toUpperCase() + string.slice(1) */}
+            LIGA {division.toUpperCase()}
           </Text>
           <ImageBackground
-            source={require("../../assets/icons/ruby.png")}
+            source={getIcon(division)}
             style={{
-              height: 18,
-              width: 18,
+              height: 30,
+              width: 30,
               marginLeft: 10,
               position: "relative",
             }}
@@ -111,7 +164,7 @@ export default function TopRestaurants(props) {
           marginBottom: 24,
         }}
       />
-      <ListTopRestautant restaurants={restaurants} navigation={navigation} />
+      <ListTopRestautant top={top} navigation={navigation} />
       <Toast ref={toastRef} position="center" opacity={0.9} />
     </ScrollView>
   );

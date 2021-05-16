@@ -1,24 +1,27 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Text, ScrollView, Image } from "react-native";
 import { Icon } from "react-native-elements";
 import { Video, AVPlaybackStatus } from "expo-av";
 
 export default function Senia(props) {
-  const { senia, navigation } = props;
+  const { senia, setShowModal, setIsLoading } = props;
   const {
-    id,
-    tema,
+    nombre,
     URL,
+    tema,
     categoria_gramatical,
     definicion,
     descripcion,
-    nombre,
     nombre_ingles,
     prosa,
     prosa_traduccion,
   } = senia.item;
   const video = useRef(null);
   const [status, setStatus] = useState({});
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   return (
     <ScrollView style={{ paddingTop: 20 }}>
@@ -45,7 +48,7 @@ export default function Senia(props) {
             ref={video}
             style={{ alignSelf: "center", width: 320, height: 200 }}
             source={{
-              uri: "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+              uri: URL,
             }}
             useNativeControls
             resizeMode="contain"
@@ -71,8 +74,7 @@ export default function Senia(props) {
               }}
             />
             <Text style={{ fontSize: 34, fontWeight: "700", lineHeight: 39 }}>
-              {" "}
-              Adulto
+              {nombre.toUpperCase()}
             </Text>
           </View>
         </View>
@@ -129,14 +131,16 @@ export default function Senia(props) {
                         flexBasis: 50,
                       }}
                     >
-                      <Text>Adj</Text>
+                      <Text>{categoria_gramatical}</Text>
                     </View>
                     <View
                       style={{ flexGrow: 1, flexShrink: 1, flexBasis: "auto" }}
                     >
-                      <Text style={{ fontWeight: "700", lineHeight: 20 }}>
-                        Que ha alcanzado su máximo desarrollo físico y psíquico.
-                      </Text>
+                      {definicion.map((d, i) => (
+                        <Text style={{ fontWeight: "700", lineHeight: 20 }}>
+                          {d}
+                        </Text>
+                      ))}
                     </View>
                   </View>
                   <View
@@ -160,7 +164,7 @@ export default function Senia(props) {
                       style={{ flexGrow: 1, flexShrink: 1, flexBasis: "auto" }}
                     >
                       <Text style={{ fontWeight: "700", lineHeight: 20 }}>
-                        PRO1 IR SORDO(x3) ADULTO VISITAR
+                        {prosa}
                       </Text>
                       <Text
                         style={{
@@ -171,7 +175,7 @@ export default function Senia(props) {
                           marginTop: 5,
                         }}
                       >
-                        Iba a visitar a los sordos adultos.{" "}
+                        {prosa_traduccion}
                       </Text>
                     </View>
                   </View>
@@ -210,11 +214,7 @@ export default function Senia(props) {
                   textAlign: "justify",
                 }}
               >
-                (El movimiento de la mano indica crecimiento) La mano en ‘5’
-                doblada, con los dedos unidos excepto el pulgar, apoya el dorso
-                de estos sobre la mejilla. Luego se mueve hacia adelante y hacia
-                arriba hasta quedar con la palma hacia atrás y el borde externo
-                hacia abajo.
+                {descripcion}
               </Text>
             </View>
           </View>

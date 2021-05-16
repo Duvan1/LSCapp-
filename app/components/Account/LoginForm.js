@@ -31,7 +31,9 @@ export default function LoginForm(props) {
       firebase
         .auth()
         .signInWithEmailAndPassword(formData.email, formData.password)
-        .then(() => {
+        .then((userCredential) => {
+          var user = userCredential.user;
+          console.log(user);
           // obtengo el uid del usuario que acaba de iniciar sesion
           const uid = firebase.auth().currentUser.uid;
           console.log("///////////////////////  ", uid);
@@ -54,6 +56,8 @@ export default function LoginForm(props) {
                   ultima_clase: null,
                   vidas: 5,
                   modulos_desbloqueados: 1,
+                  displayName: user.displayName,
+                  photoURL: user.photoURL,
                 };
                 db.collection("info_user")
                   .add(payload)

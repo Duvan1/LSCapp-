@@ -34,6 +34,7 @@ export default function Navigation() {
         setLoadded(true);
       }
       let uid = user.uid;
+      console.log(user);
       // consulto la información del usuario
       db.collection("info_user")
         .where("id_user", "==", uid)
