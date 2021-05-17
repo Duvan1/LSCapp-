@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { StyleSheet, View, Text, TextBase } from "react-native";
 import { Input, Button } from "react-native-elements";
 import * as firebase from "firebase";
+import { firebaseApp } from "../../utils/firebase";
+
+const db = firebase.firestore(firebaseApp);
 
 export default function ChangeDisplayNameForm(props) {
   const { displayName, setShowModal, toastRef, setRealoadUserInfo } = props;
@@ -24,6 +27,15 @@ export default function ChangeDisplayNameForm(props) {
         .auth()
         .currentUser.updateProfile(update)
         .then(() => {
+          let uid = firebase.default.auth().currentUser.uid;
+          db.collection("info_user")
+            .where("id_user", "==", uid)
+            .get()
+            .then((res) => {
+              res.forEach((doc) => {
+                db.collection("info_user").doc(doc.id).update(update);
+              });
+            });
           setIsLoading(false);
           setRealoadUserInfo(true);
           setShowModal(false);

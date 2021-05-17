@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Avatar } from "react-native-elements";
 import * as firebase from "firebase";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import { update } from "lodash";
+import { firebaseApp } from "../../utils/firebase";
+
+const db = firebase.firestore(firebaseApp);
 
 export default function InfoUser(props) {
   const {
@@ -13,6 +16,23 @@ export default function InfoUser(props) {
     setloadingText,
     setloading,
   } = props;
+  let logros = new Map();
+
+  useEffect(() => {
+    db.collection("mis_logros")
+      //.where("logro.nombre", "==", "Noble")
+      .get()
+      .then((res) => {
+        res.forEach((doc) => {
+          if (doc.id != undefined) {
+            logros.set(doc.data().logro.nombre, doc.id);
+          }
+        });
+        for (let clavevalor of logros.entries()) {
+          console.log(clavevalor);
+        }
+      });
+  }, []);
 
   const changeAvatar = async () => {
     const resultPermission = await Permissions.askAsync(
@@ -62,6 +82,23 @@ export default function InfoUser(props) {
           photoURL: response,
         };
         await firebase.default.auth().currentUser.updateProfile(update);
+        let uid = firebase.default.auth().currentUser.uid;
+        db.collection("info_user")
+          .where("id_user", "==", uid)
+          .get()
+          .then((res) => {
+            res.forEach((doc) => {
+              db.collection("info_user").doc(doc.id).update(update);
+            });
+          });
+        db.collection("mis_logros")
+          .doc(logros.get("Fotogenico"))
+          .update({ nivel: 2, mi_puntaje: 1 })
+          .then(() =>
+            alert(
+              "Logro desbloquedo\nFelicitaciones ahora tienes el logro 'Fotogenico'\n¡Felicitaciones.!"
+            )
+          );
         setloading(false);
         toastRef.current.show("Imagen Actualizada");
       })

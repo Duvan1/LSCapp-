@@ -22,7 +22,14 @@ import Restaurant from "../../screens/Restaurants/Restaurant";
 const db = firebase.firestore(firebaseApp);
 
 export default function ListRestaurants(props) {
-  const { restaurants, handleLoadMore, isLoading, indice, uidInfoUser } = props;
+  const {
+    restaurants,
+    handleLoadMore,
+    isLoading,
+    indice,
+    uidInfoUser,
+    setreloadInfoUser,
+  } = props;
   const [temas, setTemas] = useState([]);
   const [reaload, setreaload] = useState(0);
 
@@ -101,6 +108,7 @@ export default function ListRestaurants(props) {
                 >
                   <Tema
                     setreaload={setreaload}
+                    setreloadInfoUser={setreloadInfoUser}
                     restaurant={tema}
                     uidInfoUser={uidInfoUser}
                     navigation={navigation}
@@ -129,7 +137,8 @@ export default function ListRestaurants(props) {
 }
 
 function Tema(props) {
-  const { restaurant, navigation, uidInfoUser, setreaload } = props;
+  const { restaurant, navigation, uidInfoUser, setreaload, setreloadInfoUser } =
+    props;
   const [renderCoponent, setRenderCoponent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   //const { id, images, name, address, description } = restaurant.item;
@@ -156,6 +165,7 @@ function Tema(props) {
     setRenderCoponent(
       <Restaurant
         setreaload={setreaload}
+        setreloadInfoUser={setreloadInfoUser}
         uidInfoUser={uidInfoUser}
         tema={restaurant}
         uid_mis_temas={uid_mis_temas}

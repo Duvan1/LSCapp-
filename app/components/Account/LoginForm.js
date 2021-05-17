@@ -67,6 +67,28 @@ export default function LoginForm(props) {
                     setIsLoading(false);
                   });
               } else {
+                response.forEach((doc) => {
+                  db.collection("info_user")
+                    .doc(doc.id)
+                    .get()
+                    .then((info_user) => {
+                      let now = new Date();
+                      const oneDay = 24 * 60 * 60 * 1000;
+                      var last_class = new Date(
+                        info_user.data().ultima_clase.seconds * 1000
+                      );
+                      const diffDays = Math.round(
+                        Math.abs((now - last_class) / oneDay)
+                      );
+
+                      if (diffDays > 1) {
+                        db.collection("info_user")
+                          .doc(doc.id)
+                          .update({ dias_racha: 0 })
+                          .then(() => alert("Perdiste tu racha :c"));
+                      }
+                    });
+                });
                 /** aca voy agregar el primer ingreso en false y hago otras validaciones mas */
               }
               setloading(false);

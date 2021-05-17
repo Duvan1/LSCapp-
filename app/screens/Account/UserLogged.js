@@ -97,7 +97,7 @@ export default function UserLogged(props) {
 
       db.collection("mis_logros")
         .where("id_user", "==", user.uid)
-        .orderBy("mi_puntaje", "desc")
+        .orderBy("mi_puntaje")
         .limit(2)
         .get()
         .then((response) => {

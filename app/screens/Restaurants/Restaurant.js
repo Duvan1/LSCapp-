@@ -19,6 +19,9 @@ import { Text } from "react-native";
 import { Video, AVPlaybackStatus } from "expo-av";
 import * as Progress from "react-native-progress";
 import { isEmpty } from "lodash";
+import { FireSQL } from "firesql";
+
+const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
 
 const db = firebase.firestore(firebaseApp);
 const widthScreen = Dimensions.get("window").width;
@@ -35,6 +38,7 @@ export default function Restaurant(props) {
     uid_mis_temas,
     uidInfoUser,
     setreaload,
+    setreloadInfoUser,
   } = props;
   const [gameOver, setGameOver] = useState(false);
   const [final, setFinal] = useState(false);
@@ -56,6 +60,7 @@ export default function Restaurant(props) {
   let EXP = 0;
   let coronas = 0;
   let gemas = 0;
+  let logros = new Map();
 
   const toggleBottomNavigationView = () => {
     //Toggling the visibility state of the bottom sheet
@@ -99,6 +104,12 @@ export default function Restaurant(props) {
           let coronasaux = coronas + arrayResponse[0].coronas;
           let gemasaux = gemas + arrayResponse[0].gemas;
           let total = experiencia + coronasaux + gemasaux;
+          let racha =
+            diffDays == 0
+              ? arrayResponse[0].dias_racha
+              : diffDays <= 1
+              ? arrayResponse[0].dias_racha + 1
+              : 0;
           let divicionAux =
             total >= 2500 && total < 3000
               ? "bronce"
@@ -128,12 +139,7 @@ export default function Restaurant(props) {
                 gemas: gemasaux,
                 ultima_clase: now,
                 division: divicionAux,
-                dias_racha:
-                  diffDays == 0
-                    ? arrayResponse[0].dias_racha
-                    : diffDays <= 1
-                    ? arrayResponse[0].dias_racha + 1
-                    : 0,
+                dias_racha: racha,
                 modulos_desbloqueados: unlock >= 3 ? 3 : unlock,
               })
               .then(() => {
@@ -144,7 +150,55 @@ export default function Restaurant(props) {
                     veces_completado: tema.item.veces_completado + 1,
                     coronas: tema.item.coronas + 1,
                   })
-                  .then((response) => {
+                  .then(() => {
+                    let logros_logrados = false;
+                    if (coronasaux >= 40) {
+                      console.log(logros.get("Noble"));
+                      db.collection("mis_logros")
+                        .doc(logros.get("Noble"))
+                        .update({ nivel: 2, mi_puntaje: 40 })
+                        .then(() => (logros_logrados = true));
+                    }
+                    if (experiencia >= 100) {
+                      console.log(logros.get("Filósofo"));
+                      db.collection("mis_logros")
+                        .doc(logros.get("Filósofo"))
+                        .update({ nivel: 2, mi_puntaje: 100 })
+                        .then(() => (logros_logrados = true));
+                    }
+                    if (experiencia >= 100) {
+                      console.log(logros.get("Filósofo"));
+                      db.collection("mis_logros")
+                        .doc(logros.get("Filósofo"))
+                        .update({ nivel: 2, mi_puntaje: 100 })
+                        .then(() => (logros_logrados = true));
+                    }
+                    if (incorrectas.length < 1) {
+                      console.log(logros.get("En el blanco"));
+                      db.collection("mis_logros")
+                        .doc(logros.get("En el blanco"))
+                        .update({ nivel: 2, mi_puntaje: 20 })
+                        .then(() => (logros_logrados = true));
+                    }
+                    if (correctas.length >= 5) {
+                      console.log(logros.get("Intelectual"));
+                      db.collection("mis_logros")
+                        .doc(logros.get("Intelectual"))
+                        .update({ nivel: 2, mi_puntaje: 5 })
+                        .then(() => (logros_logrados = true));
+                    }
+                    if (racha >= 14) {
+                      console.log(logros.get("On fire"));
+                      db.collection("mis_logros")
+                        .doc(logros.get("On fire"))
+                        .update({ nivel: 2, mi_puntaje: 14 })
+                        .then(() => (logros_logrados = true));
+                    }
+                    if (logros_logrados)
+                      alert(
+                        "Has desbloqueados algunos logros!!!\n Felicitaciones!!"
+                      );
+                    setreloadInfoUser(Math.random());
                     setreaload(Math.random());
                     setShowModal(false);
                   });
@@ -158,6 +212,20 @@ export default function Restaurant(props) {
   useEffect(() => {
     //console.log("------------------>>>>>>>>>>>         ", tema);
     // este estado sera el que guardara cuantas señas tengo lo qiue es lo mismo que la cantidad de preguntas
+    db.collection("mis_logros")
+      //.where("logro.nombre", "==", "Noble")
+      .get()
+      .then((res) => {
+        res.forEach((doc) => {
+          if (doc.id != undefined) {
+            logros.set(doc.data().logro.nombre, doc.id);
+          }
+        });
+        for (let clavevalor of logros.entries()) {
+          console.log(clavevalor);
+        }
+      });
+
     setSeniasLenght(senia.length);
     if (senia.length > avance) {
       db.collection("senia")

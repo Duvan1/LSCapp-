@@ -21,12 +21,13 @@ export default function Restaurants(props) {
   const [uidInfoUser, setuidInfoUser] = useState("");
   const [infoErrorReload, setinfoErrorReload] = useState(false);
   const limitRestaurants = 6;
+  const [reloadInfoUser, setreloadInfoUser] = useState(0);
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((userInfo) => {
       setUser(userInfo);
     });
-  }, []);
+  }, [reloadInfoUser]);
 
   useFocusEffect(
     useCallback(() => {
@@ -86,7 +87,7 @@ export default function Restaurants(props) {
         });
       // proceso para cargar los modulos
       const resultModulos = [];
-    }, [infoErrorReload])
+    }, [infoErrorReload, reloadInfoUser])
   );
 
   const handleLoadMore = () => {
@@ -208,6 +209,7 @@ export default function Restaurants(props) {
           <ListRestaurants
             uidInfoUser={uidInfoUser}
             restaurants={modulos}
+            setreloadInfoUser={setreloadInfoUser}
             handleLoadMore={handleLoadMore}
             isLoading={isLoading}
             indice={i}
