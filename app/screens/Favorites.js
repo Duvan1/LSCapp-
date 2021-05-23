@@ -23,19 +23,13 @@ const db = firebase.firestore(firebaseApp);
 
 export default function Favorites(props) {
   const { navigation } = props;
-  const [restaurant, setRestaurant] = useState(null);
+  const [objeto, setObjetos] = useState(null);
   const [userLogged, setuserLogged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [idusuario, setidusuario] = useState(null);
   const [reloadData, setReloadData] = useState(false);
+  const [gemas, setgemas] = useState(0);
   const toastRef = useRef();
-
-  React.useLayoutEffect(() => {
-    navigation.dangerouslyGetParent().setOptions({
-      //tabBarVisible: false,
-      //headerVisible: false,
-      //headerShown: false,
-    });
-  }, []);
 
   firebase.auth().onAuthStateChanged((user) => {
     user ? setuserLogged(true) : setuserLogged(false);
@@ -45,45 +39,38 @@ export default function Favorites(props) {
     useCallback(() => {
       if (userLogged) {
         const idUser = firebase.auth().currentUser.uid;
+        setidusuario(idUser);
 
-        db.collection("favorites")
-          .where("idUser", "==", idUser)
+        db.collection("info_user")
+          .where("id_user", "==", idUser)
           .get()
           .then((response) => {
-            const idRestaurantsArray = [];
+            const array = [];
             response.forEach((doc) => {
-              idRestaurantsArray.push(doc.data().idRestaurant);
+              array.push(doc.data().gemas);
             });
-            getDataRestaurant(idRestaurantsArray).then((response) => {
-              const restaurants = [];
-              response.forEach((doc) => {
-                const restaurant = doc.data();
-                restaurant.id = doc.id;
-                restaurants.push(restaurant);
-              });
-              setRestaurant(restaurants);
-            });
+            setgemas(array);
           });
+
+        db.collection("objetos_comprados")
+          .where("id_user", "==", idUser)
+          //.orderBy("categoria", "asc")
+          .get()
+          .then((response) => {
+            const array = [];
+            response.forEach((doc) => {
+              array.push(doc.data());
+            });
+            setObjetos(array);
+          });
+        //console.log(objeto);
       }
       setReloadData(false);
     }, [userLogged, reloadData])
   );
 
-  const getDataRestaurant = (idRestaurantsArray) => {
-    const arrayRestaurant = [];
-    idRestaurantsArray.forEach((idRestaurant) => {
-      const result = db.collection("restaurants").doc(idRestaurant).get();
-      arrayRestaurant.push(result);
-    });
-    return Promise.all(arrayRestaurant);
-  };
-
   if (!userLogged) {
     return <UserNoLogged navigation={navigation} />;
-  }
-
-  if (restaurant?.length === 0) {
-    return <NotFoundRestaurant />;
   }
 
   return (
@@ -132,17 +119,19 @@ export default function Favorites(props) {
               marginLeft: 10,
             }}
           >
-            10
+            {gemas[0]}
           </Text>
         </View>
       </View>
       <ScrollView>
-        {restaurant ? (
+        {objeto ? (
           <FlatList
-            data={restaurant}
-            renderItem={(restaurant) => (
-              <Restaurant
-                restaurant={restaurant}
+            data={objeto}
+            renderItem={(objeto) => (
+              <Objeto
+                objeto={objeto}
+                idusuario={idusuario}
+                gemas={gemas}
                 keyExtractor={(item, index) => index.toString()}
                 setIsLoading={setIsLoading}
                 toastRef={toastRef}
@@ -150,6 +139,7 @@ export default function Favorites(props) {
                 navigation={navigation}
               />
             )}
+            contentContainerStyle={{ marginBottom: 20 }}
           />
         ) : (
           <View style={styles.loaderRestaurant}>
@@ -158,20 +148,9 @@ export default function Favorites(props) {
           </View>
         )}
         <Toast position="center" opacity={0.9} ref={toastRef} />
-        <Loading text="elimiando " isVisible={isLoading} />
+        <Loading text="Cargando " isVisible={isLoading} />
       </ScrollView>
     </>
-  );
-}
-
-function NotFoundRestaurant(props) {
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Icon type="material-community" name="alert-outline" size={50} />
-      <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-        No Tienes restaurantes en favoritos
-      </Text>
-    </View>
   );
 }
 
@@ -193,60 +172,79 @@ function UserNoLogged(props) {
   );
 }
 
-function Restaurant(props) {
+function Objeto(props) {
   const {
-    restaurant,
+    objeto,
     setIsLoading,
     toastRef,
     setReloadData,
     navigation,
+    idusuario,
+    gemas,
   } = props;
-  const { id, name, images } = restaurant.item;
-
-  const confirmRemoveFavorites = () => {
-    Alert.alert(
-      "Eliminar Restaurante de favoritos",
-      "¿Lo quieres eliminar?",
-      [
-        {
-          text: "Cancelar",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "Eliminar", onPress: removeFavorites },
-      ],
-      { cancelable: false }
-    );
-  };
-
-  const removeFavorites = (params) => {
+  const { nombre, descripcion, fecha, precio, categoria } =
+    objeto.item.objeto_tienda;
+  //setIsLoading(false);
+  const comprar = (id) => {
     setIsLoading(true);
-    db.collection("favorites")
-      .where("idRestaurant", "==", id)
-      .where("idUser", "==", firebase.auth().currentUser.uid)
-      .get()
-      .then((response) => {
-        response.forEach((doc) => {
-          const idFavorites = doc.id;
-          db.collection("favorites")
-            .doc(idFavorites)
-            .delete()
-            .then(() => {
-              setIsLoading(false);
-              setReloadData(true);
-              toastRef.current.show("Eliminado");
-            })
-            .catch(() => {
-              setIsLoading(false);
-              toastRef.current.show("error");
+    if (gemas >= precio) {
+      db.collection("objetos_comprados")
+        .where("id_objeto_tienda", "==", id)
+        .get()
+        .then((response) => {
+          const array = [];
+          let id_comprado = "";
+          response.forEach((doc) => {
+            id_comprado = doc.id;
+            array.push(doc.data());
+          });
+          array[0].comprado = true;
+          console.log(array[0]);
+          db.collection("objetos_comprados")
+            .doc(id_comprado)
+            .update(array[0])
+            .then((res) => {
+              db.collection("info_user")
+                .where("id_user", "==", idusuario)
+
+                .get()
+                .then((res) => {
+                  let id_info_user = null;
+                  let gemasAux = null;
+                  res.forEach((doc) => {
+                    id_info_user = doc.id;
+                    gemasAux = doc.data().gemas;
+                  });
+                  db.collection("info_user")
+                    .doc(id_info_user)
+                    .update({
+                      gemas: gemasAux - precio,
+                      objetos_comprados: [{ nombre: nombre, fecha: fecha }],
+                    })
+                    .then(() => {
+                      setIsLoading(false);
+                      setReloadData(true);
+                      toastRef.current.show("Objeto comprado :D");
+                    });
+                });
             });
         });
-      });
+    } else {
+      setIsLoading(false);
+      alert("No tienes suficientes gemas para comprar este objeto :c");
+    }
   };
 
   return (
-    <View style={{ padding: 0, marginRight: 10, marginLeft: 10 }}>
-      <View style={{ position: "relative" }}>
+    <View
+      style={{
+        padding: 0,
+        marginRight: 10,
+        marginLeft: 10,
+        marginBottom: objeto.index == 4 ? 50 : 10,
+      }}
+    >
+      <View>
         <Text
           style={{
             marginTop: 40,
@@ -256,7 +254,7 @@ function Restaurant(props) {
             marginBottom: 25,
           }}
         >
-          Tonicos
+          {categoria.toUpperCase()}
         </Text>
         <View style={{ margin: 0, padding: 0 }}>
           <View
@@ -292,7 +290,7 @@ function Restaurant(props) {
                 fontWeight: "700",
               }}
             >
-              Racha
+              {nombre.replace(/^\w/, (c) => c.toUpperCase())}
             </Text>
             <Text
               style={{
@@ -305,28 +303,48 @@ function Restaurant(props) {
                 fontSize: 16,
               }}
             >
-              Te permite mantener tu racha cuando no estudias por un día.
+              {descripcion.replace(/^\w/, (c) => c.toUpperCase())}
             </Text>
-            <TouchableOpacity
-              style={{
-                float: "right",
-                right: 0,
-                minWidth: 100,
-                position: "absolute",
-                top: 120,
-                backgroundColor: "#fff",
-                flexDirection: "row",
-                padding: 8,
-                borderColor: "#00B100",
-                borderTopWidth: 0.5,
-                borderLeftWidth: 1,
-                borderBottomWidth: 3,
-                borderRightWidth: 3,
-                borderRadius: 12,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            {!objeto.item.comprado ? (
+              <TouchableOpacity
+                onPress={() => comprar(objeto.item.id_objeto_tienda)}
+                style={{
+                  float: "right",
+                  right: 0,
+                  minWidth: 100,
+                  position: "absolute",
+                  top: 120,
+                  backgroundColor: "#fff",
+                  flexDirection: "row",
+                  padding: 8,
+                  borderColor: "#00B100",
+                  borderTopWidth: 0.5,
+                  borderLeftWidth: 1,
+                  borderBottomWidth: 3,
+                  borderRightWidth: 3,
+                  borderRadius: 12,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#00B100",
+                    fontSize: 15,
+                    fontWeight: "bold",
+                    lineHeight: 20,
+                    letterSpacing: 0.8,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Llevatelo por: {precio}
+                </Text>
+                <ImageBackground
+                  style={{ width: 40, height: 40 }}
+                  source={require("../../assets/icons/esmeralda.png")}
+                />
+              </TouchableOpacity>
+            ) : (
               <Text
                 style={{
                   color: "#00B100",
@@ -337,13 +355,9 @@ function Restaurant(props) {
                   textTransform: "uppercase",
                 }}
               >
-                Llevatelo por:
+                Objeto comprado
               </Text>
-              <ImageBackground
-                style={{ width: 40, height: 40 }}
-                source={require("../../assets/icons/esmeralda.png")}
-              />
-            </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>

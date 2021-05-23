@@ -58,6 +58,7 @@ export default function LoginForm(props) {
                   modulos_desbloqueados: 1,
                   displayName: user.displayName,
                   photoURL: user.photoURL,
+                  objetos_comprados: [],
                 };
                 db.collection("info_user")
                   .add(payload)
@@ -81,11 +82,73 @@ export default function LoginForm(props) {
                         Math.abs((now - last_class) / oneDay)
                       );
 
+                      let objetosAux = [];
+
+                      info_user.data().objetos_comprados.map((x) => {
+                        if (x.nombre.toLowerCase() == "protector") {
+                          diffDays = 0;
+                          // actualizo los objetos
+                          db.collection("objetos_comprados")
+                            .where("id_user", "==", info_user.data().id_user)
+                            .where("objeto_tienda.nombre", "==", "Protector")
+                            .get()
+                            .then((res) => {
+                              res.forEach((doc) => {
+                                doc
+                                  .collection(objetos_comprados)
+                                  .doc(doc.id)
+                                  .update({ comprado: false });
+                              });
+                            });
+                        } else {
+                          objetosAux.push(x);
+                        }
+                      });
+
                       if (diffDays > 1) {
                         db.collection("info_user")
                           .doc(doc.id)
-                          .update({ dias_racha: 0 })
+                          .update({
+                            dias_racha: 0,
+                            objetos_comprados: objetosAux,
+                          })
                           .then(() => alert("Perdiste tu racha :c"));
+                      } else if (
+                        info_user.data().dias_racha >= 7 &&
+                        info_user
+                          .data()
+                          .objetos_comprados.find(
+                            (x) => x.nombre.toLowerCase() == "todo o nada"
+                          ) != undefined
+                      ) {
+                        db.collection("info_user")
+                          .doc(idUserAux)
+                          .update({
+                            gemas: info_user.data() * 2,
+                          })
+                          .then(() => {
+                            db.collection("objetos_comprados")
+                              .where("id_user", "==", info_user.data().id_user)
+                              .where(
+                                "objeto_tienda.nombre",
+                                "==",
+                                "Todo o nada"
+                              )
+                              .get()
+                              .then((res) => {
+                                res.forEach((doc) => {
+                                  doc
+                                    .collection(objetos_comprados)
+                                    .doc(doc.id)
+                                    .update({ comprado: false });
+                                });
+                              });
+                            alert(
+                              "Todo o nada! ganaste tu apuesta toma tu premio: " +
+                                info_user.data() * 2 +
+                                " gemas."
+                            );
+                          });
                       }
                     });
                 });

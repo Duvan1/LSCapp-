@@ -41,7 +41,9 @@ export default function Navigation() {
         .get()
         .then((response) => {
           const arrayResponse = [];
+          let idUserAux = null;
           response.forEach((doc) => {
+            idUserAux = doc.id;
             arrayResponse.push(doc.data());
           });
           // Verifico si es el primer ingreso
@@ -138,6 +140,76 @@ export default function Navigation() {
                     });
                 });
               });
+          } else {
+            let now = new Date();
+            const oneDay = 24 * 60 * 60 * 1000;
+            var last_class = new Date(
+              arrayResponse[0].ultima_clase.seconds * 1000
+            );
+            const diffDays = Math.round(Math.abs((now - last_class) / oneDay));
+
+            let objetosAux = [];
+
+            arrayResponse[0].objetos_comprados.map((x) => {
+              if (x.nombre.toLowerCase() == "protector") {
+                diffDays = 0;
+                // actualizo los objetos
+                db.collection("objetos_comprados")
+                  .where("id_user", "==", arrayResponse[0].id_user)
+                  .where("objeto_tienda.nombre", "==", "Protector")
+                  .get()
+                  .then((res) => {
+                    res.forEach((doc) => {
+                      doc
+                        .collection(objetos_comprados)
+                        .doc(doc.id)
+                        .update({ comprado: false });
+                    });
+                  });
+              } else {
+                objetosAux.push(x);
+              }
+            });
+
+            if (diffDays > 1) {
+              db.collection("info_user")
+                .doc(idUserAux)
+                .update({
+                  dias_racha: 0,
+                  objetos_comprados: objetosAux,
+                })
+                .then(() => alert("Perdiste tu racha :c"));
+            } else if (
+              arrayResponse[0].dias_racha >= 7 &&
+              arrayResponse[0].objetos_comprados.find(
+                (x) => x.nombre.toLowerCase() == "todo o nada"
+              ) != undefined
+            ) {
+              db.collection("info_user")
+                .doc(idUserAux)
+                .update({
+                  gemas: arrayResponse[0] * 2,
+                })
+                .then(() => {
+                  db.collection("objetos_comprados")
+                    .where("id_user", "==", arrayResponse[0].id_user)
+                    .where("objeto_tienda.nombre", "==", "Todo o nada")
+                    .get()
+                    .then((res) => {
+                      res.forEach((doc) => {
+                        doc
+                          .collection(objetos_comprados)
+                          .doc(doc.id)
+                          .update({ comprado: false });
+                      });
+                    });
+                  alert(
+                    "Todo o nada! ganaste tu apuesta toma tu premio: " +
+                      arrayResponse[0] * 2 +
+                      " gemas."
+                  );
+                });
+            }
           }
         });
     });

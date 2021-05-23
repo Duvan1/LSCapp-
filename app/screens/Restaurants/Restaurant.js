@@ -107,7 +107,7 @@ export default function Restaurant(props) {
           let racha =
             diffDays == 0
               ? arrayResponse[0].dias_racha
-              : diffDays <= 1
+              : diffDays == 1
               ? arrayResponse[0].dias_racha + 1
               : 0;
           let divicionAux =
@@ -758,23 +758,20 @@ export default function Restaurant(props) {
             }}
           >
             <ImageBackground
-              style={{ width: 150, height: 125, marginBottom: 10 }}
-              source={require("../../../assets/img/mascota_triste.png")}
+              style={{ width: 170, height: 150, marginBottom: 10 }}
+              source={require("../../../assets/img/mascota.png")}
             />
             <Text
               style={{
                 fontWeight: "bold",
-                fontSize: 17,
+                fontSize: 30,
                 textAlign: "center",
-                lineHeight: 25,
-                marginBottom: 10,
+                marginTop: 10,
               }}
             >
-              ¡Te quedaste sin vidas!{"\n"}
-              Pero no te preocupes {"\n"}
-              Sabemos que lo harás mejor la próxima{"\n"}
-              la práctica hace al maestro.
+              ¡Gantaste!{"\n"}
             </Text>
+
             <Card
               containerStyle={{ width: widthScreen * 0.8, borderRadius: 10 }}
             >
@@ -850,6 +847,7 @@ export default function Restaurant(props) {
                 </View>
               ))}
             </Card>
+
             <Button
               onPress={() => {
                 finalizar();
