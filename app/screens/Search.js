@@ -7,14 +7,20 @@ import {
   Text,
   ImageBackground,
 } from "react-native";
-import { SearchBar, ListItem, Avatar } from "react-native-elements";
+import {
+  SearchBar,
+  ListItem,
+  Avatar,
+  Button,
+  Icon,
+} from "react-native-elements";
 import { FireSQL } from "firesql";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseApp } from "../utils/firebase";
 import Loading from "../components/Loading";
 import ModalSenia from "../components/ModalSenia";
-import Senia from "./Senia";
+import Alfabeto from "./Alfabeto";
 
 const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
 const db = firebase.firestore(firebaseApp);
@@ -22,9 +28,11 @@ export default function Search(props) {
   const { navigation } = props;
   const [search, setSearch] = useState("");
   const [senias, setsenias] = useState([]);
+  const [seniasAux, setseniasAux] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [renderCoponent, setRenderCoponent] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [falgSearch, setfalgSearch] = useState(0);
 
   const list = [
     {
@@ -34,34 +42,134 @@ export default function Search(props) {
     },
   ];
 
+  const similarity = (s1, s2) => {
+    var longer = s1;
+    var shorter = s2;
+    if (s1.length < s2.length) {
+      longer = s2;
+      shorter = s1;
+    }
+    var longerLength = longer.length;
+    if (longerLength == 0) {
+      return 1.0;
+    }
+    return (
+      (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength)
+    );
+  };
+
+  const editDistance = (s1, s2) => {
+    s1 = s1.toLowerCase();
+    s2 = s2.toLowerCase();
+
+    var costs = new Array();
+    for (var i = 0; i <= s1.length; i++) {
+      var lastValue = i;
+      for (var j = 0; j <= s2.length; j++) {
+        if (i == 0) costs[j] = j;
+        else {
+          if (j > 0) {
+            var newValue = costs[j - 1];
+            if (s1.charAt(i - 1) != s2.charAt(j - 1))
+              newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+            costs[j - 1] = lastValue;
+            lastValue = newValue;
+          }
+        }
+      }
+      if (i > 0) costs[s2.length] = lastValue;
+    }
+    return costs[s2.length];
+  };
+
   useEffect(() => {
-    setIsLoading(true);
-    if (search) {
-      let consultav = search.toLowerCase();
-      fireSQL
-        .query(`SELECT * FROM senia WHERE nombre LIKE '${consultav}%'`)
-        .then((response) => {
+    if (falgSearch > 0) {
+      setIsLoading(true);
+      if (search) {
+        setTimeout(() => {
+          let aux = [];
+          seniasAux.map((senia) => {
+            if (senia.nombre != undefined) {
+              if (similarity(search, senia.nombre) > 0.5) {
+                console.log("Agregando: " + senia.nombre);
+                aux.push(senia);
+              }
+            }
+          });
+          setsenias(aux);
+          setIsLoading(false);
+        }, 1000);
+      } else {
+        setsenias(seniasAux);
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(true);
+      if (search) {
+        let consultav = search.toLowerCase();
+        fireSQL
+          .query(`SELECT * FROM senia WHERE nombre LIKE '${consultav}%'`)
+          .then((response) => {
+            setsenias(response);
+            setseniasAux(response);
+            setIsLoading(false);
+          });
+      } else {
+        fireSQL.query(`SELECT * FROM senia`).then((response) => {
           setsenias(response);
+          setseniasAux(response);
           setIsLoading(false);
         });
-    } else {
-      fireSQL.query(`SELECT * FROM senia`).then((response) => {
-        setsenias(response);
-        setIsLoading(false);
-      });
+      }
     }
-  }, [search]);
+    /*
+    console.log("******************* cargar ********************");
+    setIsLoading(true);
+    db.collection("senia")
+      .where("tema", "==", "instituciones sociales")
+      .get()
+      .then((res) => {
+        let seniasTema = [];
+        res.forEach((doc) => {
+          console.log(doc.id);
+          seniasTema.push(doc.id);
+        });
+        console.log(seniasTema);
+
+        db.collection("tema")
+          .doc("fIWVjgG5D4NQGBZfgEPq")
+          .update({ senia: seniasTema })
+          .then(() => {
+            alert("subio el tema");
+            setIsLoading(false);
+          });
+      });   */
+  }, [falgSearch]);
 
   return (
     <>
       <View>
-        <SearchBar
-          placeholder="Buscar seña..."
-          onChangeText={(e) => setSearch(e)}
-          value={search}
-          containerStyle={styles.searchBar}
-        />
-
+        <View
+          style={{
+            flexDirection: "row",
+            width: "100%",
+          }}
+        >
+          <SearchBar
+            placeholder="Buscar seña..."
+            onChangeText={(e) => setSearch(e)}
+            value={search}
+            containerStyle={styles.searchBar}
+          />
+          <Button
+            title="Buscar"
+            containerStyle={{ height: 100, width: "30%" }}
+            buttonStyle={{ height: 60, fontSize: 15, fontWeight: "bold" }}
+            onPress={() => setfalgSearch(falgSearch + 1)}
+            //onPress={() => cargar()}
+            loading={isLoading}
+          />
+        </View>
         {senias.length === 0 ? (
           <NotFoundRestaurants />
         ) : (
@@ -101,6 +209,20 @@ export default function Search(props) {
           </View>
         )}
       </View>
+      <Icon
+        reverse
+        containerStyle={styles.btnContainer}
+        type="material-community"
+        name="book-open-variant"
+        color="#5F7AFF"
+        onPress={() => {
+          setIsLoading(true);
+          setRenderCoponent(
+            <Alfabeto setShowModal={setShowModal} setIsLoading={setIsLoading} />
+          );
+          setShowModal(true);
+        }}
+      />
       <Loading text="Cargando... " isVisible={isLoading} />
       {renderCoponent && (
         <ModalSenia isVisible={showModal} setVisible={setShowModal}>
@@ -110,6 +232,14 @@ export default function Search(props) {
     </>
   );
 }
+
+const goDictionary = () => {
+  //setIsLoading(true);
+  setRenderCoponent(
+    <Alfabeto setShowModal={setShowModal} setIsLoading={setIsLoading} />
+  );
+  setShowModal(true);
+};
 
 function NotFoundRestaurants(props) {
   return (
@@ -149,6 +279,7 @@ function Restaurant(props) {
     URL,
     id,
     tema,
+    img,
     categoria_gramatical,
     definicion,
     descripcion,
@@ -156,6 +287,7 @@ function Restaurant(props) {
     prosa,
     prosa_traduccion,
   } = senia.item;
+  //console.log(img);
   const goRestaurant = () => {
     setIsLoading(true);
     setRenderCoponent(
@@ -168,11 +300,12 @@ function Restaurant(props) {
     setShowModal(true);
   };
   return (
-    <ListItem
-      key={id}
-      bottomDivider
-      onPress={() => goRestaurant()}
-      /*
+    <View style={{ marginBottom: 40 }}>
+      <ListItem
+        key={id}
+        bottomDivider
+        onPress={() => goRestaurant()}
+        /*
       onPress={() => {
         setIsLoading(true);
         if (senia != undefined) {
@@ -193,21 +326,40 @@ function Restaurant(props) {
         }
       }}
       */
-    >
-      <Avatar source={require("../../assets/icons/achievement-winner.png")} />
-      <ListItem.Content>
-        <ListItem.Title>{nombre}</ListItem.Title>
-      </ListItem.Content>
-      <ListItem.Content>
-        <ListItem.Title>{tema}</ListItem.Title>
-      </ListItem.Content>
-      <ListItem.Chevron />
-    </ListItem>
+      >
+        <Avatar
+          source={{
+            uri:
+              img == "" || img == undefined
+                ? "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/senias-icons%2Fhombre%2Fgaleria-de-imagenes%20(1).png?alt=media&token=5dde644a-1a4a-4014-b57b-cd9c763fa6c0"
+                : img,
+          }}
+        />
+        <ListItem.Content>
+          <ListItem.Title>{nombre}</ListItem.Title>
+        </ListItem.Content>
+        <ListItem.Content>
+          <ListItem.Title>{tema}</ListItem.Title>
+        </ListItem.Content>
+        <ListItem.Chevron />
+      </ListItem>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   searchBar: {
     marginBottom: 20,
+    maxWidth: "100%",
+    width: "70%",
+    height: 60,
+  },
+  btnContainer: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    shadowColor: "black",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.5,
   },
 });

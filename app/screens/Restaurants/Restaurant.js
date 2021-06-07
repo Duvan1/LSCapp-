@@ -55,6 +55,7 @@ export default function Restaurant(props) {
   const [correctas, setcorrectas] = useState([]);
   const [incorrectas, setincorrectas] = useState([]);
   const [seguidas, setseguidas] = useState(0);
+  const [seniasOpciones, setseniasOpciones] = useState([]);
   //const [uidInfoUser, setuidInfoUser] = useState("");
   let banderaSeguidas = false;
   let EXP = 0;
@@ -221,9 +222,11 @@ export default function Restaurant(props) {
             logros.set(doc.data().logro.nombre, doc.id);
           }
         });
+        /*
         for (let clavevalor of logros.entries()) {
-          console.log(clavevalor);
+          //console.log(clavevalor);
         }
+        */
       });
 
     setSeniasLenght(senia.length);
@@ -233,8 +236,8 @@ export default function Restaurant(props) {
         .get()
         .then((response) => {
           let payload = {
-            nombre: response.data().nombre,
-            icon: require("../../../assets/icons/crown.png"),
+            nombre: response.data().nombre.toLowerCase(),
+            icon: { uri: response.data().img },
             isCorrect: true,
           };
           crearOpciones(payload);
@@ -301,20 +304,46 @@ export default function Restaurant(props) {
     setflexDirection({});
   }
 
-  const crearOpciones = (res) => {
+  const crearOpciones = (resp) => {
     // creo el array donde se guardaran las 4 opciones
     let auxOpciones = [];
-    for (let index = 0; index < 4; index++) {
-      auxOpciones.push({
-        nombre: "opcion: " + (index + 1),
-        icon: require("../../../assets/icons/esmeralda.png"),
-        isCorrect: false,
-      });
-    }
-    // en una posicion aleatoria de las opciones guardo la respuesta correcta
-    auxOpciones[Math.floor(Math.random() * (3 - 0 + 1) + 0)] = res;
-    // guardo las opciones en un estado
-    setOpciones(auxOpciones);
+    getRandomSign(resp.nombre).then(() => {
+      auxOpciones[0] = seniasOpciones[generateRandom(seniasOpciones.length)];
+      auxOpciones[1] = seniasOpciones[generateRandom(seniasOpciones.length)];
+      auxOpciones[2] = seniasOpciones[generateRandom(seniasOpciones.length)];
+      auxOpciones[3] = seniasOpciones[generateRandom(seniasOpciones.length)];
+      // en una posicion aleatoria de las opciones guardo la respuesta correcta
+      auxOpciones[generateRandom(3)] = resp;
+      // guardo las opciones en un estado
+      setOpciones(auxOpciones);
+    });
+  };
+
+  function generateRandom(max) {
+    return Math.floor(Math.random() * (max - 0 + 1) + 0);
+  }
+
+  const getRandomSign = (name) => {
+    //alert("entro");
+    return new Promise((resolve, reject) => {
+      if (avance > 0) {
+        resolve();
+      } else {
+        db.collection("senia")
+          .where("nombre", "!=", name)
+          .get()
+          .then((res) => {
+            res.forEach((doc) => {
+              seniasOpciones.push({
+                nombre: doc.data().nombre.toLowerCase(),
+                icon: { uri: doc.data().img },
+                isCorrect: false,
+              });
+            });
+            resolve();
+          });
+      }
+    });
   };
 
   const PreviewLayout = ({

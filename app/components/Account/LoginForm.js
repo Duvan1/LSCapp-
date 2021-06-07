@@ -68,6 +68,9 @@ export default function LoginForm(props) {
                     setIsLoading(false);
                   });
               } else {
+                db.collection("info_user").doc(doc.id).update({
+                  primer_ingreso: false,
+                });
                 response.forEach((doc) => {
                   db.collection("info_user")
                     .doc(doc.id)

@@ -51,6 +51,7 @@ export default function Restaurants(props) {
                 let i = 0;
                 if (infoUser[0] == undefined) {
                   setinfoErrorReload(true);
+                  return;
                 }
                 let modulos_unlock = infoUser[0].modulos_desbloqueados - 1;
                 const modulo = doc.data();
