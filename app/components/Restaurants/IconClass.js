@@ -4,7 +4,15 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Avatar, Badge, Icon, withBadge } from "react-native-elements";
 
 export default function IconClass(props) {
-  const { nombre, nombreIcon, coronas, completado, veces_completado } = props;
+  const {
+    nombre,
+    nombreIcon,
+    coronas,
+    completado,
+    veces_completado,
+    img,
+    color,
+  } = props;
   //const disable = true;
   const [percent, setPercent] = useState(0);
 
@@ -47,9 +55,9 @@ export default function IconClass(props) {
     ],
   ]);
 
-  const jewelStyle = function (nombreIcon) {
+  const jewelStyle = function (color) {
     return {
-      backgroundColor: iconMap.get(nombreIcon).color,
+      backgroundColor: color,
       borderRadius: 100,
       width: "80%",
       height: "80%",
@@ -78,9 +86,7 @@ export default function IconClass(props) {
           bgColor="#fff"
         >
           <View
-            style={
-              percent === 0 ? styles.iconContainerGray : jewelStyle(nombreIcon)
-            }
+            style={percent === 0 ? styles.iconContainerGray : jewelStyle(color)}
             onPress={() => console.log("lkdnsklfsn")}
           >
             <Image
@@ -89,7 +95,7 @@ export default function IconClass(props) {
                 height: 40,
                 width: 40,
               }}
-              source={iconMap.get(nombreIcon).uri}
+              source={{ uri: img }}
             />
             {percent === 0 ? (
               <Image
@@ -101,7 +107,7 @@ export default function IconClass(props) {
                   height: 40,
                   width: 40,
                 }}
-                source={iconMap.get(nombreIcon).uri}
+                source={{ uri: img }}
               />
             ) : null}
           </View>

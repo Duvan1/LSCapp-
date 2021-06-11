@@ -21,6 +21,7 @@ import { firebaseApp } from "../utils/firebase";
 import Loading from "../components/Loading";
 import ModalSenia from "../components/ModalSenia";
 import Alfabeto from "./Alfabeto";
+import Senia from "./Senia";
 
 const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" });
 const db = firebase.firestore(firebaseApp);
@@ -41,6 +42,39 @@ export default function Search(props) {
       categoria: "Categoria",
     },
   ];
+
+  var miMapa = new Map();
+  miMapa.set("actividades", "04pDSjsmeacjmOdLftag");
+  miMapa.set("administracion", "QTRApaafzC2IJFoNImKa");
+  miMapa.set("alimentacion", "IJEUQXIbiu7tkXxtOvz2"); //
+  miMapa.set("aseo personal", "30q9iteRYjnVsr7mr4lj");
+  miMapa.set("aseo personal", "30q9iteRYjnVsr7mr4lj");
+  miMapa.set("calificar", "cyk0MWZOyUYM0Pz8rSsT");
+  miMapa.set("cantidad", "htxJBQSF6z3wROPtdCmw");
+  miMapa.set("caracteristicas y sentimientos", "EQn8aexRqlj7XmqIDvPI");
+  miMapa.set("ciudad", "igyPr8UiCpmiyHHkODfl");
+  miMapa.set("comunicacion", "REl2nup24ixzi0wYpzNJ");
+  miMapa.set("cuerpo humano", "SAHMfQEBO1aLvmBggL1K");
+  miMapa.set("cultura", "LqzpnJQVUHO0kLvCkb4B");
+  miMapa.set("deporte", "BUal024b89qhydt0u6Hz");
+  miMapa.set("dias de la semana", "8p4YHn9gnqMLfCQ09jlq");
+  miMapa.set("educacion", "r9h9K4QoamnPwPqaJMGB");
+  miMapa.set("espacio", "SP2vzZE9LXCkFveJV64B");
+  miMapa.set("familia y relaciones personales", "sSeahgahvXUoLthVqSx0");
+  miMapa.set("fisiologia", "RS4lnyCM0x9bFUss3uZv");
+  miMapa.set("formulas de cortesia", "JYnLddQfx7LSgKTTp6A7");
+  miMapa.set("hogar y vivienda", "IS7xgAgHvC8IF5qvK2ky");
+  miMapa.set("inteligencia", "CeVxSCPVOn75xyp10TW6");
+  miMapa.set("interrogar", "VTABSYXEOQaE9f4AjFwK");
+  miMapa.set("meses del año", "ZLpPojxi0oPpUXz1eJAx");
+  miMapa.set("profesiones y oficios", "LVcLIyu6OF9h8AltrMIm");
+  miMapa.set("religion", "Zg6k8DpIPJKkiwB4NYNz");
+  miMapa.set("salud", "Klskkx1w4q2uB5Vq4MDG");
+  miMapa.set("sanciones sociales y vicios", "iSJn9BSal5rX8oFJ9NF9");
+  miMapa.set("ser humano", "tsUYern1niVOOaIpoN30");
+  miMapa.set("tecnologia", "HwyI4O5WdHIF7NfG9PjR");
+  miMapa.set("tiempo", "enzH5ujRj5gYFv0Hnalj");
+  miMapa.set("vestuario", "nf2slWVcsuW9fPNeKIoX");
 
   const similarity = (s1, s2) => {
     var longer = s1;
@@ -80,6 +114,33 @@ export default function Search(props) {
       if (i > 0) costs[s2.length] = lastValue;
     }
     return costs[s2.length];
+  };
+
+  const sync = (tema, id) => {
+    console.log("******************* cargar ********************");
+    console.log(tema, " - ", id);
+    return new Promise((resolve, reject) => {
+      db.collection("senia")
+        .where("tema", "==", tema)
+        .get()
+        .then((res) => {
+          let seniasTema = [];
+          res.forEach((doc) => {
+            console.log(doc.id);
+            seniasTema.push(doc.id);
+          });
+          console.log(seniasTema);
+
+          db.collection("tema")
+            .doc(id)
+            .update({ senia: seniasTema })
+            .then(() => {
+              resolve();
+              //alert("subio el tema");
+              //setIsLoading(false);
+            });
+        });
+    });
   };
 
   useEffect(() => {
@@ -122,28 +183,25 @@ export default function Search(props) {
         });
       }
     }
-    /*
-    console.log("******************* cargar ********************");
-    setIsLoading(true);
-    db.collection("senia")
-      .where("tema", "==", "instituciones sociales")
-      .get()
-      .then((res) => {
-        let seniasTema = [];
-        res.forEach((doc) => {
-          console.log(doc.id);
-          seniasTema.push(doc.id);
-        });
-        console.log(seniasTema);
 
-        db.collection("tema")
-          .doc("fIWVjgG5D4NQGBZfgEPq")
-          .update({ senia: seniasTema })
-          .then(() => {
-            alert("subio el tema");
-            setIsLoading(false);
-          });
-      });   */
+    /*
+    setIsLoading(true);
+    let promises = [];
+    miMapa.forEach(function (valor, clave) {
+      promises.push(sync(clave, valor));
+    });
+    Promise.all(promises).then(
+      () => {
+        alert("todo melo");
+        setIsLoading(false);
+      },
+      (err) => {
+        alert("la cagamos");
+        setIsLoading(false);
+      }
+    );
+   
+     */
   }, [falgSearch]);
 
   return (
@@ -290,43 +348,22 @@ function Restaurant(props) {
   //console.log(img);
   const goRestaurant = () => {
     setIsLoading(true);
-    setRenderCoponent(
-      <Senia
-        senia={senia}
-        setShowModal={setShowModal}
-        setIsLoading={setIsLoading}
-      />
-    );
-    setShowModal(true);
+    let aux = senia;
+    console.log(senia);
+    if (senia != undefined) {
+      setRenderCoponent(
+        <Senia
+          senia={senia}
+          setShowModal={setShowModal}
+          setIsLoading={setIsLoading}
+        />
+      );
+      setShowModal(true);
+    }
   };
   return (
     <View style={{ marginBottom: 40 }}>
-      <ListItem
-        key={id}
-        bottomDivider
-        onPress={() => goRestaurant()}
-        /*
-      onPress={() => {
-        setIsLoading(true);
-        if (senia != undefined) {
-          setIsLoading(false);
-
-          navigation.navigate("senia", {
-            nombre: nombre,
-            URL: URL,
-            id: id,
-            tema: tema,
-            categoria_gramatical: categoria_gramatical,
-            definicion: definicion,
-            descripcion: descripcion,
-            nombre_ingles: nombre_ingles,
-            prosa: prosa,
-            prosa_traduccion: prosa_traduccion,
-          });
-        }
-      }}
-      */
-      >
+      <ListItem key={id} bottomDivider onPress={() => goRestaurant()}>
         <Avatar
           source={{
             uri:

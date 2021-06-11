@@ -47,8 +47,8 @@ export default function Restaurants(props) {
           db.collection("modulo")
             .get()
             .then((response) => {
+              let i = 0;
               response.forEach((doc) => {
-                let i = 0;
                 if (infoUser[0] == undefined) {
                   setinfoErrorReload(true);
                   return;
@@ -62,6 +62,7 @@ export default function Restaurants(props) {
                 i += 1;
               });
               setModulos(resultModulos);
+              console.log(modulos);
             });
         });
 

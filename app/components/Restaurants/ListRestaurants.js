@@ -148,6 +148,8 @@ function Tema(props) {
     completado,
     veces_completado,
     coronas,
+    img,
+    color,
     uid_mis_temas,
   } = restaurant.item;
   let nombreIcon = nombre.replace(" ", "-").toLowerCase();
@@ -185,6 +187,8 @@ function Tema(props) {
           nombre={nombre}
           nombreIcon={nombreIcon}
           completado={completado}
+          color={color}
+          img={img}
           coronas={coronas}
           veces_completado={veces_completado}
         />
