@@ -11,7 +11,8 @@ const db = firebase.firestore(firebaseApp);
 
 export default function InfoUser(props) {
   const {
-    userInfo: { uid, photoURL, displayName, email },
+    userInfo, //: { photoURL, displayName, email },
+    uid,
     toastRef,
     setloadingText,
     setloading,
@@ -19,6 +20,10 @@ export default function InfoUser(props) {
   let logros = new Map();
 
   useEffect(() => {
+    console.log(
+      "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n----------------------->",
+      userInfo
+    );
     db.collection("mis_logros")
       //.where("logro.nombre", "==", "Noble")
       .get()
@@ -117,8 +122,8 @@ export default function InfoUser(props) {
         showAccessory
         containerStyle={styles.userInfoAvatar}
         source={
-          photoURL
-            ? { uri: photoURL }
+          userInfo.photoURL
+            ? { uri: userInfo.photoURL }
             : require("../../../assets/img/avatar-default.jpg")
         }
       >
@@ -134,9 +139,9 @@ export default function InfoUser(props) {
       </Avatar>
       <View>
         <Text style={styles.displayName}>
-          {displayName ? displayName : "Anonimo"}
+          {userInfo.displayName ? userInfo.displayName : "Anonimo"}
         </Text>
-        <Text>{email ? email : "Social Login"}</Text>
+        <Text>{userInfo.email ? userInfo.email : "Social Login"}</Text>
       </View>
     </View>
   );

@@ -26,126 +26,36 @@ export default function Navigation() {
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        setLogged(false);
-        setLoadded(true);
-      } else {
-        setLogged(true);
-        setLoadded(true);
-      }
+      setTimeout(() => {
+        if (!user) {
+          setLogged(false);
+          setLoadded(true);
+        } else {
+          setLogged(true);
+          setLoadded(true);
+        }
+      }, 2000);
       let uid = user.uid;
-      console.log(user);
+
       // consulto la información del usuario
       db.collection("info_user")
         .where("id_user", "==", uid)
         .get()
         .then((response) => {
-          const arrayResponse = [];
-          let idUserAux = null;
-          response.forEach((doc) => {
-            idUserAux = doc.id;
-            arrayResponse.push(doc.data());
-          });
-          // Verifico si es el primer ingreso
-          if (arrayResponse[0].primer_ingreso) {
-            // si lo es limpio la colección "mis_temas" por si aun quedan documentos guardados
-            // hecho esto ingreso todos los temas como mis temas pero con los puntos coronas y demas en 0
-            db.collection("mis_temas")
-              .get()
-              .then((response) => {
-                response.forEach((doc) => {
-                  db.collection("mis_temas").doc(doc.id).delete();
-                });
-              });
-            // con la tabla limpia empiezo a ingresas los documentos de tema a mis_temas
-            db.collection("tema")
-              .get()
-              .then((response) => {
-                response.forEach((doc) => {
-                  let payload = {
-                    tema: doc.data(),
-                    veces_completado: 0,
-                    coronas: 0,
-                    completado: false,
-                    id_tema: doc.id,
-                    id_user: uid,
-                    default: true,
-                  };
-                  db.collection("mis_temas")
-                    .add(payload)
-                    .then(() => {
-                      console.log("se subieron todos los temas");
-                    })
-                    .catch(() => {
-                      console.log("Un error a ocurrido");
-                    });
-                });
-              });
-            //--------------------------------ahora debo hacer lo mismo para mis_logros -------------------------/
-            db.collection("mis_logros")
-              .get()
-              .then((response) => {
-                response.forEach((doc) => {
-                  db.collection("mis_logros").doc(doc.id).delete();
-                });
-              });
-            // con la tabla limpia empiezo a ingresas los documentos de tema a mis_temas
-            db.collection("logros")
-              .get()
-              .then((response) => {
-                response.forEach((doc) => {
-                  let payload = {
-                    logro: doc.data(),
-                    nivel: 1,
-                    mi_puntaje: 0,
-                    id_logro: doc.id,
-                    id_user: uid,
-                  };
-                  db.collection("mis_logros")
-                    .add(payload)
-                    .then(() => {
-                      console.log("se subieron todos los logros");
-                    })
-                    .catch(() => {
-                      console.log("Un error a ocurrido");
-                    });
-                });
-              });
-            //--------------------------------ahora debo hacer lo mismo para mis_logros -------------------------/
-            db.collection("objetos_comprados")
-              .get()
-              .then((response) => {
-                response.forEach((doc) => {
-                  db.collection("objetos_comprados").doc(doc.id).delete();
-                });
-              });
-            // con la tabla limpia empiezo a ingresas los documentos de tema a mis_temas
-            db.collection("objetos_tienda")
-              .get()
-              .then((response) => {
-                response.forEach((doc) => {
-                  let payload = {
-                    objeto_tienda: doc.data(),
-                    comprado: false,
-                    id_objeto_tienda: doc.id,
-                    id_user: uid,
-                  };
-                  db.collection("objetos_comprados")
-                    .add(payload)
-                    .then(() => {
-                      console.log("se subieron todos los objetos de la tienda");
-                    })
-                    .catch(() => {
-                      console.log("Un error a ocurrido");
-                    });
-                });
-              });
-          } else {
+          if (response.docs.length > 0) {
+            const arrayResponse = [];
+            let idUserAux = null;
+            response.forEach((doc) => {
+              idUserAux = doc.id;
+              arrayResponse.push(doc.data());
+            });
+
             let now = new Date();
             const oneDay = 24 * 60 * 60 * 1000;
-            var last_class = new Date(
-              arrayResponse[0].ultima_clase.seconds * 1000
-            );
+            var last_class =
+              arrayResponse[0].ultima_clase != null
+                ? new Date(arrayResponse[0].ultima_clase.seconds * 1000)
+                : now;
             const diffDays = Math.round(Math.abs((now - last_class) / oneDay));
 
             let objetosAux = [];
@@ -171,7 +81,14 @@ export default function Navigation() {
               }
             });
 
-            if (diffDays > 1) {
+            if (diffDays == 0 && arrayResponse[0].primer_ingreso) {
+              db.collection("info_user")
+                .doc(idUserAux)
+                .update({
+                  dias_racha: arrayResponse[0].dias_racha + 1,
+                  primer_ingreso: false,
+                });
+            } else if (diffDays > 1) {
               db.collection("info_user")
                 .doc(idUserAux)
                 .update({

@@ -73,6 +73,7 @@ export default function Restaurant(props) {
   const finalizar = () => {
     setisLoading(true);
     if (final && !gameOver) {
+      setisLoading(true);
       EXP =
         seguidas * 10 +
         100 +
@@ -87,6 +88,7 @@ export default function Restaurant(props) {
         .where("id_user", "==", uid)
         .get()
         .then((response) => {
+          setisLoading(true);
           const arrayResponse = [];
           response.forEach((doc) => {
             arrayResponse.push(doc.data());
@@ -96,9 +98,10 @@ export default function Restaurant(props) {
           // base del timestamp comparativo
           const oneDay = 24 * 60 * 60 * 1000;
           //ultima clase vista
-          var last_class = new Date(
-            arrayResponse[0].ultima_clase.seconds * 1000
-          );
+          var last_class =
+            arrayResponse[0].ultima_clase != null
+              ? new Date(arrayResponse[0].ultima_clase.seconds * 1000)
+              : now;
           //dias de diferencia
           const diffDays = Math.round(Math.abs((now - last_class) / oneDay));
 

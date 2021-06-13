@@ -43,6 +43,10 @@ export default function Restaurants(props) {
         .where("id_user", "==", uid)
         .get()
         .then((response) => {
+          if (response.docs.length === 0) {
+            setinfoErrorReload(true);
+            return;
+          }
           const arrayResponse = [];
           response.forEach((doc) => {
             setuidInfoUser(doc.id);

@@ -18,6 +18,10 @@ export default function LoginForm(props) {
   const [showPassword, setshowPassword] = useState(false);
   const [formData, setFormData] = useState(defaultFormValue());
   const navigation = useNavigation();
+  const [flagUserInfo, setflagUserInfo] = useState(0);
+  const [flagTemas, setflagTemas] = useState(0);
+  const [flagLogros, setflagLogros] = useState(0);
+  const [flagTienda, setflagTienda] = useState(0);
   const [loading, setloading] = useState(false);
 
   const onSubmit = () => {
@@ -56,21 +60,130 @@ export default function LoginForm(props) {
                   ultima_clase: null,
                   vidas: 5,
                   modulos_desbloqueados: 1,
-                  displayName: user.displayName,
-                  photoURL: user.photoURL,
+                  displayName: user.email,
+                  email: user.email,
+                  photoURL:
+                    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/avatar%2Fmascota_saludo.png?alt=media&token=b75dd4dd-b269-40e6-a265-607ffa09ecd5",
                   objetos_comprados: [],
                 };
-                db.collection("info_user")
-                  .add(payload)
-                  .then(() => {})
-                  .catch(() => {
-                    toastRef.current.show("Un error a ocurrido");
-                    setIsLoading(false);
-                  });
+                if (flagUserInfo < 1) {
+                  db.collection("info_user")
+                    .add(payload)
+                    .then(() => {
+                      setflagUserInfo(flagUserInfo + 1);
+                      // ingresas los documentos de tema a mis_temas
+                      if (flagTemas < 1) {
+                        db.collection("tema")
+                          .get()
+                          .then((response) => {
+                            let promesas = [];
+                            response.forEach((doc) => {
+                              let payload = {
+                                tema: doc.data(),
+                                veces_completado: 0,
+                                coronas: 0,
+                                completado: false,
+                                id_tema: doc.id,
+                                id_user: uid,
+                                default: true,
+                              };
+                              promesas.push(
+                                db.collection("mis_temas").add(payload)
+                              );
+                            });
+                            Promise.all(promesas).then(
+                              () => {
+                                setflagTemas(flagTemas + 1);
+                                console.log("se crearon todos lo temas");
+                              },
+                              (err) => {
+                                console.log("algo salio mal: ", err);
+                              }
+                            );
+                          });
+                      } else {
+                        console.log(
+                          "estas intentando crear mas de los temas correspondientes"
+                        );
+                      }
+                      //--------------------------------ahora debo hacer lo mismo para mis_logros -------------------------/
+
+                      if (flagLogros < 1) {
+                        db.collection("logros")
+                          .get()
+                          .then((response) => {
+                            let promesas = [];
+                            response.forEach((doc) => {
+                              let payload = {
+                                logro: doc.data(),
+                                nivel: 1,
+                                mi_puntaje: 0,
+                                id_logro: doc.id,
+                                id_user: uid,
+                              };
+                              promesas.push(
+                                db.collection("mis_logros").add(payload)
+                              );
+                            });
+                            Promise.all(promesas).then(
+                              () => {
+                                setflagLogros(flagLogros + 1);
+                                console.log("se crearon todos lo temas");
+                              },
+                              (err) => {
+                                console.log("algo salio mal: ", err);
+                              }
+                            );
+                          });
+                      } else {
+                        console.log(
+                          "estas intentando crear mas de los logros correspondientes"
+                        );
+                      }
+                      //--------------------------------ahora debo hacer lo mismo para mis_logros -------------------------/
+                      if (flagTienda < 1) {
+                        db.collection("objetos_tienda")
+                          .get()
+                          .then((response) => {
+                            let promesas = [];
+                            response.forEach((doc) => {
+                              let payload = {
+                                objeto_tienda: doc.data(),
+                                comprado: false,
+                                id_objeto_tienda: doc.id,
+                                id_user: uid,
+                              };
+                              promesas.push(
+                                db.collection("objetos_comprados").add(payload)
+                              );
+                            });
+
+                            Promise.all(promesas).then(
+                              () => {
+                                setflagTienda(flagTienda + 1);
+                                console.log("se crearon todos lo temas");
+                              },
+                              (err) => {
+                                console.log("algo salio mal: ", err);
+                              }
+                            );
+                          });
+                      } else {
+                        console.log(
+                          "intentas crear mas objetos de tienda de los correspondientes"
+                        );
+                      }
+                    })
+                    .catch(() => {
+                      toastRef.current.show("Un error a ocurrido");
+                      setIsLoading(false);
+                    });
+                } else {
+                  console.log(
+                    "estas intentando crear el usuario mas de una vez"
+                  );
+                }
               } else {
-                db.collection("info_user").doc(doc.id).update({
-                  primer_ingreso: false,
-                });
                 response.forEach((doc) => {
                   db.collection("info_user")
                     .doc(doc.id)
@@ -78,9 +191,12 @@ export default function LoginForm(props) {
                     .then((info_user) => {
                       let now = new Date();
                       const oneDay = 24 * 60 * 60 * 1000;
-                      var last_class = new Date(
-                        info_user.data().ultima_clase.seconds * 1000
-                      );
+                      var last_class =
+                        info_user.data().ultima_clase != null
+                          ? new Date(
+                              info_user.data().ultima_clase.seconds * 1000
+                            )
+                          : now;
                       const diffDays = Math.round(
                         Math.abs((now - last_class) / oneDay)
                       );
@@ -108,7 +224,14 @@ export default function LoginForm(props) {
                         }
                       });
 
-                      if (diffDays > 1) {
+                      if (diffDays == 0 && arrayResponse[0].primer_ingreso) {
+                        db.collection("info_user")
+                          .doc(idUserAux)
+                          .update({
+                            dias_racha: arrayResponse[0].dias_racha + 1,
+                            primer_ingreso: false,
+                          });
+                      } else if (diffDays > 1) {
                         db.collection("info_user")
                           .doc(doc.id)
                           .update({
@@ -162,21 +285,6 @@ export default function LoginForm(props) {
             });
           setloading(false);
           navigation.navigate("account");
-          /*
-          firebase.auth().onAuthStateChanged((user) => {
-            let uid = user.uid;
-            db.collection("info_user")
-              .where("id_user", "==", uid)
-              .get()
-              .then((response) => {
-                if (response.docs.length === 0) {
-
-                }
-                setloading(false);
-                navigation.navigate("account");
-              });
-          });
-          */
         })
         .catch(() => {
           setloading(false);

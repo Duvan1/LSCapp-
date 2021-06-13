@@ -98,6 +98,7 @@ export default function UserLogged(props) {
           response.forEach((doc) => {
             arrayResponse.push(doc.data());
           });
+
           setInfoUser(arrayResponse);
         });
 
@@ -129,7 +130,8 @@ export default function UserLogged(props) {
             setloading={setloading}
             setloadingText={setloadingText}
             toastRef={toastRef}
-            userInfo={userInfo}
+            userInfo={infoUser[0]}
+            uid={userInfo.uid}
           />
         )}
 

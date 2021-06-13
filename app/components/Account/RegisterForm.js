@@ -3,9 +3,14 @@ import { StyleSheet, View, Text } from "react-native";
 import { Input, Icon, Button } from "react-native-elements";
 import { validateEmail } from "../../utils/validation";
 import { size, isEmpty } from "lodash";
-import * as firebase from "firebase";
+//import * as firebase from "firebase";
 import { useNavigation } from "@react-navigation/native";
 import Loading from "../Loading";
+//////// firebase
+import firebase from "firebase";
+import { firebaseApp } from "../../utils/firebase";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
 
 export default function RegisterForm(props) {
   const { toastRef } = props;
@@ -13,6 +18,10 @@ export default function RegisterForm(props) {
   const [showPasswordRepite, setShowPasswordRepite] = useState(false);
   const [formData, setFormData] = useState(defaultFormValue());
   const navigation = useNavigation();
+  const [flagUserInfo, setflagUserInfo] = useState(0);
+  const [flagTemas, setflagTemas] = useState(0);
+  const [flagLogros, setflagLogros] = useState(0);
+  const [flagTienda, setflagTienda] = useState(0);
   const [loading, setloading] = useState(false);
 
   const onSubmit = () => {
@@ -37,14 +46,155 @@ export default function RegisterForm(props) {
       firebase.default
         .auth()
         .createUserWithEmailAndPassword(formData.email, formData.password)
-        .then((response) => {
-          setloading(false);
-          toastRef.current.show(
-            "Usuario creado con éxito, ahora puedes iniciar sesión."
-          );
-          navigation.navigate("login");
+        .then((user) => {
+          console.log("\n\n\n\n\n\n", user.user.uid);
+          let uid = user.user.uid;
+          // si la respuesta es 0 quiere decir que no tiene
+          db.collection("info_user")
+            .where("id_user", "==", uid)
+            .get()
+            .then((response) => {
+              if (response.docs.length === 0) {
+                //agrego la información de usuario correspondiente
+                const payload = {
+                  EXP: 0,
+                  coronas: 0,
+                  dias_racha: 0,
+                  division: "bronce",
+                  gemas: 0,
+                  id_user: uid,
+                  primer_ingreso: true,
+                  ultima_clase: null,
+                  vidas: 5,
+                  modulos_desbloqueados: 1,
+                  displayName: user.user.email,
+                  email: user.user.email,
+                  photoURL:
+                    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/avatar%2Fmascota_saludo.png?alt=media&token=b75dd4dd-b269-40e6-a265-607ffa09ecd5",
+                  objetos_comprados: [],
+                };
+                if (flagUserInfo < 1) {
+                  db.collection("info_user")
+                    .add(payload)
+                    .then(() => {
+                      setflagUserInfo(flagUserInfo + 1);
+                      // ingresas los documentos de tema a mis_temas
+                      if (flagTemas < 1) {
+                        db.collection("tema")
+                          .get()
+                          .then((response) => {
+                            let promesas = [];
+                            response.forEach((doc) => {
+                              let payload = {
+                                tema: doc.data(),
+                                veces_completado: 0,
+                                coronas: 0,
+                                completado: false,
+                                id_tema: doc.id,
+                                id_user: uid,
+                                default: true,
+                              };
+                              promesas.push(
+                                db.collection("mis_temas").add(payload)
+                              );
+                            });
+                            Promise.all(promesas).then(
+                              () => {
+                                setflagTemas(flagTemas + 1);
+                                console.log("se crearon todos lo temas");
+                              },
+                              (err) => {
+                                console.log("algo salio mal: ", err);
+                              }
+                            );
+                          });
+                      } else {
+                        console.log(
+                          "estas intentando crear mas de los temas correspondientes"
+                        );
+                      }
+                      //--------------------------------ahora debo hacer lo mismo para mis_logros -------------------------/
+
+                      if (flagLogros < 1) {
+                        db.collection("logros")
+                          .get()
+                          .then((response) => {
+                            let promesas = [];
+                            response.forEach((doc) => {
+                              let payload = {
+                                logro: doc.data(),
+                                nivel: 1,
+                                mi_puntaje: 0,
+                                id_logro: doc.id,
+                                id_user: uid,
+                              };
+                              promesas.push(
+                                db.collection("mis_logros").add(payload)
+                              );
+                            });
+                            Promise.all(promesas).then(
+                              () => {
+                                setflagLogros(flagLogros + 1);
+                                console.log("se crearon todos lo temas");
+                              },
+                              (err) => {
+                                console.log("algo salio mal: ", err);
+                              }
+                            );
+                          });
+                      } else {
+                        console.log(
+                          "estas intentando crear mas de los logros correspondientes"
+                        );
+                      }
+                      //--------------------------------ahora debo hacer lo mismo para mis_logros -------------------------/
+                      if (flagTienda < 1) {
+                        db.collection("objetos_tienda")
+                          .get()
+                          .then((response) => {
+                            let promesas = [];
+                            response.forEach((doc) => {
+                              let payload = {
+                                objeto_tienda: doc.data(),
+                                comprado: false,
+                                id_objeto_tienda: doc.id,
+                                id_user: uid,
+                              };
+                              promesas.push(
+                                db.collection("objetos_comprados").add(payload)
+                              );
+                            });
+
+                            Promise.all(promesas).then(
+                              () => {
+                                setflagTienda(flagTienda + 1);
+                                console.log("se crearon todos lo temas");
+                              },
+                              (err) => {
+                                console.log("algo salio mal: ", err);
+                              }
+                            );
+                          });
+                      } else {
+                        console.log(
+                          "intentas crear mas objetos de tienda de los correspondientes"
+                        );
+                      }
+                    })
+                    .catch(() => {
+                      toastRef.current.show("Un error a ocurrido");
+                      setIsLoading(false);
+                    });
+                } else {
+                  console.log(
+                    "estas intentando crear el usuario mas de una vez"
+                  );
+                }
+              }
+            });
         })
         .catch((err) => {
+          console.log(err);
           setloading(false);
           toastRef.current.show("Error al crear el usuario.");
         });
