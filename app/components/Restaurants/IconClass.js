@@ -74,6 +74,7 @@ export default function IconClass(props) {
       style={{
         alignItems: "center",
         marginBottom: 20,
+        width: 100,
       }}
     >
       <View style={{ position: "absolute" }}>
@@ -151,7 +152,14 @@ export default function IconClass(props) {
           </Text>
         )}
       </View>
-      <Text style={{ marginTop: 100, fontSize: 14, fontWeight: "bold" }}>
+      <Text
+        style={{
+          marginTop: 100,
+          fontSize: 12,
+          fontWeight: "bold",
+          textAlign: "center",
+        }}
+      >
         {nombre.toUpperCase()}
       </Text>
     </View>

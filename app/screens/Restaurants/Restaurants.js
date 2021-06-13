@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  ScrollView,
+} from "react-native";
 import { Icon } from "react-native-elements";
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
@@ -45,6 +51,7 @@ export default function Restaurants(props) {
           setInfoUser(arrayResponse);
 
           db.collection("modulo")
+            .orderBy("nombre")
             .get()
             .then((response) => {
               let i = 0;
@@ -206,8 +213,8 @@ export default function Restaurants(props) {
         </View>
       </View>
       {/* body del inicio */}
-      <View style={styles.viewBody}>
-        {modulos.map((l, i) => (
+      <ScrollView style={styles.viewBody}>
+        {modulos.map((modulo, i) => (
           <ListRestaurants
             uidInfoUser={uidInfoUser}
             restaurants={modulos}
@@ -215,6 +222,7 @@ export default function Restaurants(props) {
             handleLoadMore={handleLoadMore}
             isLoading={isLoading}
             indice={i}
+            modulo={modulo}
           />
         ))}
 
@@ -228,7 +236,7 @@ export default function Restaurants(props) {
             onPress={() => navigation.navigate("add-restaurant")}
           />
         )}
-      </View>
+      </ScrollView>
     </>
   );
 }

@@ -29,6 +29,7 @@ export default function ListRestaurants(props) {
     indice,
     uidInfoUser,
     setreloadInfoUser,
+    modulo,
   } = props;
   const [temas, setTemas] = useState([]);
   const [reaload, setreaload] = useState(0);
@@ -41,41 +42,41 @@ export default function ListRestaurants(props) {
   useEffect(() => {
     const uid = firebase.auth().currentUser.uid;
     let temasAux = [];
-    restaurants.forEach((modulo) => {
-      modulo.categorias.forEach((categoria) => {
-        db.collection("categoria_principal")
-          .doc(categoria)
-          .get()
-          .then((response) => {
-            response.data().temas.forEach((tema) => {
-              db.collection("tema")
-                .doc(tema)
-                .get()
-                .then((response) => {
-                  let aux = response.data();
-                  aux.uid = response.id;
-                  db.collection("mis_temas")
-                    .where("id_tema", "==", tema)
-                    .get()
-                    .then((res) => {
-                      res.forEach((doc) => {
-                        aux.uid_mis_temas = doc.id;
-                        aux.completado = doc.data().completado;
-                        aux.coronas = doc.data().coronas;
-                        aux.veces_completado = doc.data().veces_completado;
-                      });
-                      temasAux.push(aux);
-                      setTemas([...temasAux]);
+    //restaurants.forEach((modulo) => {
+    modulo.categorias.forEach((categoria) => {
+      db.collection("categoria_principal")
+        .doc(categoria)
+        .get()
+        .then((response) => {
+          response.data().temas.forEach((tema) => {
+            db.collection("tema")
+              .doc(tema)
+              .get()
+              .then((response) => {
+                let aux = response.data();
+                aux.uid = response.id;
+                db.collection("mis_temas")
+                  .where("id_tema", "==", tema)
+                  .get()
+                  .then((res) => {
+                    res.forEach((doc) => {
+                      aux.uid_mis_temas = doc.id;
+                      aux.completado = doc.data().completado;
+                      aux.coronas = doc.data().coronas;
+                      aux.veces_completado = doc.data().veces_completado;
                     });
-                });
-            });
+                    temasAux.push(aux);
+                    setTemas([...temasAux]);
+                  });
+              });
           });
-      });
+        });
     });
+    //});
   }, [reaload]);
 
   return (
-    <ScrollView
+    <View
       contentContainerStyle={{
         alignItems: "center",
         backgroundColor: "#f2f2f2",
@@ -132,7 +133,7 @@ export default function ListRestaurants(props) {
           <Text>Cargando...</Text>
         </View>
       )}
-    </ScrollView>
+    </View>
   );
 }
 

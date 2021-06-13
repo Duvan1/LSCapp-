@@ -39,7 +39,10 @@ export default function RegisterForm(props) {
         .createUserWithEmailAndPassword(formData.email, formData.password)
         .then((response) => {
           setloading(false);
-          navigation.navigate("account");
+          toastRef.current.show(
+            "Usuario creado con éxito, ahora puedes iniciar sesión."
+          );
+          navigation.navigate("login");
         })
         .catch((err) => {
           setloading(false);

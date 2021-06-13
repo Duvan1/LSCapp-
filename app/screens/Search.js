@@ -34,6 +34,7 @@ export default function Search(props) {
   const [renderCoponent, setRenderCoponent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [falgSearch, setfalgSearch] = useState(0);
+  const [primeraCarga, setprimeraCarga] = useState(true);
 
   const list = [
     {
@@ -144,14 +145,21 @@ export default function Search(props) {
   };
 
   useEffect(() => {
-    if (falgSearch > 0) {
+    if (primeraCarga) {
+      setIsLoading(true);
+      fireSQL.query(`SELECT * FROM senia ORDER BY nombre`).then((response) => {
+        setsenias(response.slice(0, 20));
+        setseniasAux(response);
+        setIsLoading(false);
+      });
+    } else {
       setIsLoading(true);
       if (search) {
         setTimeout(() => {
           let aux = [];
           seniasAux.map((senia) => {
             if (senia.nombre != undefined) {
-              if (similarity(search, senia.nombre) > 0.5) {
+              if (similarity(search, senia.nombre) > 0.6) {
                 console.log("Agregando: " + senia.nombre);
                 aux.push(senia);
               }
@@ -161,26 +169,8 @@ export default function Search(props) {
           setIsLoading(false);
         }, 1000);
       } else {
-        setsenias(seniasAux);
+        setsenias(seniasAux.slice(0, 20));
         setIsLoading(false);
-      }
-    } else {
-      setIsLoading(true);
-      if (search) {
-        let consultav = search.toLowerCase();
-        fireSQL
-          .query(`SELECT * FROM senia WHERE nombre LIKE '${consultav}%'`)
-          .then((response) => {
-            setsenias(response);
-            setseniasAux(response);
-            setIsLoading(false);
-          });
-      } else {
-        fireSQL.query(`SELECT * FROM senia`).then((response) => {
-          setsenias(response);
-          setseniasAux(response);
-          setIsLoading(false);
-        });
       }
     }
 
@@ -223,7 +213,10 @@ export default function Search(props) {
             title="Buscar"
             containerStyle={{ height: 100, width: "30%" }}
             buttonStyle={{ height: 60, fontSize: 15, fontWeight: "bold" }}
-            onPress={() => setfalgSearch(falgSearch + 1)}
+            onPress={() => {
+              setfalgSearch(falgSearch + 1);
+              setprimeraCarga(false);
+            }}
             //onPress={() => cargar()}
             loading={isLoading}
           />

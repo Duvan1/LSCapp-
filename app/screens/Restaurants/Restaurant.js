@@ -56,7 +56,8 @@ export default function Restaurant(props) {
   const [incorrectas, setincorrectas] = useState([]);
   const [seguidas, setseguidas] = useState(0);
   const [seniasOpciones, setseniasOpciones] = useState([]);
-  //const [uidInfoUser, setuidInfoUser] = useState("");
+  const [isLoading, setisLoading] = useState(false);
+
   let banderaSeguidas = false;
   let EXP = 0;
   let coronas = 0;
@@ -70,6 +71,7 @@ export default function Restaurant(props) {
   };
 
   const finalizar = () => {
+    setisLoading(true);
     if (final && !gameOver) {
       EXP =
         seguidas * 10 +
@@ -81,7 +83,6 @@ export default function Restaurant(props) {
       gemas = coronas * 4 + Math.ceil(EXP / 40);
 
       const uid = firebase.auth().currentUser.uid;
-      //console.log(uid);
       db.collection("info_user")
         .where("id_user", "==", uid)
         .get()
@@ -127,11 +128,14 @@ export default function Restaurant(props) {
               : arrayResponse[0].division;
 
           getAllmodulsUnlock(uid_mis_temas).then((data) => {
-            console.log(data);
             let unlock = data
               ? arrayResponse[0].modulos_desbloqueados + 1
               : arrayResponse[0].modulos_desbloqueados;
-            console.log(unlock);
+            console.log(
+              "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" +
+                uidInfoUser +
+                "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+            );
             db.collection("info_user")
               .doc(uidInfoUser)
               .update({
@@ -154,80 +158,117 @@ export default function Restaurant(props) {
                   .then(() => {
                     let logros_logrados = false;
                     if (coronasaux >= 40) {
-                      console.log(logros.get("Noble"));
                       db.collection("mis_logros")
-                        .doc(logros.get("Noble"))
-                        .update({ nivel: 2, mi_puntaje: 40 })
-                        .then(() => (logros_logrados = true));
+                        //.doc(logros.get("Noble"))
+                        .where("logro.nombre", "==", "Noble")
+                        .get()
+                        .then((res) => {
+                          res.forEach((doc) => {
+                            let id = doc.id;
+                            db.collection("mis_logros")
+                              .doc(id)
+                              .update({ nivel: 2, mi_puntaje: 40 })
+                              .then(
+                                () => (logros_logrados = true),
+                                (err) => console.log("ocurrio un error", err)
+                              );
+                          });
+                        });
                     }
                     if (experiencia >= 100) {
-                      console.log(logros.get("Filósofo"));
                       db.collection("mis_logros")
-                        .doc(logros.get("Filósofo"))
-                        .update({ nivel: 2, mi_puntaje: 100 })
-                        .then(() => (logros_logrados = true));
-                    }
-                    if (experiencia >= 100) {
-                      console.log(logros.get("Filósofo"));
-                      db.collection("mis_logros")
-                        .doc(logros.get("Filósofo"))
-                        .update({ nivel: 2, mi_puntaje: 100 })
-                        .then(() => (logros_logrados = true));
+                        .where("logro.nombre", "==", "Filósofo")
+                        .get()
+                        .then((res) => {
+                          res.forEach((doc) => {
+                            let id = doc.id;
+                            db.collection("mis_logros")
+                              .doc(id)
+                              .update({ nivel: 2, mi_puntaje: 100 })
+                              .then(
+                                () => (logros_logrados = true),
+                                (err) => console.log("ocurrio un error", err)
+                              );
+                          });
+                        });
                     }
                     if (incorrectas.length < 1) {
-                      console.log(logros.get("En el blanco"));
                       db.collection("mis_logros")
-                        .doc(logros.get("En el blanco"))
-                        .update({ nivel: 2, mi_puntaje: 20 })
-                        .then(() => (logros_logrados = true));
+                        .where("logro.nombre", "==", "En el blanco")
+                        .get()
+                        .then((res) => {
+                          res.forEach((doc) => {
+                            let id = doc.id;
+                            db.collection("mis_logros")
+                              .doc(id)
+                              .update({ nivel: 2, mi_puntaje: 20 })
+                              .then(
+                                () => (logros_logrados = true),
+                                (err) => console.log("ocurrio un error", err)
+                              );
+                          });
+                        });
                     }
                     if (correctas.length >= 5) {
-                      console.log(logros.get("Intelectual"));
                       db.collection("mis_logros")
-                        .doc(logros.get("Intelectual"))
-                        .update({ nivel: 2, mi_puntaje: 5 })
-                        .then(() => (logros_logrados = true));
+                        .where("logro.nombre", "==", "Intelectual")
+                        .get()
+                        .then((res) => {
+                          res.forEach((doc) => {
+                            let id = doc.id;
+                            db.collection("mis_logros")
+                              .doc(id)
+                              .update({ nivel: 2, mi_puntaje: 5 })
+                              .then(
+                                () => (logros_logrados = true),
+                                (err) => console.log("ocurrio un error", err)
+                              );
+                          });
+                        });
                     }
                     if (racha >= 14) {
-                      console.log(logros.get("On fire"));
                       db.collection("mis_logros")
-                        .doc(logros.get("On fire"))
-                        .update({ nivel: 2, mi_puntaje: 14 })
-                        .then(() => (logros_logrados = true));
+                        .where("logro.nombre", "==", "On fire")
+                        .get()
+                        .then((res) => {
+                          res.forEach((doc) => {
+                            let id = doc.id;
+                            db.collection("mis_logros")
+                              .doc(id)
+                              .update({ nivel: 2, mi_puntaje: 14 })
+                              .then(
+                                () => (logros_logrados = true),
+                                (err) => console.log("ocurrio un error", err)
+                              );
+                          });
+                        });
                     }
-                    if (logros_logrados)
+
+                    if (logros_logrados) {
                       alert(
                         "Has desbloqueados algunos logros!!!\n Felicitaciones!!"
                       );
-                    setreloadInfoUser(Math.random());
-                    setreaload(Math.random());
-                    setShowModal(false);
+                    }
+
+                    setTimeout(() => {
+                      setisLoading(false);
+                      setreloadInfoUser(Math.random());
+                      setreaload(Math.random());
+                      setShowModal(false);
+                    }, 2000);
                   });
               });
           });
         });
       //setShowModal(false);
+    } else if (final && gameOver) {
+      setShowModal(false);
     }
   };
 
   useEffect(() => {
-    //console.log("------------------>>>>>>>>>>>         ", tema);
+    setisLoading(true);
     // este estado sera el que guardara cuantas señas tengo lo qiue es lo mismo que la cantidad de preguntas
-    db.collection("mis_logros")
-      //.where("logro.nombre", "==", "Noble")
-      .get()
-      .then((res) => {
-        res.forEach((doc) => {
-          if (doc.id != undefined) {
-            logros.set(doc.data().logro.nombre, doc.id);
-          }
-        });
-        /*
-        for (let clavevalor of logros.entries()) {
-          //console.log(clavevalor);
-        }
-        */
-      });
 
     setSeniasLenght(senia.length);
     if (senia.length > avance) {
@@ -242,16 +283,16 @@ export default function Restaurant(props) {
           };
           crearOpciones(payload);
           setSenias(response.data());
+          setisLoading(false);
         });
     } else {
+      setisLoading(false);
       setFinal(true);
-      //console.log("");
     }
   }, [avance]);
 
   const getAllmodulsUnlock = (id) => {
     return new Promise((resolve, reject) => {
-      console.log("getAllmodulsUnlock");
       let isModuleCompleted = false;
       db.collection("mis_temas")
         .get()
@@ -272,7 +313,9 @@ export default function Restaurant(props) {
   };
 
   function comprobar() {
+    setisLoading(true);
     if (isEmpty(flexDirection)) {
+      setisLoading(false);
       alert("Por favor seleccione una opción.");
       return;
     }
@@ -300,6 +343,7 @@ export default function Restaurant(props) {
     if (seguidas == 4) {
       alert("WOW 4 seguidas lo estas haciendo excelente");
     }
+    setisLoading(false);
     setIsVisible(true);
     setflexDirection({});
   }
@@ -371,7 +415,7 @@ export default function Restaurant(props) {
                 selectedValue === value && styles.selectedLabel,
               ]}
             >
-              {value.nombre}
+              {value.nombre.replace(" ", "\n")}
             </Text>
           </TouchableOpacity>
         ))}
@@ -643,6 +687,7 @@ export default function Restaurant(props) {
                     borderTopRightRadius: 12,
                   }}
                   titleStyle={{ fontSize: 20 }}
+                  loading={isLoading}
                 />
               </View>
             </View>
@@ -774,6 +819,7 @@ export default function Restaurant(props) {
                 marginTop: 15,
               }}
               titleStyle={{ fontSize: 20 }}
+              loading={isLoading}
             />
           </View>
         </ScrollView>

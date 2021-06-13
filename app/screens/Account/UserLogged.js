@@ -30,27 +30,33 @@ export default function UserLogged(props) {
   const [infoUser, setInfoUser] = useState([]);
   const [logros, setlogros] = useState([]);
 
-  const divisiones_insignias = new Map();
-  divisiones_insignias.set("bronce", {
-    require: require("../../../assets/icons/bronce.png"),
-  });
-  divisiones_insignias.set("plata", {
-    require: require("../../../assets/icons/plata.png"),
-  });
-  divisiones_insignias.set("oro", {
-    require: require("../../../assets/icons/oro.png"),
-  });
-  divisiones_insignias.set("rubi", {
-    require: require("../../../assets/icons/ruby.png"),
-  });
-  divisiones_insignias.set("diamante", {
-    require: require("../../../assets/icons/diamond.png"),
-  });
-  divisiones_insignias.set("esmeralda", {
-    require: require("../../../assets/icons/esmeralda.png"),
-  });
-
-  let list = [];
+  const getInsignia = (division) => {
+    if (division == "bronce") {
+      return {
+        uri: "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/divisiones%2Fbronce.png?alt=media&token=ca5367e6-d115-45e1-8ecb-dd768b28bd74",
+      };
+    } else if (division == "plata") {
+      return {
+        uri: "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/divisiones%2Fplata.png?alt=media&token=aab5c56b-6701-4791-8f27-0ff088c9919c",
+      };
+    } else if (division == "oro") {
+      return {
+        uri: "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/divisiones%2Foro.png?alt=media&token=deaec550-3388-46ca-b651-3e7770fedd39",
+      };
+    } else if (division == "ruby") {
+      return {
+        uri: "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/divisiones%2Fruby.png?alt=media&token=9a3679e6-46f7-4e90-83ff-bc201858eb1e",
+      };
+    } else if (division == "diamante") {
+      return {
+        uri: "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/divisiones%2Fdiamond.png?alt=media&token=bc642b26-b1d6-4ab5-8d5c-515c6f06bf9d",
+      };
+    } else if (division == "esmeralda") {
+      return {
+        uri: "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/divisiones%2Fesmeralda.png?alt=media&token=b24b73e1-5113-47bc-988f-d92aee13f951",
+      };
+    }
+  };
 
   const getIcon = (nombre) => {
     switch (nombre) {
@@ -337,9 +343,7 @@ export default function UserLogged(props) {
                   >
                     <ImageBackground
                       style={{ height: 30, width: 30 }}
-                      source={
-                        divisiones_insignias.get(infoUser[0].division).require
-                      }
+                      source={getInsignia(infoUser[0].division)}
                     />
                   </View>
                   <View style={{ width: "60%" }}>

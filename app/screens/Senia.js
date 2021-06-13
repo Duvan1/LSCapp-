@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, Text, ScrollView, Image } from "react-native";
-import { Icon } from "react-native-elements";
+import { Icon, Avatar } from "react-native-elements";
 import { Video, AVPlaybackStatus } from "expo-av";
 
 export default function Senia(props) {
@@ -13,6 +13,7 @@ export default function Senia(props) {
     definicion,
     descripcion,
     nombre_ingles,
+    img,
     prosa,
     prosa_traduccion,
   } = senia.item;
@@ -55,27 +56,36 @@ export default function Senia(props) {
             isLooping
             onPlaybackStatusUpdate={(status) => setStatus(() => status)}
           />
-          <View
-            style={{
-              marginBottom: 30,
-              marginTop: 0,
-              marginLeft: 0,
-              marginRight: 0,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Icon
-              type="material-community"
-              name="play"
-              color="#5fbdff"
-              onPress={() => {
-                console.log("aldmlsm");
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <View
+              style={{
+                marginTop: 0,
+                marginLeft: 0,
+                marginRight: 10,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Icon
+                type="material-community"
+                name="play"
+                color="#5fbdff"
+                onPress={() => {
+                  console.log("aldmlsm");
+                }}
+              />
+              <Text style={{ fontSize: 34, fontWeight: "700", lineHeight: 39 }}>
+                {nombre.toUpperCase()}
+              </Text>
+            </View>
+            <Avatar
+              source={{
+                uri:
+                  img == "" || img == undefined
+                    ? "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/senias-icons%2Fhombre%2Fgaleria-de-imagenes%20(1).png?alt=media&token=5dde644a-1a4a-4014-b57b-cd9c763fa6c0"
+                    : img,
               }}
             />
-            <Text style={{ fontSize: 34, fontWeight: "700", lineHeight: 39 }}>
-              {nombre.toUpperCase()}
-            </Text>
           </View>
         </View>
         <View

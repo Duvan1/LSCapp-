@@ -102,8 +102,10 @@ export default function InfoUser(props) {
         setloading(false);
         toastRef.current.show("Imagen Actualizada");
       })
-      .catch(() => {
-        toastRef.current.show("Error al actuañlizar el avatar");
+      .catch((err) => {
+        console.log(err);
+        setloading(false);
+        toastRef.current.show("Error al actualizar el avatar");
       });
   };
 
