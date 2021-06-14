@@ -224,7 +224,11 @@ export default function LoginForm(props) {
                         }
                       });
 
-                      if (diffDays == 0 && arrayResponse[0].primer_ingreso) {
+                      if (
+                        diffDays == 0 &&
+                        arrayResponse[0].primer_ingreso &&
+                        info_user.data().ultima_clase != null
+                      ) {
                         db.collection("info_user")
                           .doc(idUserAux)
                           .update({

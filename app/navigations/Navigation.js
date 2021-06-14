@@ -84,7 +84,11 @@ export default function Navigation() {
                 }
               });
 
-              if (diffDays == 0 && arrayResponse[0].primer_ingreso) {
+              if (
+                diffDays == 0 &&
+                arrayResponse[0].primer_ingreso &&
+                arrayResponse[0].ultima_clase != null
+              ) {
                 db.collection("info_user")
                   .doc(idUserAux)
                   .update({
