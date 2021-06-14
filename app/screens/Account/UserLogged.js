@@ -25,7 +25,7 @@ export default function UserLogged(props) {
   const [loading, setloading] = useState(false);
   const [loadingText, setloadingText] = useState("");
   const toastRef = useRef();
-  const [realoadUserInfo, setRealoadUserInfo] = useState(false);
+  const [realoadUserInfo, setRealoadUserInfo] = useState(0);
   const [userInfo, setuserInfo] = useState(null);
   const [infoUser, setInfoUser] = useState([]);
   const [logros, setlogros] = useState([]);
@@ -125,12 +125,13 @@ export default function UserLogged(props) {
   return (
     <>
       <ScrollView style={styles.viewUserInfo}>
-        {userInfo && (
+        {userInfo != null && (
           <InfoUser
             setloading={setloading}
             setloadingText={setloadingText}
             toastRef={toastRef}
-            userInfo={infoUser[0]}
+            realoadUserInfo={realoadUserInfo}
+            //userInfo={infoUser[0]}
             uid={userInfo.uid}
           />
         )}

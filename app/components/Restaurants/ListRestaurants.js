@@ -53,10 +53,12 @@ export default function ListRestaurants(props) {
               .doc(tema)
               .get()
               .then((response) => {
+                //alert(response.docs.length);
                 let aux = response.data();
                 aux.uid = response.id;
                 db.collection("mis_temas")
                   .where("id_tema", "==", tema)
+                  .where("id_user", "==", uid)
                   .get()
                   .then((res) => {
                     res.forEach((doc) => {

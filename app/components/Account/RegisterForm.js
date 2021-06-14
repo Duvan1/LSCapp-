@@ -28,6 +28,7 @@ export default function RegisterForm(props) {
     if (
       isEmpty(formData.email) ||
       isEmpty(formData.password) ||
+      isEmpty(formData.usuario) ||
       isEmpty(formData.repeatPassword)
     ) {
       //console.log("no");
@@ -67,7 +68,7 @@ export default function RegisterForm(props) {
                   ultima_clase: null,
                   vidas: 5,
                   modulos_desbloqueados: 1,
-                  displayName: user.user.email,
+                  displayName: formData.usuario,
                   email: user.user.email,
                   photoURL:
                     "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/avatar%2Fmascota_saludo.png?alt=media&token=b75dd4dd-b269-40e6-a265-607ffa09ecd5",
@@ -223,6 +224,19 @@ export default function RegisterForm(props) {
         }
       />
       <Input
+        placeholder="Nombre de usuario"
+        containerStyle={styles.inputForm}
+        inputContainerStyle={styles.input}
+        onChange={(e) => onChange(e, "usuario")}
+        rightIcon={
+          <Icon
+            type="material-community"
+            name="account-circle-outline"
+            iconStyle={styles.iconRight}
+          />
+        }
+      />
+      <Input
         password={true}
         secureTextEntry={showPassword ? false : true}
         placeholder="Contraseña"
@@ -269,6 +283,7 @@ export default function RegisterForm(props) {
 function defaultFormValue() {
   return {
     email: "",
+    usuario: "",
     password: "",
     repeatPassword: "",
   };

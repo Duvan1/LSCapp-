@@ -25,7 +25,7 @@ export default function Restaurants(props) {
   const [infoUser, setInfoUser] = useState([]);
   const [modulos, setModulos] = useState([]);
   const [uidInfoUser, setuidInfoUser] = useState("");
-  const [infoErrorReload, setinfoErrorReload] = useState(false);
+  const [infoErrorReload, setinfoErrorReload] = useState(0);
   const limitRestaurants = 6;
   const [reloadInfoUser, setreloadInfoUser] = useState(0);
 
@@ -44,37 +44,40 @@ export default function Restaurants(props) {
         .get()
         .then((response) => {
           if (response.docs.length === 0) {
-            setinfoErrorReload(true);
+            //alert("no viene usuario");
+            setinfoErrorReload(Math.random());
             return;
-          }
-          const arrayResponse = [];
-          response.forEach((doc) => {
-            setuidInfoUser(doc.id);
-            arrayResponse.push(doc.data());
-          });
-          setInfoUser(arrayResponse);
-
-          db.collection("modulo")
-            .orderBy("nombre")
-            .get()
-            .then((response) => {
-              let i = 0;
-              response.forEach((doc) => {
-                if (infoUser[0] == undefined) {
-                  setinfoErrorReload(true);
-                  return;
-                }
-                let modulos_unlock = infoUser[0].modulos_desbloqueados - 1;
-                const modulo = doc.data();
-                modulo.id = doc.id;
-                if (i <= modulos_unlock) {
-                  resultModulos.push(modulo);
-                }
-                i += 1;
-              });
-              setModulos(resultModulos);
-              console.log(modulos);
+          } else {
+            const arrayResponse = [];
+            response.forEach((doc) => {
+              setuidInfoUser(doc.id);
+              arrayResponse.push(doc.data());
             });
+            setInfoUser(arrayResponse);
+
+            db.collection("modulo")
+              .orderBy("nombre")
+              .get()
+              .then((response) => {
+                //alert(response.docs.length === 0);
+                let i = 0;
+                response.forEach((doc) => {
+                  if (infoUser[0] == undefined) {
+                    setinfoErrorReload(Math.random());
+                    return;
+                  }
+                  let modulos_unlock = infoUser[0].modulos_desbloqueados - 1;
+                  const modulo = doc.data();
+                  modulo.id = doc.id;
+                  if (i <= modulos_unlock) {
+                    resultModulos.push(modulo);
+                  }
+                  i += 1;
+                });
+                setModulos(resultModulos);
+                console.log(modulos);
+              });
+          }
         });
 
       db.collection("restaurants")
@@ -229,17 +232,6 @@ export default function Restaurants(props) {
             modulo={modulo}
           />
         ))}
-
-        {user && (
-          <Icon
-            reverse
-            containerStyle={styles.btnContainer}
-            type="material-community"
-            name="plus"
-            color="#00a680"
-            onPress={() => navigation.navigate("add-restaurant")}
-          />
-        )}
       </ScrollView>
     </>
   );

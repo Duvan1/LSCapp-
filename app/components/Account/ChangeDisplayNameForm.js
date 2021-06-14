@@ -37,7 +37,7 @@ export default function ChangeDisplayNameForm(props) {
               });
             });
           setIsLoading(false);
-          setRealoadUserInfo(true);
+          setRealoadUserInfo(Math.random());
           setShowModal(false);
         })
         .catch(() => {

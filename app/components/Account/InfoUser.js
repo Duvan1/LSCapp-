@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Avatar } from "react-native-elements";
 import * as firebase from "firebase";
@@ -10,22 +10,29 @@ import { firebaseApp } from "../../utils/firebase";
 const db = firebase.firestore(firebaseApp);
 
 export default function InfoUser(props) {
-  const {
-    userInfo, //: { photoURL, displayName, email },
-    uid,
-    toastRef,
-    setloadingText,
-    setloading,
-  } = props;
+  const [userInfo, setuserInfo] = useState({
+    photoURL: null,
+    displayName: null,
+    email: null,
+  });
+  useState;
+  const { realoadUserInfo, uid, toastRef, setloadingText, setloading } = props;
   let logros = new Map();
 
   useEffect(() => {
-    console.log(
-      "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n----------------------->",
-      userInfo
-    );
+    db.collection("info_user")
+      .where("id_user", "==", uid)
+      .get()
+      .then((response) => {
+        const arrayResponse = [];
+        response.forEach((doc) => {
+          arrayResponse.push(doc.data());
+        });
+
+        setuserInfo(arrayResponse[0]);
+      });
     db.collection("mis_logros")
-      //.where("logro.nombre", "==", "Noble")
+      .where("id_user", "==", uid)
       .get()
       .then((res) => {
         res.forEach((doc) => {
@@ -37,7 +44,7 @@ export default function InfoUser(props) {
           console.log(clavevalor);
         }
       });
-  }, []);
+  }, [realoadUserInfo]);
 
   const changeAvatar = async () => {
     const resultPermission = await Permissions.askAsync(
