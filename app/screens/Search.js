@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   ImageBackground,
+  TouchableOpacity,
 } from "react-native";
 import {
   SearchBar,
@@ -35,6 +36,12 @@ export default function Search(props) {
   const [showModal, setShowModal] = useState(false);
   const [falgSearch, setfalgSearch] = useState(0);
   const [primeraCarga, setprimeraCarga] = useState(true);
+  const [mascota_feliz, setmascota_feliz] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+  );
+  const [mascota_triste, setmascota_triste] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+  );
 
   const list = [
     {
@@ -145,34 +152,90 @@ export default function Search(props) {
   };
 
   useEffect(() => {
-    if (primeraCarga) {
-      setIsLoading(true);
-      fireSQL.query(`SELECT * FROM senia ORDER BY nombre`).then((response) => {
-        setsenias(response.slice(0, 20));
-        setseniasAux(response);
-        setIsLoading(false);
-      });
-    } else {
-      setIsLoading(true);
-      if (search) {
-        setTimeout(() => {
-          let aux = [];
-          seniasAux.map((senia) => {
-            if (senia.nombre != undefined) {
-              if (similarity(search, senia.nombre) > 0.6) {
-                console.log("Agregando: " + senia.nombre);
-                aux.push(senia);
-              }
-            }
+    (async () => {
+      const user = await firebase.default.auth().currentUser;
+
+      db.collection("info_user")
+        .where("id_user", "==", user.uid)
+        .get()
+        .then((response) => {
+          const arrayResponse = [];
+          response.forEach((doc) => {
+            arrayResponse.push(doc.data());
           });
-          setsenias(aux);
-          setIsLoading(false);
-        }, 1000);
+          if (arrayResponse[0].traje == "normal") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+            );
+          } else if (arrayResponse[0].traje == "formal") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje.png?alt=media&token=3c6d98dd-f566-4758-bc2c-113ef567b8ba"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje_triste.png?alt=media&token=77aa098c-a1d3-41ee-98cb-b95b0cfdb440"
+            );
+          } else if (arrayResponse[0].traje == "playa") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_feliz.png?alt=media&token=ce7ab628-4296-408a-b1e2-97ada844051b"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_triste.png?alt=media&token=20cdecaf-c092-4ba9-a99b-42ff1ed47fb7"
+            );
+          } else if (arrayResponse[0].traje == "robot") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-feliz.png?alt=media&token=2c8a699b-f3e7-42ab-936b-d991b1e853e9"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-triste.png?alt=media&token=81913344-efef-4ec6-82ff-10cfcb4aecca"
+            );
+          } else {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+            );
+          }
+        });
+      if (primeraCarga) {
+        setIsLoading(true);
+        fireSQL
+          .query(`SELECT * FROM senia ORDER BY nombre`)
+          .then((response) => {
+            setsenias(response.slice(0, 20));
+            setseniasAux(response);
+            setIsLoading(false);
+          });
       } else {
-        setsenias(seniasAux.slice(0, 20));
-        setIsLoading(false);
+        setIsLoading(true);
+        if (search) {
+          setTimeout(() => {
+            let aux = [];
+            seniasAux.map((senia) => {
+              if (senia.nombre != undefined) {
+                if (similarity(search, senia.nombre) > 0.6) {
+                  console.log("Agregando: " + senia.nombre);
+                  aux.push(senia);
+                }
+              }
+            });
+            setsenias(aux);
+            setIsLoading(false);
+          }, 1000);
+        } else {
+          setsenias(seniasAux.slice(0, 20));
+          setIsLoading(false);
+        }
       }
-    }
+    })();
 
     /*
     setIsLoading(true);
@@ -280,6 +343,29 @@ export default function Search(props) {
           {renderCoponent}
         </ModalSenia>
       )}
+      <TouchableOpacity
+        onPress={() =>
+          alert(
+            "Hola! Soy Coco tu guía\n ¿Necesitas un poco de ayuda? aquí encontraras un completo diccionario con todas las señas que podrás aprender, y eso no es todo, también encontraras la tabla de configuraciones manuales."
+          )
+        }
+        style={{
+          zIndex: 1,
+          alignSelf: "flex-end",
+          position: "absolute",
+          bottom: 30,
+          right: 30,
+          height: 40,
+          justifyContent: "center",
+          alignContent: "center",
+          width: 80,
+        }}
+      >
+        <ImageBackground
+          source={{ uri: mascota_feliz }}
+          style={styles.btnContainer1}
+        ></ImageBackground>
+      </TouchableOpacity>
     </>
   );
 }
@@ -355,25 +441,27 @@ function Restaurant(props) {
     }
   };
   return (
-    <View style={{ marginBottom: 40 }}>
-      <ListItem key={id} bottomDivider onPress={() => goRestaurant()}>
-        <Avatar
-          source={{
-            uri:
-              img == "" || img == undefined
-                ? "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/senias-icons%2Fhombre%2Fgaleria-de-imagenes%20(1).png?alt=media&token=5dde644a-1a4a-4014-b57b-cd9c763fa6c0"
-                : img,
-          }}
-        />
-        <ListItem.Content>
-          <ListItem.Title>{nombre}</ListItem.Title>
-        </ListItem.Content>
-        <ListItem.Content>
-          <ListItem.Title>{tema}</ListItem.Title>
-        </ListItem.Content>
-        <ListItem.Chevron />
-      </ListItem>
-    </View>
+    <>
+      <View style={{ marginBottom: 40 }}>
+        <ListItem key={id} bottomDivider onPress={() => goRestaurant()}>
+          <Avatar
+            source={{
+              uri:
+                img == "" || img == undefined
+                  ? "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/senias-icons%2Fhombre%2Fgaleria-de-imagenes%20(1).png?alt=media&token=5dde644a-1a4a-4014-b57b-cd9c763fa6c0"
+                  : img,
+            }}
+          />
+          <ListItem.Content>
+            <ListItem.Title>{nombre}</ListItem.Title>
+          </ListItem.Content>
+          <ListItem.Content>
+            <ListItem.Title>{tema}</ListItem.Title>
+          </ListItem.Content>
+          <ListItem.Chevron />
+        </ListItem>
+      </View>
+    </>
   );
 }
 
@@ -386,8 +474,18 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     position: "absolute",
-    bottom: 10,
-    right: 10,
+    bottom: 100,
+    right: 20,
+    shadowColor: "black",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.5,
+  },
+  btnContainer1: {
+    borderRadius: 100,
+    padding: 10,
+    backgroundColor: "#fff",
+    width: 80,
+    height: 70,
     shadowColor: "black",
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.5,

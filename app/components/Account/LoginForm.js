@@ -226,13 +226,13 @@ export default function LoginForm(props) {
 
                       if (
                         diffDays == 0 &&
-                        arrayResponse[0].primer_ingreso &&
+                        info_user.data().primer_ingreso &&
                         info_user.data().ultima_clase != null
                       ) {
                         db.collection("info_user")
                           .doc(idUserAux)
                           .update({
-                            dias_racha: arrayResponse[0].dias_racha + 1,
+                            dias_racha: info_user.data().dias_racha + 1,
                             primer_ingreso: false,
                           });
                       } else if (diffDays > 1) {
@@ -285,7 +285,7 @@ export default function LoginForm(props) {
                 /** aca voy agregar el primer ingreso en false y hago otras validaciones mas */
               }
               setloading(false);
-              navigation.navigate("account");
+              //navigation.navigate("account");
             });
           setloading(false);
           navigation.navigate("account");

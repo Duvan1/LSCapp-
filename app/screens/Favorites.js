@@ -6,7 +6,6 @@ import {
   FlatList,
   ActivityIndicator,
   ImageBackground,
-  Alert,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
@@ -30,6 +29,12 @@ export default function Favorites(props) {
   const [reloadData, setReloadData] = useState(false);
   const [gemas, setgemas] = useState(0);
   const toastRef = useRef();
+  const [mascota_feliz, setmascota_feliz] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+  );
+  const [mascota_triste, setmascota_triste] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+  );
 
   firebase.auth().onAuthStateChanged((user) => {
     user ? setuserLogged(true) : setuserLogged(false);
@@ -46,10 +51,53 @@ export default function Favorites(props) {
           .get()
           .then((response) => {
             const array = [];
+            let arrayResponse = [];
             response.forEach((doc) => {
               array.push(doc.data().gemas);
+              arrayResponse.push(doc.data());
             });
             setgemas(array);
+            if (arrayResponse[0].traje == "normal") {
+              setmascota_feliz(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+              );
+
+              setmascota_triste(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+              );
+            } else if (arrayResponse[0].traje == "formal") {
+              setmascota_feliz(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje.png?alt=media&token=3c6d98dd-f566-4758-bc2c-113ef567b8ba"
+              );
+
+              setmascota_triste(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje_triste.png?alt=media&token=77aa098c-a1d3-41ee-98cb-b95b0cfdb440"
+              );
+            } else if (arrayResponse[0].traje == "playa") {
+              setmascota_feliz(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_feliz.png?alt=media&token=ce7ab628-4296-408a-b1e2-97ada844051b"
+              );
+
+              setmascota_triste(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_triste.png?alt=media&token=20cdecaf-c092-4ba9-a99b-42ff1ed47fb7"
+              );
+            } else if (arrayResponse[0].traje == "robot") {
+              setmascota_feliz(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-feliz.png?alt=media&token=2c8a699b-f3e7-42ab-936b-d991b1e853e9"
+              );
+
+              setmascota_triste(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-triste.png?alt=media&token=81913344-efef-4ec6-82ff-10cfcb4aecca"
+              );
+            } else {
+              setmascota_feliz(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+              );
+
+              setmascota_triste(
+                "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+              );
+            }
           });
 
         db.collection("objetos_comprados")
@@ -150,6 +198,29 @@ export default function Favorites(props) {
         <Toast position="center" opacity={0.9} ref={toastRef} />
         <Loading text="Cargando " isVisible={isLoading} />
       </ScrollView>
+      <TouchableOpacity
+        onPress={() =>
+          alert(
+            "Hola! Soy Coco tu guía\n Aquí tienes la tienda de LSCapp completa tus lecciones y obtendras esmeraldas para comprar los objectos que aquí ves."
+          )
+        }
+        style={{
+          zIndex: 1,
+          alignSelf: "flex-end",
+          position: "absolute",
+          bottom: 30,
+          right: 30,
+          height: 40,
+          justifyContent: "center",
+          alignContent: "center",
+          width: 80,
+        }}
+      >
+        <ImageBackground
+          source={{ uri: mascota_feliz }}
+          style={styles.btnContainer}
+        ></ImageBackground>
+      </TouchableOpacity>
     </>
   );
 }
@@ -184,7 +255,24 @@ function Objeto(props) {
   } = props;
   const { nombre, descripcion, fecha, precio, categoria } =
     objeto.item.objeto_tienda;
-  //setIsLoading(false);
+
+  const getImg = (nombre) => {
+    let name = nombre.replace(/^\w/, (c) => c.toUpperCase());
+    if (name == "Traje robot para Coco.") {
+      return "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot.png?alt=media&token=31db858e-43dd-4ada-98b1-a4eb4f84efc4";
+    } else if (name == "Traje esmoquin") {
+      return "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-traje.png?alt=media&token=4a929d8a-f064-4a4f-a762-69c2ac9fb5e1";
+    } else if (name == "Todo o nada") {
+      return "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fapuesta.png?alt=media&token=447f1614-1a6f-4a2b-b5fd-203a52a11729";
+    } else if (name == "Traje de playa") {
+      return "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa.png?alt=media&token=d84ce01e-7722-4df6-a086-0624e317a99e";
+    } else if (name == "Protector") {
+      return "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fsecure-shield.png?alt=media&token=479088fd-4021-4943-91fd-7688966d42c1";
+    } else {
+      return "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fdiamond.png?alt=media&token=3cfc1ec5-1d64-4ffb-a46a-1d0496d37f21";
+    }
+  };
+
   const comprar = (id) => {
     setIsLoading(true);
     if (gemas >= precio) {
@@ -269,10 +357,10 @@ function Objeto(props) {
             }}
           >
             <ImageBackground
-              source={require("../../assets/icons/diamond.png")}
+              source={{ uri: getImg(nombre) }}
               style={{
                 width: 100,
-                height: 100,
+                height: 90,
                 float: "left",
                 marginTop: -10,
                 marginRight: 0,
@@ -402,5 +490,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 100,
+  },
+  btnContainer: {
+    borderRadius: 100,
+    padding: 10,
+    backgroundColor: "#fff",
+    width: 80,
+    height: 70,
+    shadowColor: "black",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.5,
   },
 });

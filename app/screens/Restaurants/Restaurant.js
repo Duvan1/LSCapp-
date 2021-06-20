@@ -57,12 +57,19 @@ export default function Restaurant(props) {
   const [seguidas, setseguidas] = useState(0);
   const [seniasOpciones, setseniasOpciones] = useState([]);
   const [isLoading, setisLoading] = useState(false);
+  const [mascota_feliz, setmascota_feliz] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+  );
+  const [mascota_triste, setmascota_triste] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+  );
 
   let banderaSeguidas = false;
   let EXP = 0;
   let coronas = 0;
   let gemas = 0;
-  let logros = new Map();
+  // let mascota_triste = null;
+  // let mascota_feliz = null;
 
   const toggleBottomNavigationView = () => {
     //Toggling the visibility state of the bottom sheet
@@ -272,7 +279,55 @@ export default function Restaurant(props) {
   useEffect(() => {
     setisLoading(true);
     // este estado sera el que guardara cuantas señas tengo lo qiue es lo mismo que la cantidad de preguntas
+    if (avance < 1) {
+      db.collection("info_user")
+        .doc(uidInfoUser)
+        .get()
+        .then((info_user) => {
+          //alert(info_user.data().traje);
+          if (info_user.data().traje == "normal") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+            );
 
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+            );
+          } else if (info_user.data().traje == "formal") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje.png?alt=media&token=3c6d98dd-f566-4758-bc2c-113ef567b8ba"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje_triste.png?alt=media&token=77aa098c-a1d3-41ee-98cb-b95b0cfdb440"
+            );
+          } else if (info_user.data().traje == "playa") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_feliz.png?alt=media&token=ce7ab628-4296-408a-b1e2-97ada844051b"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_triste.png?alt=media&token=20cdecaf-c092-4ba9-a99b-42ff1ed47fb7"
+            );
+          } else if (info_user.data().traje == "robot") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-feliz.png?alt=media&token=2c8a699b-f3e7-42ab-936b-d991b1e853e9"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-triste.png?alt=media&token=81913344-efef-4ec6-82ff-10cfcb4aecca"
+            );
+          } else {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+            );
+          }
+        });
+    }
     setSeniasLenght(senia.length);
     if (senia.length > avance) {
       db.collection("senia")
@@ -487,8 +542,8 @@ export default function Restaurant(props) {
                     style={{ width: 110, height: 100 }}
                     source={
                       correctAnswer
-                        ? require("../../../assets/img/mascota.png")
-                        : require("../../../assets/img/mascota_triste.png")
+                        ? { uri: mascota_feliz }
+                        : { uri: mascota_triste }
                     }
                   />
                 </View>
@@ -707,7 +762,7 @@ export default function Restaurant(props) {
           >
             <ImageBackground
               style={{ width: 150, height: 125, marginBottom: 10 }}
-              source={require("../../../assets/img/mascota_triste.png")}
+              source={{ uri: mascota_triste }}
             />
             <Text
               style={{
@@ -837,7 +892,7 @@ export default function Restaurant(props) {
           >
             <ImageBackground
               style={{ width: 170, height: 150, marginBottom: 10 }}
-              source={require("../../../assets/img/mascota.png")}
+              source={{ uri: mascota_feliz }}
             />
             <Text
               style={{

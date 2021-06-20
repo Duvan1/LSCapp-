@@ -5,8 +5,9 @@ import {
   StyleSheet,
   ImageBackground,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
-import { Divider, ProgressBar } from "react-native-paper";
+import { ProgressBar } from "react-native-paper";
 import { ListItem, Image } from "react-native-elements";
 import * as firebase from "firebase";
 import { firebaseApp } from "../../utils/firebase";
@@ -16,7 +17,6 @@ import Toast from "react-native-easy-toast";
 import Loading from "../../components/Loading";
 import InfoUser from "../../components/Account/InfoUser";
 import AccountOptions from "../../components/Account/AccountOptions";
-import { ImageBackgroundBase } from "react-native";
 
 const db = firebase.firestore(firebaseApp);
 
@@ -29,6 +29,12 @@ export default function UserLogged(props) {
   const [userInfo, setuserInfo] = useState(null);
   const [infoUser, setInfoUser] = useState([]);
   const [logros, setlogros] = useState([]);
+  const [mascota_feliz, setmascota_feliz] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+  );
+  const [mascota_triste, setmascota_triste] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+  );
 
   const getInsignia = (division) => {
     if (division == "bronce") {
@@ -100,11 +106,53 @@ export default function UserLogged(props) {
           });
 
           setInfoUser(arrayResponse);
+
+          if (arrayResponse[0].traje == "normal") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+            );
+          } else if (arrayResponse[0].traje == "formal") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje.png?alt=media&token=3c6d98dd-f566-4758-bc2c-113ef567b8ba"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje_triste.png?alt=media&token=77aa098c-a1d3-41ee-98cb-b95b0cfdb440"
+            );
+          } else if (arrayResponse[0].traje == "playa") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_feliz.png?alt=media&token=ce7ab628-4296-408a-b1e2-97ada844051b"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_triste.png?alt=media&token=20cdecaf-c092-4ba9-a99b-42ff1ed47fb7"
+            );
+          } else if (arrayResponse[0].traje == "robot") {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-feliz.png?alt=media&token=2c8a699b-f3e7-42ab-936b-d991b1e853e9"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-triste.png?alt=media&token=81913344-efef-4ec6-82ff-10cfcb4aecca"
+            );
+          } else {
+            setmascota_feliz(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota.png?alt=media&token=44b8ae65-a3e7-4ca9-a130-a5474c1f474d"
+            );
+
+            setmascota_triste(
+              "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
+            );
+          }
         });
 
       db.collection("mis_logros")
         .where("id_user", "==", user.uid)
-        .orderBy("mi_puntaje")
+        .orderBy("mi_puntaje", "desc")
         .limit(2)
         .get()
         .then((response) => {
@@ -505,6 +553,29 @@ export default function UserLogged(props) {
         <Toast ref={toastRef} position="center" opacity={0.9} />
         <Loading isVisible={loading} text={loadingText} />
       </ScrollView>
+      <TouchableOpacity
+        onPress={() =>
+          alert(
+            "Hola! Soy Coco tu guía\n Mira! toda tu información progreso y logos en esta sección dale un vistazo."
+          )
+        }
+        style={{
+          zIndex: 1,
+          alignSelf: "flex-end",
+          position: "absolute",
+          bottom: 30,
+          right: 30,
+          height: 40,
+          justifyContent: "center",
+          alignContent: "center",
+          width: 80,
+        }}
+      >
+        <ImageBackground
+          source={{ uri: mascota_feliz }}
+          style={styles.btnContainer}
+        ></ImageBackground>
+      </TouchableOpacity>
     </>
   );
 }
@@ -546,5 +617,15 @@ const styles = StyleSheet.create({
   ratingText: {
     paddingLeft: 2,
     color: "grey",
+  },
+  btnContainer: {
+    borderRadius: 100,
+    padding: 10,
+    backgroundColor: "#fff",
+    width: 80,
+    height: 70,
+    shadowColor: "black",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.5,
   },
 });
