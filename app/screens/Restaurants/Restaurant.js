@@ -293,7 +293,7 @@ export default function Restaurant(props) {
             setmascota_triste(
               "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
             );
-          } else if (info_user.data().traje == "formal") {
+          } else if (info_user.data().traje == "Traje esmoquin") {
             setmascota_feliz(
               "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje.png?alt=media&token=3c6d98dd-f566-4758-bc2c-113ef567b8ba"
             );
@@ -301,7 +301,7 @@ export default function Restaurant(props) {
             setmascota_triste(
               "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje_triste.png?alt=media&token=77aa098c-a1d3-41ee-98cb-b95b0cfdb440"
             );
-          } else if (info_user.data().traje == "playa") {
+          } else if (info_user.data().traje == "Traje de playa") {
             setmascota_feliz(
               "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_feliz.png?alt=media&token=ce7ab628-4296-408a-b1e2-97ada844051b"
             );
@@ -309,7 +309,7 @@ export default function Restaurant(props) {
             setmascota_triste(
               "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_triste.png?alt=media&token=20cdecaf-c092-4ba9-a99b-42ff1ed47fb7"
             );
-          } else if (info_user.data().traje == "robot") {
+          } else if (info_user.data().traje == "Traje robot para Coco.") {
             setmascota_feliz(
               "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-feliz.png?alt=media&token=2c8a699b-f3e7-42ab-936b-d991b1e853e9"
             );

@@ -51,7 +51,7 @@ export default function Login() {
         </View>
       </View>
       <View style={styles.viewContainer}>
-        <LoginFacebook toastRef={toastRef} />
+        {/*<LoginFacebook toastRef={toastRef} />*/}
         <CreateAccount />
       </View>
       <Toast ref={toastRef} position="center" opacity={0.9} />

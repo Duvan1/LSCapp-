@@ -19,15 +19,18 @@ export default function LoginFacebook(props) {
 
     if (type === "success") {
       setloading(true);
-      const credentials = firebase.default.auth.FacebookAuthProvider.credential(
-        token
-      );
+      const credentials =
+        firebase.default.auth.FacebookAuthProvider.credential(token);
       firebase.default
         .auth()
         .signInWithCredential(credentials)
-        .then(() => {
+        .then((res) => {
+          console.log(
+            "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n ",
+            res
+          );
           setloading(false);
-          navigation.navigate("account");
+          //navigation.navigate("account");
         })
         .catch(() => {
           setloading(false);

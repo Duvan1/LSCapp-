@@ -65,7 +65,7 @@ export default function Favorites(props) {
               setmascota_triste(
                 "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_triste.png?alt=media&token=9411bf24-d226-48ce-8fbb-0c8c4361e780"
               );
-            } else if (arrayResponse[0].traje == "formal") {
+            } else if (arrayResponse[0].traje == "Traje esmoquin") {
               setmascota_feliz(
                 "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje.png?alt=media&token=3c6d98dd-f566-4758-bc2c-113ef567b8ba"
               );
@@ -73,7 +73,7 @@ export default function Favorites(props) {
               setmascota_triste(
                 "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_traje_triste.png?alt=media&token=77aa098c-a1d3-41ee-98cb-b95b0cfdb440"
               );
-            } else if (arrayResponse[0].traje == "playa") {
+            } else if (arrayResponse[0].traje == "Traje de playa") {
               setmascota_feliz(
                 "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_feliz.png?alt=media&token=ce7ab628-4296-408a-b1e2-97ada844051b"
               );
@@ -81,7 +81,7 @@ export default function Favorites(props) {
               setmascota_triste(
                 "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota_playa_triste.png?alt=media&token=20cdecaf-c092-4ba9-a99b-42ff1ed47fb7"
               );
-            } else if (arrayResponse[0].traje == "robot") {
+            } else if (arrayResponse[0].traje == "Traje robot para Coco.") {
               setmascota_feliz(
                 "https://firebasestorage.googleapis.com/v0/b/tenedores-d1e09.appspot.com/o/mascota%2Fmascota-robot-feliz.png?alt=media&token=2c8a699b-f3e7-42ab-936b-d991b1e853e9"
               );
@@ -274,6 +274,8 @@ function Objeto(props) {
   };
 
   const comprar = (id) => {
+    console.log(id);
+
     setIsLoading(true);
     if (gemas >= precio) {
       db.collection("objetos_comprados")
@@ -294,7 +296,6 @@ function Objeto(props) {
             .then((res) => {
               db.collection("info_user")
                 .where("id_user", "==", idusuario)
-
                 .get()
                 .then((res) => {
                   let id_info_user = null;
@@ -303,17 +304,32 @@ function Objeto(props) {
                     id_info_user = doc.id;
                     gemasAux = doc.data().gemas;
                   });
-                  db.collection("info_user")
-                    .doc(id_info_user)
-                    .update({
-                      gemas: gemasAux - precio,
-                      objetos_comprados: [{ nombre: nombre, fecha: fecha }],
-                    })
-                    .then(() => {
-                      setIsLoading(false);
-                      setReloadData(true);
-                      toastRef.current.show("Objeto comprado :D");
-                    });
+                  if (categoria == "traje") {
+                    db.collection("info_user")
+                      .doc(id_info_user)
+                      .update({
+                        gemas: gemasAux - precio,
+                        objetos_comprados: [{ nombre: nombre, fecha: fecha }],
+                        traje: nombre,
+                      })
+                      .then(() => {
+                        setIsLoading(false);
+                        setReloadData(true);
+                        toastRef.current.show("Objeto comprado :D");
+                      });
+                  } else {
+                    db.collection("info_user")
+                      .doc(id_info_user)
+                      .update({
+                        gemas: gemasAux - precio,
+                        objetos_comprados: [{ nombre: nombre, fecha: fecha }],
+                      })
+                      .then(() => {
+                        setIsLoading(false);
+                        setReloadData(true);
+                        toastRef.current.show("Objeto comprado :D");
+                      });
+                  }
                 });
             });
         });
@@ -400,8 +416,9 @@ function Objeto(props) {
                   float: "right",
                   right: 0,
                   minWidth: 100,
-                  position: "absolute",
-                  top: 120,
+                  //position: "absolute",
+                  //top: 120,
+                  marginBottom: -30,
                   backgroundColor: "#fff",
                   flexDirection: "row",
                   padding: 8,
