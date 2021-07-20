@@ -16,45 +16,6 @@ export default function IconClass(props) {
   //const disable = true;
   const [percent, setPercent] = useState(0);
 
-  // Map que asigna un color y la imagen por cada categoria
-  const iconMap = new Map([
-    [
-      "cuerpo-humano",
-      {
-        uri: require("../../../assets/icons/hombre/cuerpo-humano.png"),
-        color: "#5DADE2",
-      },
-    ],
-    [
-      "escencia",
-      {
-        uri: require("../../../assets/icons/hombre/escencia.png"),
-        color: "#5DADE2",
-      },
-    ],
-    [
-      "tiempo",
-      {
-        uri: require("../../../assets/icons/hombre/tiempo.png"),
-        color: "#5DADE2",
-      },
-    ],
-    [
-      "inteligencia",
-      {
-        uri: require("../../../assets/icons/hombre/inteligencia.png"),
-        color: "#5DADE2",
-      },
-    ],
-    [
-      "espacio",
-      {
-        uri: require("../../../assets/icons/hombre/espacio.png"),
-        color: "#5DADE2",
-      },
-    ],
-  ]);
-
   const jewelStyle = function (color) {
     return {
       backgroundColor: color,
